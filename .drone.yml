@@ -1,0 +1,8 @@
+peline:
+  validate:
+    image: quay.io/ukhomeofficedigital/acp-toolset:latest
+    pull: true
+    commands:
+    - /platform/scripts/tf-validate.sh
+    when:
+      event: pull_request
