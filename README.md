@@ -17,5 +17,5 @@ Module usage:
 |------|-------------|:-----:|:-----:|
 | name | The allocated to the s3 bucket in aws | - | yes |
 | acl | Amazon control list of access rights to the created bucket | - | yes |
-| environment | The environment the RDS is running in i.e. dev, prod etc | - | yes |
+| environment | The environment the S3 is running in i.e. dev, prod etc | - | yes |
 | tags | A map of tags to add to all resources | `<map>` | no |
