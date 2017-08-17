@@ -29,9 +29,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
     principals {
       type = "AWS"
 
-      identifiers = [
-          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.name}",
-      ]
+      identifiers = ["*"]
     }
   }
 }
