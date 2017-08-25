@@ -90,7 +90,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
 
   statement {
 
-    sid    = "Enable IAM User KMS permissions"
+    sid    = "KMSPermissions"
     effect = "Allow"
 
     resources = [
@@ -112,7 +112,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
 
   statement {
     
-    sid    = "Deny s3 put not following the condition"
+    sid    = "DenyCondition"
     effect = "Deny"
 
     actions = [
@@ -138,7 +138,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
 
   statement {
 
-    sid    = "Enable IAM User S3 permissions"
+    sid    = "IAMPermissions"
     effect = "Allow"
 
     resources = [
@@ -164,7 +164,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
 
   statement {
 
-    sid    = "Enable IAM User Permissions"
+    sid    = "IAMPermissions"
     effect = "Allow"
 
     resources = ["*"]
@@ -183,7 +183,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
 
   statement {
 
-    sid    = "Allow access for Key Administrators"
+    sid    = "KeyAdministratorsPermissions"
     effect = "Allow"
     
     resources = ["*"]
