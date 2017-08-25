@@ -72,7 +72,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
 
   statement {
 
-    sid    = "Enable IAM User S3 permissions"
+    sid    = "IAMPermissions"
     effect = "Allow"
 
     resources = [
