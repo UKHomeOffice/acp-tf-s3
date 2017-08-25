@@ -68,7 +68,7 @@ resource "aws_iam_user_policy" "s3_bucket_user_policy" {
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
     
-  policy_id = "${var.bucket_iam_user}-policy"
+  policy_id = "${var.bucket_iam_user}Policy"
 
   statement {
 
@@ -134,7 +134,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
 
 data "aws_iam_policy_document" "s3_bucket_policy_document" {
   
-  policy_id = "${var.bucket_iam_user}-policy"
+  policy_id = "${var.bucket_iam_user}Policy"
 
   statement {
 
@@ -160,7 +160,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
 
   count = "${var.kms_alias == "" ? 0 : 1 }"
 
-  policy_id = "${var.kms_alias}-policy"
+  policy_id = "${var.kms_alias}Policy"
 
   statement {
 
