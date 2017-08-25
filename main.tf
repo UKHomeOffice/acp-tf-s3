@@ -89,7 +89,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
     sid    = "Enable IAM User KMS permissions"
     effect = "Allow"
 
-    resources = ["${var.kms_alias != "" ? aws_kms_key.s3_bucket_kms_key.arn : "" }"]
+    resources = ["${var.kms_alias != "" ? aws_kms_key.s3_bucket_kms_key.arn : "*" }"]
 
     actions = [
       "kms:Decrypt",
