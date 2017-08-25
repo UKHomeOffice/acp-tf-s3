@@ -1,8 +1,6 @@
 
 data "aws_caller_identity" "current" { }
 
-data "aws_availability_zones" "selected" {}
-
 resource "aws_kms_key" "s3_bucket_kms_key" {
 
   count = "${var.kms_alias == "" ? 0 : 1}"
@@ -92,7 +90,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
     effect = "Allow"
 
     resources = [
-      "arn:aws:kms:${data.aws_availability_zones.selected.region}:${data.aws_caller_identity.current.name}:key/${var.kms_alias}"
+      "arn:aws:kms:${data.aws_region}:${data.aws_caller_identity.current.name}:key/${var.kms_alias}"
     ]
 
     actions = [
