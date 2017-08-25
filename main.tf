@@ -52,6 +52,8 @@ resource "aws_iam_user_policy" "s3_bucket_user_policy" {
 
 data "aws_iam_policy_document" "s3_bucket_policy_document" {
   
+  count = "${var.kms_alias == "" ? 0 : 1 }"
+  
   policy_id = "${var.bucket_iam_user}-policy"
 
   statement {
@@ -114,7 +116,35 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
   }
 }
 
+data "aws_iam_policy_document" "s3_bucket_policy_document" {
+  
+  count = "${var.kms_alias == "" ? 1 : 0 }"
+
+  policy_id = "${var.bucket_iam_user}-policy"
+
+  statement {
+
+    sid    = "Enable IAM User S3 permissions"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}"
+    ]
+
+    actions = [
+      "s3:Get*",
+      "s3:List*",
+      "s3:Delete*",
+      "s3:Put*",
+    ]
+
+  }
+
+}
+
 data "aws_iam_policy_document" "kms_key_policy_document" {
+
+  count = "${var.kms_alias == "" ? 0 : 1 }"
 
   policy_id = "${var.kms_alias}-policy"
 
