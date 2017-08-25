@@ -42,7 +42,7 @@ resource "aws_iam_user" "s3_bucket_iam_user" {
 
 }
 
-resource "aws_iam_user_policy" "s3_bucket_user_policy" {
+resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy" {
   
   count  = "${var.kms_alias == "" ? 0 : 1 }"
 
