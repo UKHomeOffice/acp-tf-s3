@@ -67,8 +67,8 @@ resource "aws_iam_user_policy" "s3_bucket_user_policy" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
-    
-  policy_id = "${var.bucket_iam_user}Policy"
+
+  policy_id = "${var.bucket_iam_user}policy"
 
   statement {
 
@@ -83,7 +83,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
       "s3:Get*",
       "s3:List*",
       "s3:Delete*",
-      "s3:Put*",
+      "s3:Put*"
     ]
 
   }
@@ -106,7 +106,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
       "kms:GenerateRandom",
       "kms:GetKeyPolicy",
       "kms:GetKeyRotationStatus",
-      "kms:ReEncrypt",
+      "kms:ReEncrypt"
     ]
   }
 
@@ -121,7 +121,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
 
     condition {
 
-      test = "stringNotEquals" 
+      test = "StringNotEquals" 
       variable = "s3:x-amz-server-side-encryption"
       values = [
         "aws:kms"
