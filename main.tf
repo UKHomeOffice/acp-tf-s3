@@ -115,6 +115,10 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
     sid    = "DenyCondition"
     effect = "Deny"
 
+    resources = [
+      "aws_s3_bucket.s3_bucket.arn"
+    ]
+
     actions = [
       "s3:Put*"
     ]
