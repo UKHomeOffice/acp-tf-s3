@@ -99,7 +99,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
     sid    = "Deny s3 put not following the condition"
     effect = "Deny"
 
-    action = [
+    actions = [
       "s3:Put*"
     ]
 
@@ -107,7 +107,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
 
       test = "stringNotEquals" 
       variable = "s3:x-amz-server-side-encryption"
-      value = [
+      values = [
         "aws:kms"
       ]
 
@@ -127,7 +127,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
 
     resources = ["*"]
 
-    action = [
+    actions = [
       "kms:*"
     ]
 
@@ -146,7 +146,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
     
     resources = ["*"]
 
-    action = [
+    actions = [
       "kms:Create*",
       "kms:Describe*",
       "kms:Enable*",
