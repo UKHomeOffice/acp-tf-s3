@@ -40,8 +40,6 @@ resource "aws_iam_user" "s3_bucket_iam_user" {
   name = "${var.bucket_iam_user}"
   path = "/"
 
-  tags = "${merge(var.tags, map("Name", format("%s-%s", var.environment, var.name)), map("Env", var.environment), map("KubernetesCluster", var.environment))}"
-
 }
 
 resource "aws_iam_user_policy" "s3_bucket_user_policy" {
