@@ -1,36 +1,166 @@
 
 data "aws_caller_identity" "current" { }
 
+resource "aws_kms_key" "s3_bucket_kms_key" {
+
+  count = "${var.kms_alias == "" ? 0 : 1}"
+
+  description = "A kms key for encrypting/decryting S3 bucket ${var.name}"
+  policy = "${data.aws_iam_policy_document.kms_key_policy_document.json}"
+
+  tags = "${merge(var.tags, map("Name", format("%s-%s", var.environment, var.name)), map("Env", var.environment), map("KubernetesCluster",var.environment))}"
+
+}
+
+resource "aws_kms_alias" "s3_bucket_kms_alias" {
+
+  count = "${var.kms_alias == "" ? 0 : 1}"
+
+  name          = "alias/${var.kms_alias}"
+  target_key_id = "${aws_kms_key.s3_bucket_kms_key.key_id}"
+
+}
+
 resource "aws_s3_bucket" "s3_bucket" {
   
   bucket = "${var.name}"
   acl    = "${var.acl}"
-  policy = "${data.aws_iam_policy_document.s3_bucket_policy_document.json}"
+
+  versioning {
+    enabled    = "${var.versioning_enabled}"
+    mfa_delete = "${var.mfa_delete_enabled}"
+  }
 
   tags = "${merge(var.tags, map("Name", format("%s-%s", var.environment, var.name)), map("Env", var.environment), map("KubernetesCluster", var.environment))}"  
 
 }
 
-data "aws_iam_policy_document" "s3_bucket_policy_document" {
-  policy_id = "TerraformPolicy"
+resource "aws_iam_user" "s3_bucket_iam_user" {
+  
+  name = "${var.bucket_iam_user}"
+  path = "/"
+
+  tags = "${merge(var.tags, map("Name", format("%s-%s", var.environment, var.name)), map("Env", var.environment), map("KubernetesCluster", var.environment))}"
+
+}
+
+resource "aws_iam_user_policy" "s3_bucket_user_policy" {
+  
+  name   = "${var.iam_user_policy_name}"
+  user   = "${aws_iam_user.s3_bucket_iam_user.name}"
+  policy = "${data.aws_iam_policy_document.s3_bucket_policy_document.json}"
+
+}
+
+data "aws_iam_policy_document" "s3_bucket_user_policy_document" {
+  
+  policy_id = "${var.bucket_iam_user}-policy"
 
   statement {
-    sid    = "BucketAccess"
+
+    sid    = "Enable IAM User S3 permissions"
     effect = "Allow"
 
-    actions = [
-      "s3:*",
-    ]
-
     resources = [
-      "arn:aws:s3:::${var.name}/*",
+      "${aws_s3_bucket.s3_bucket.arn}"
     ]
 
-    principals {
-      type = "AWS"
+    actions = [
+      "s3:Get*",
+      "s3:List*",
+      "s3:Delete*",
+      "s3:Put*",
+    ]
 
-      identifiers = ["*"]
+  }
+
+  statement {
+
+    sid    = "Enable IAM User KMS permissions"
+    effect = "Allow"
+
+    resources = ["${aws_kms_key.s3_bucket_kms_key.arn}"]
+
+    actions = [
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:Encrypt",
+      "kms:GenerateDataKey",
+      "kms:GenerateDataKeyWithoutPlaintext",
+      "kms:GenerateRandom",
+      "kms:GetKeyPolicy",
+      "kms:GetKeyRotationStatus",
+      "kms:ReEncrypt",
+    ]
+  }
+
+  statement {
+    
+    sid    = "Deny s3 put not following the condition"
+    effect = "Deny"
+
+    action = [
+      "s3:Put*"
+    ]
+
+    condition {
+
+      test = "stringNotEquals" 
+      variable = "s3:x-amz-server-side-encryption"
+      value = [
+        "aws:kms"
+      ]
+
     }
+
   }
 }
 
+data "aws_iam_policy_document" "kms_key_policy_document" {
+
+  policy_id = "${var.kms_alias}-policy"
+
+  statement {
+
+    sid    = "Enable IAM User Permissions"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    action = [
+      "kms:*"
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+      ]
+    }
+  }
+
+  statement {
+
+    sid    = "Allow access for Key Administrators"
+    effect = "Allow"
+    
+    resources = ["*"]
+
+    action = [
+      "kms:Create*",
+      "kms:Describe*",
+      "kms:Enable*",
+      "kms:List*",
+      "kms:Put*",
+      "kms:Update*",
+      "kms:Revoke*",
+      "kms:Disable*",
+      "kms:Get*",
+      "kms:Delete*",
+      "kms:ScheduleKeyDeletion",
+      "kms:CancelKeyDeletion",
+    ]
+
+  }
+
+}
