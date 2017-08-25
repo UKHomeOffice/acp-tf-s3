@@ -1,10 +1,10 @@
 
 variable "name" {
-  description = "A descriptive name for the RDS instance"
+  description = "A descriptive name for the S3 instance"
 }
 
 variable "environment" {
-  description = "The environment the RDS is running in i.e. dev, prod etc"
+  description = "The environment the S3 is running in i.e. dev, prod etc"
 }
 
 variable "bucket_iam_user" {
