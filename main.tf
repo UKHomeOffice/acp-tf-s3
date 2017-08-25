@@ -51,7 +51,7 @@ resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy" {
   count  = "${var.kms_alias == "" ? 0 : 1 }"
 
   name   = "${var.iam_user_policy_name}"
-  user   = "${aws_iam_user.s3_bucket_iam_user.name}"
+  user   = "${var.bucket_iam_user}"
   policy = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document.json}"
 
 }
@@ -61,7 +61,7 @@ resource "aws_iam_user_policy" "s3_bucket_user_policy" {
   count  = "${var.kms_alias == "" ? 1 : 0 }"
 
   name   = "${var.iam_user_policy_name}"
-  user   = "${aws_iam_user.s3_bucket_iam_user.name}"
+  user   = "${var.bucket_iam_user}"
   policy = "${data.aws_iam_policy_document.s3_bucket_policy_document.json}"
 
 }
