@@ -1,4 +1,3 @@
-
 variable "name" {
   description = "A descriptive name for the S3 instance"
 }
@@ -17,17 +16,17 @@ variable "iam_user_policy_name" {
 
 variable "kms_alias" {
   description = "The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects"
-  default = ""
+  default     = ""
 }
 
 variable "versioning_enabled" {
   description = "If versioning is set for buckets in case of accidental deletion"
-  default = "true"
+  default     = "true"
 }
 
 variable "mfa_delete_enabled" {
   description = "If mfa is enabled for bucket deletion"
-  default = "false"
+  default     = "false"
 }
 
 variable "acl" {
