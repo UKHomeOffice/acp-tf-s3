@@ -54,10 +54,10 @@ resource "aws_iam_user_policy" "s3_bucket_user_policy" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
-  policy_id = "${var.bucket_iam_user}policy"
+  policy_id = "${var.bucket_iam_user}Policy"
 
   statement {
-    sid    = "IAMPermissions"
+    sid    = "IAMS3BucketPermissions"
     effect = "Allow"
 
     resources = [
@@ -65,10 +65,22 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
     ]
 
     actions = [
-      "s3:Get*",
-      "s3:List*",
-      "s3:Delete*",
-      "s3:Put*",
+      "s3:ListBucket",
+    ]
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPermissions"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:DeleteObject",
     ]
   }
 
@@ -98,11 +110,11 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
     effect = "Deny"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
+      "${aws_s3_bucket.s3_bucket.arn}/*",
     ]
 
     actions = [
-      "s3:Put*",
+      "s3:PutObject",
     ]
 
     condition {
@@ -120,18 +132,30 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
   policy_id = "${var.bucket_iam_user}Policy"
 
   statement {
-    sid    = "IAMPermissions"
+    sid    = "IAMS3BucketPermissions"
     effect = "Allow"
 
     resources = [
-      "arn:aws:s3:::${var.name}*",
+      "${aws_s3_bucket.s3_bucket.arn}",
     ]
 
     actions = [
-      "s3:Get*",
-      "s3:List*",
-      "s3:Delete*",
-      "s3:Put*",
+      "s3:ListBucket",
+    ]
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPermissions"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:DeleteObject",
     ]
   }
 }
