@@ -29,6 +29,41 @@ resource "aws_s3_bucket" "s3_bucket" {
     mfa_delete = "${var.mfa_delete_enabled}"
   }
 
+  lifecycle_rule {
+    id      = "transition-to-infrequent-access-storage"
+    enabled = "${var.lifecycle_infrequent_storage_transition_enabled}"
+
+    prefix  = "${var.lifecycle_infrequent_storage_object_prefix}"
+
+    transition {
+      days          = ${var.lifecycle_days_to_infrequent_storage_transition}
+      storage_class = "STANDARD_IA"
+    }
+  }
+
+  lifecycle_rule {
+    id      = "transition-to-glacier"
+    enabled = "${var.lifecycle_glacier_transition_enabled}"
+
+    prefix  = "${var.lifecycle_glacier_object_prefix}"
+
+    transition {
+      days          = ${var.lifecycle_days_to_glacier_transition}
+      storage_class = "GLACIER"
+    }
+  }
+
+  lifecycle_rule {
+    id      = "expire-objects"
+    enabled = "${var.lifecycle_expiration_enabled}"
+
+    prefix  = "${var.lifecycle_expiration_object_prefix}"
+
+    expiration {
+      days = ${var.lifecycle_days_to_expiration}
+    }
+  }
+
   tags = "${merge(var.tags, map("Name", format("%s-%s", var.environment, var.name)), map("Env", var.environment), map("KubernetesCluster", var.environment))}"
 }
 

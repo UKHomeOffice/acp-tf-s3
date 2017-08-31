@@ -37,3 +37,48 @@ variable "tags" {
   description = "A map of tags to add to all resources"
   default     = {}
 }
+
+variable "lifecycle_infrequent_storage_transition_enabled" {
+  description = "Specifies infrequent storage transition lifecycle rule status."
+  default     = "false"
+}
+
+variable "lifecycle_infrequent_storage_object_prefix" {
+  description = "Object key prefix identifying one or more objects to which the lifecycle rule applies."
+  default     = ""
+}
+
+variable "lifecycle_days_to_infrequent_storage_transition" {
+  description = "Specifies the number of days after object creation when it will be moved to standard infrequent access storage."
+  default     = 60
+}
+
+variable "lifecycle_glacier_transition_enabled" {
+  description = "Specifies Glacier transition lifecycle rule status."
+  default     = "false"
+}
+
+variable "lifecycle_glacier_object_prefix" {
+  description = "Object key prefix identifying one or more objects to which the lifecycle rule applies."
+  default     = ""
+}
+
+variable "lifecycle_days_to_glacier_transition" {
+  description = "Specifies the number of days after object creation when it will be moved to Glacier storage."
+  default     = 180
+}
+
+variable "lifecycle_expiration_enabled" {
+  description = "Specifies expiration lifecycle rule status."
+  default     = "false"
+}
+
+variable "lifecycle_expiration_object_prefix" {
+  description = "Object key prefix identifying one or more objects to which the lifecycle rule applies."
+  default     = ""
+}
+
+variable "lifecycle_days_to_expiration" {
+  description = "Specifies the number of days after object creation when the object expires."
+  default     = 365
+}
