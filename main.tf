@@ -36,7 +36,7 @@ resource "aws_s3_bucket" "s3_bucket" {
     prefix  = "${var.lifecycle_infrequent_storage_object_prefix}"
 
     transition {
-      days          = ${var.lifecycle_days_to_infrequent_storage_transition}
+      days          = "${var.lifecycle_days_to_infrequent_storage_transition}"
       storage_class = "STANDARD_IA"
     }
   }
@@ -48,7 +48,7 @@ resource "aws_s3_bucket" "s3_bucket" {
     prefix  = "${var.lifecycle_glacier_object_prefix}"
 
     transition {
-      days          = ${var.lifecycle_days_to_glacier_transition}
+      days          = "${var.lifecycle_days_to_glacier_transition}"
       storage_class = "GLACIER"
     }
   }
@@ -60,7 +60,7 @@ resource "aws_s3_bucket" "s3_bucket" {
     prefix  = "${var.lifecycle_expiration_object_prefix}"
 
     expiration {
-      days = ${var.lifecycle_days_to_expiration}
+      days = "${var.lifecycle_days_to_expiration}"
     }
   }
 
