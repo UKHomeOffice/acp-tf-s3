@@ -124,6 +124,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
     effect = "Allow"
 
     resources = [
+      "${aws_kms_key.s3_bucket_kms_key.arn}",
       "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:alias/${var.kms_alias}",
     ]
 
