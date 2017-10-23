@@ -177,7 +177,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelisted" 
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ${var.white_list_ip}
+      values   = "${var.white_list_ip}"
     }
 
     condition {
@@ -204,7 +204,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelisted" 
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ${var.white_list_ip}
+      values   = "${var.white_list_ip}"
     }
 
     condition {
@@ -238,7 +238,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelisted" 
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ${var.white_list_ip}
+      values   = "${var.white_list_ip}"
     }
 
     condition {
@@ -272,7 +272,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelisted" 
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ${var.white_list_ip}
+      values   = "${var.white_list_ip}"
     }
 
     condition {
@@ -303,7 +303,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ${var.white_list_ip}
+      values   = "${var.white_list_ip}"
     }
 
     condition {
@@ -330,7 +330,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ${var.white_list_ip}
+      values   = "${var.white_list_ip}"
     }
 
     condition {
@@ -367,7 +367,7 @@ data "aws_iam_policy_document" "kms_key_policy_document_whitelist" {
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ${var.white_list_ip}
+      values   = "${var.white_list_ip}"
     }
 
     condition {
@@ -401,7 +401,7 @@ data "aws_iam_policy_document" "kms_key_policy_document_whitelist" {
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ${var.white_list_ip}
+      values   = "${var.white_list_ip}"
     }
 
     condition {
