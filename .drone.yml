@@ -18,7 +18,6 @@ pipeline:
     - ENVIRONMENT=testing
     commands:
     - /platform/scripts/run.sh plan
-    - ./scripts/cluster.sh dry-run
     when:
       event: pull_request
 
