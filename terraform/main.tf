@@ -8,7 +8,7 @@ module "s3-default" {
   name                 = "testing-${random_id.s3-bucket-name.hex}"
   acl                  = "private"
   environment          = "testing"
-  kms_alias            = "testingkey"
+  kms_alias            = "testingkmskey"
   bucket_iam_user      = "testing-s3-bucket-user"
   iam_user_policy_name = "testing-s3-bucket-policy"
 }
