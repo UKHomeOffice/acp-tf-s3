@@ -31,7 +31,9 @@ pipeline:
     environment:
     - ENVIRONMENT=testing
     commands:
-    - terraform apply terraform/ 
+    - cd terraform
+    - terraform get 
+    - terraform apply
     - echo "Terraform apply was successful"
     - terraform destroy --force
     when:
