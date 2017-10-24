@@ -15,3 +15,4 @@ module "s3-default" {
     iam_user_policy_name = "testing-s3-bucket-policy"
 
 }
+
