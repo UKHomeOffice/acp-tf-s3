@@ -1,8 +1,43 @@
-peline:
+pipeline:
   validate:
-    image: quay.io/ukhomeofficedigital/acp-toolset:latest
+    image: quay.io/ukhomeofficedigital/acp-toolset:v0.0.11
     pull: true
     commands:
     - /platform/scripts/tf-validate.sh
+    when:
+      event: pull_request
+
+  plan:
+    image: quay.io/ukhomeofficedigital/acp-toolset:v0.0.11
+    secrets:
+    - source: testing_aws_access_key
+      target: aws_access_key_id
+    - source: testing_aws_secret_key
+      target: aws_secret_access_key
+    environment:
+    - ENVIRONMENT=testing
+    commands:
+    - /platform/scripts/run.sh plan
+    - ./scripts/cluster.sh dry-run
+    when:
+      event: pull_request
+
+  deploy:
+    image: quay.io/ukhomeofficedigital/acp-toolset:v0.0.11
+    secrets:
+    - source: testing_aws_access_key
+      target: aws_access_key_id
+    - source: testing_aws_secret_key
+      target: aws_secret_access_key
+    environment:
+    - ENVIRONMENT=testing
+    commands:
+    - if ! ./scripts/cluster.sh deploy ; then
+        echo "Terraform apply failed!"
+        terraform destroy --force
+        exit 1
+      fi
+    - echo "Terraform apply was successful"
+    - terraform destroy --force
     when:
       event: pull_request
