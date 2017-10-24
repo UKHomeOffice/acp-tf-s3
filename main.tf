@@ -5,7 +5,7 @@ data "aws_region" "current" {
 }
 
 resource "aws_kms_key" "s3_bucket_kms_key" {
-  count = "${var.kms_alias == "" ? 0 : 1 + 2 * var.white_list_ip[0] == "" ? 0 : 1 == 1 ? 1 : 0}"
+  count = "${var.kms_alias == "" ? 0 : 1 + 2 * length(var.white_list_ip) == 0 ? 0 : 1 == 1 ? 1 : 0}"
 
   description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
   policy      = "${data.aws_iam_policy_document.kms_key_policy_document.json}"
@@ -14,7 +14,7 @@ resource "aws_kms_key" "s3_bucket_kms_key" {
 }
 
 resource "aws_kms_key" "s3_bucket_kms_key_whitelist" {
-  count = "${var.kms_alias == "" ? 0 : 1 + 2 * var.white_list_ip[0] == "" ? 0 : 1 == 3 ? 1 : 0}"
+  count = "${var.kms_alias == "" ? 0 : 1 + 2 * length(var.white_list_ip) == 0 ? 0 : 1 == 3 ? 1 : 0}"
 
   description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
   policy      = "${data.aws_iam_policy_document.kms_key_policy_document_whitelist.json}"
@@ -82,7 +82,7 @@ resource "aws_iam_user" "s3_bucket_iam_user" {
 }
 
 resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy" {
-  count = "${var.kms_alias == "" ? 0 : 1 + 2 * var.white_list_ip[0] == "" ? 0 : 1 == 1 ? 1 : 0}"
+  count = "${var.kms_alias == "" ? 0 : 1 + 2 * length(var.white_list_ip) == 0 ? 0 : 1 == 1 ? 1 : 0}"
 
   name   = "${var.iam_user_policy_name}"
   user   = "${aws_iam_user.s3_bucket_iam_user.name}"
@@ -90,7 +90,7 @@ resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy" {
 }
 
 resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy_whitelist" {
-  count = "${var.kms_alias == "" ? 0 : 1 + 2 * var.white_list_ip[0] == "" ? 0 : 1 == 3 ? 1 : 0}"
+  count = "${var.kms_alias == "" ? 0 : 1 + 2 * length(var.white_list_ip) == 0 ? 0 : 1 == 3 ? 1 : 0}"
 
   name   = "${var.iam_user_policy_name}"
   user   = "${aws_iam_user.s3_bucket_iam_user.name}"
@@ -98,7 +98,7 @@ resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy_whitelist" {
 }
 
 resource "aws_iam_user_policy" "s3_bucket_user_policy" {
-  count = "${var.kms_alias == "" ? 1 : 0 + 2 * var.white_list_ip[0] == "" ? 0 : 1 == 0 ? 1 : 0}"
+  count = "${var.kms_alias == "" ? 1 : 0 + 2 * length(var.white_list_ip) == 0 ? 0 : 1 == 0 ? 1 : 0}"
 
   name   = "${var.iam_user_policy_name}"
   user   = "${aws_iam_user.s3_bucket_iam_user.name}"
@@ -106,7 +106,7 @@ resource "aws_iam_user_policy" "s3_bucket_user_policy" {
 }
 
 resource "aws_iam_user_policy" "s3_bucket_user_policy_whitelist" {
-  count = "${var.kms_alias == "" ? 1 : 0 + 2 * var.white_list_ip[0] == "" ? 0 : 1 == 2 ? 1 : 0}"
+  count = "${var.kms_alias == "" ? 1 : 0 + 2 * length(var.white_list_ip) == 0 ? 0 : 1 == 2 ? 1 : 0}"
 
   name   = "${var.iam_user_policy_name}"
   user   = "${aws_iam_user.s3_bucket_iam_user.name}"
