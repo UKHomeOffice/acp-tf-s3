@@ -7,3 +7,5 @@ terraform apply &
 wait
 echo "Terraform apply was successful"
 terraform destroy --force
+
+
