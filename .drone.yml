@@ -31,11 +31,7 @@ pipeline:
     environment:
     - ENVIRONMENT=testing
     commands:
-    - if ! terraform apply terraform/main.tf ; then
-        echo "Terraform apply failed!"
-        terraform destroy --force
-        exit 1
-      fi
+    - terraform apply 
     - echo "Terraform apply was successful"
     - terraform destroy --force
     when:
