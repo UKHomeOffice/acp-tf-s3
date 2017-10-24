@@ -1,5 +1,5 @@
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
-  count = "${var.kms_alias == "" ? 0 : 1 + 2 * length(var.white_list_ip) == 0 ? 0 : 1 == 1 ? 1 : 0}"
+  count = "${var.kms_alias == "" ? 0 : 1 + var.white_list_ip[0] == "*" ? 0 : 2 == 1 ? 1 : 0}"
 
   policy_id = "${var.bucket_iam_user}Policy"
 
@@ -77,7 +77,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_policy_document" {
-  count = "${var.kms_alias == "" ? 0 : 1 + 2 * length(var.white_list_ip) == 0 ? 0 : 1 == 0 ? 1 : 0}"
+  count = "${var.kms_alias == "" ? 0 : 1 + var.white_list_ip[0] == "*" ? 0 : 2 == 0 ? 1 : 0}"
 
   policy_id = "${var.bucket_iam_user}Policy"
 
@@ -111,7 +111,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
 }
 
 data "aws_iam_policy_document" "kms_key_policy_document" {
-  count = "${var.kms_alias == "" ? 0 : 1  + 2 * length(var.white_list_ip) == 0 ? 0 : 1 == 1 ? 1 : 0}"
+  count = "${var.kms_alias == "" ? 0 : 1 + var.white_list_ip[0] == "*" ? 0 : 2 == 1 ? 1 : 0}"
 
   policy_id = "${var.kms_alias}Policy"
 
@@ -158,7 +158,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist" {
-  count = "${var.kms_alias == "" ? 0 : 1 + 2 * length(var.white_list_ip) == 0 ? 0 : 1 == 3 ? 1 : 0}"
+  count = "${var.kms_alias == "" ? 0 : 1 + var.white_list_ip[0] == "*" ? 0 : 2 == 3 ? 1 : 0}"
 
   policy_id = "${var.bucket_iam_user}Policy"
 
@@ -284,7 +284,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
-  count = "${var.kms_alias == "" ? 0 : 1 + 2 * length(var.white_list_ip) == 0 ? 0 : 1 == 2 ? 1 : 0}"
+  count = "${var.kms_alias == "" ? 0 : 1 + var.white_list_ip[0] == "*" ? 0 : 2 == 2 ? 1 : 0}"
 
   policy_id = "${var.bucket_iam_user}Policy"
 
@@ -342,7 +342,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
 }
 
 data "aws_iam_policy_document" "kms_key_policy_document_whitelist" {
-  count = "${var.kms_alias == "" ? 0 : 1 + 2 * length(var.white_list_ip) == 0 ? 0 : 1 == 3 ? 1 : 0}"
+  count = "${var.kms_alias == "" ? 0 : 1 + var.white_list_ip[0] == "*" ? 0 : 2 == 3 ? 1 : 0}"
 
   policy_id = "${var.kms_alias}Policy"
 

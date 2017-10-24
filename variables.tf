@@ -35,7 +35,7 @@ variable "acl" {
 
 variable "white_list_ip" {
   description = "Whitelisted ip allowed to access the created s3 bucket"
-  default     = []
+  default     = ["*"]
 }
 
 variable "tags" {
