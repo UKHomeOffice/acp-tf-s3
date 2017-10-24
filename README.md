@@ -28,6 +28,7 @@ Module usage:
 | kms_alias | The name of the key for encrypting and decrypting | - | no |
 | versioning_enabled | If the versioning is enabled for the created s3 bucket | true | no |
 | mfa_delete_enabled | If mfa is need for delete for s3 bucket | false | no |
+| white_list_ip | The ip's to whitelist from users | [] | no |
 | tags | A map of tags to add to all resources | `<map>` | no |
 | lifecycle_infrequent_storage_transition_enabled | Whether bucket infrequent storage transition lifecycle is enabled | false | no |
 | lifecycle_infrequent_storage_object_prefix | Object key prefix identifying one or more objects to which the infrequent access storage transition rule applies | `""` | no |
