@@ -31,7 +31,7 @@ pipeline:
     environment:
     - ENVIRONMENT=testing
     commands:
-    - if ! ./scripts/cluster.sh deploy ; then
+    - if ! terraform apply terraform/main.tf ; then
         echo "Terraform apply failed!"
         terraform destroy --force
         exit 1
