@@ -54,6 +54,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
   }
 
   statement {
+    count = 0
+
     sid    = "DenyCondition"
     effect = "Deny"
 
