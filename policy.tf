@@ -197,7 +197,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
     }
 
     condition {
-      count = "${var.white_list_ip[0] == "*" ? 0 : 1}" 
+      count = "${var.white_list_ip[0] == "*" ? 0 : 1}"
 
       test     = "Bool"
       variable = "aws:MultiFactorAuthPresent"
