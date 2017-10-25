@@ -4,7 +4,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
   policy_id = "${var.bucket_iam_user}Policy"
 
   statement {
-    count = "${var.white_list_ip[0] == "*" ? 0 : 1}"
+    count = "${length(var.white_list_ip) == 0 ? 0 : 1}"
 
     sid    = "IAMS3BucketPermissions"
     effect = "Allow"
@@ -31,7 +31,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
   }
 
   statement {
-    count = "${var.white_list_ip[0] == "*" ? 0 : 1}"
+    count = "${length(var.white_list_ip) == 0 ? 0 : 1}"
 
     sid    = "IAMS3ObjectPermissions"
     effect = "Allow"
@@ -60,7 +60,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
   }
 
   statement {
-    count = "${var.white_list_ip[0] == "*" ? 0 : 1}"
+    count = "${length(var.white_list_ip) == 0 ? 0 : 1}"
 
     sid    = "KMSPermissions"
     effect = "Allow"
@@ -96,7 +96,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
   }
 
   statement {
-    count = "${var.white_list_ip[0] == "*" ? 0 : 1}"
+    count = "${length(var.white_list_ip) == 0 ? 0 : 1}"
 
     sid    = "DenyCondition"
     effect = "Deny"
@@ -138,7 +138,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
   policy_id = "${var.bucket_iam_user}Policy"
 
   statement {
-    count = "${var.white_list_ip[0] == "*" ? 0 : 1}"
+    count = "${length(var.white_list_ip) == 0 ? 0 : 1}"
 
     sid    = "IAMS3BucketPermissions"
     effect = "Allow"
@@ -165,7 +165,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
   }
 
   statement {
-    count = "${var.white_list_ip[0] == "*" ? 0 : 1}"
+    count = "${length(var.white_list_ip) == 0 ? 0 : 1}"
 
     sid    = "IAMS3ObjectPermissions"
     effect = "Allow"
@@ -200,7 +200,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
   policy_id = "${var.kms_alias}Policy"
 
   statement {
-    count = "${var.white_list_ip[0] == "*" ? 0 : 1}"
+    count = "${length(var.white_list_ip) == 0 ? 0 : 1}"
 
     sid    = "IAMPermissions"
     effect = "Allow"
@@ -233,7 +233,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
   }
 
   statement {
-    count = "${var.white_list_ip[0] == "*" ? 0 : 1}"
+    count = "${length(var.white_list_ip) == 0 ? 0 : 1}"
 
     sid    = "KeyAdministratorsPermissions"
     effect = "Allow"
