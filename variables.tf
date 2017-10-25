@@ -33,6 +33,11 @@ variable "acl" {
   description = "The access control list assigned to this bucket"
 }
 
+variable "white_list_ip" {
+  description = "Whitelisted ip allowed to access the created s3 bucket"
+  default     = []
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   default     = {}

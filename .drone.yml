@@ -1,8 +1,36 @@
-peline:
+pipeline:
   validate:
-    image: quay.io/ukhomeofficedigital/acp-toolset:latest
+    image: quay.io/ukhomeofficedigital/acp-toolset:v0.0.11
     pull: true
     commands:
     - /platform/scripts/tf-validate.sh
+    when:
+      event: pull_request
+
+  plan:
+    image: quay.io/ukhomeofficedigital/acp-toolset:v0.0.11
+    secrets:
+    - source: testing_aws_access_key
+      target: aws_access_key_id
+    - source: testing_aws_secret_key
+      target: aws_secret_access_key
+    environment:
+    - ENVIRONMENT=testing
+    commands:
+    - /platform/scripts/run.sh plan
+    when:
+      event: pull_request
+
+  run:
+    image: quay.io/ukhomeofficedigital/acp-toolset:v0.0.11
+    secrets:
+    - source: testing_aws_access_key
+      target: aws_access_key_id
+    - source: testing_aws_secret_key
+      target: aws_secret_access_key
+    environment:
+    - ENVIRONMENT=testing
+    commands:
+    - ./run.sh
     when:
       event: pull_request
