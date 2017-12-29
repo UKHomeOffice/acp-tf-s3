@@ -5,7 +5,7 @@ data "aws_region" "current" {
 }
 
 resource "aws_kms_key" "s3_bucket_kms_key" {
-  count = "${var.kms_alias == "" ? 0 : 1}"
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? 1 : 0}"
 
   description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
   policy      = "${data.aws_iam_policy_document.kms_key_policy_document.json}"
@@ -14,10 +14,26 @@ resource "aws_kms_key" "s3_bucket_kms_key" {
 }
 
 resource "aws_kms_alias" "s3_bucket_kms_alias" {
-  count = "${var.kms_alias == "" ? 0 : 1}"
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? 1 : 0}"
 
   name          = "alias/${var.kms_alias}"
   target_key_id = "${aws_kms_key.s3_bucket_kms_key.key_id}"
+}
+
+resource "aws_kms_key" "s3_bucket_kms_key_whitelist" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? 1 : 0}"
+
+  description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
+  policy      = "${data.aws_iam_policy_document.kms_key_policy_document_whitelist.json}"
+
+  tags = "${merge(var.tags, map("Name", format("%s-%s", var.environment, var.name)), map("Env", var.environment), map("KubernetesCluster",var.environment))}"
+}
+
+resource "aws_kms_alias" "s3_bucket_kms_alias_whitelist" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? 1 : 0}"
+
+  name          = "alias/${var.kms_alias}"
+  target_key_id = "${aws_kms_key.s3_bucket_kms_key_whitelist.key_id}"
 }
 
 resource "aws_s3_bucket" "s3_bucket" {
@@ -25,8 +41,7 @@ resource "aws_s3_bucket" "s3_bucket" {
   acl    = "${var.acl}"
 
   versioning {
-    enabled    = "${var.versioning_enabled}"
-    mfa_delete = "${var.mfa_delete_enabled}"
+    enabled = "${var.versioning_enabled}"
   }
 
   lifecycle_rule {
@@ -68,179 +83,56 @@ resource "aws_s3_bucket" "s3_bucket" {
 }
 
 resource "aws_iam_user" "s3_bucket_iam_user" {
-  name = "${var.bucket_iam_user}"
+  count = "${var.number_of_users}"
+
+  name = "${var.bucket_iam_user}${var.number_of_users != 1 ? "-${count.index}" : "" }"
   path = "/"
 }
 
-resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy" {
-  count = "${var.kms_alias == "" ? 0 : 1 }"
+resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy_1" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? var.number_of_users : 0}"
 
-  name   = "${var.iam_user_policy_name}"
-  user   = "${aws_iam_user.s3_bucket_iam_user.name}"
-  policy = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document.json}"
+  name   = "${var.iam_user_policy_name}S3BucketPolicy"
+  user   = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_1.json}"
+}
+
+resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy_2" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? var.number_of_users : 0}"
+
+  name   = "${var.iam_user_policy_name}S3ObjectPolicy"
+  user   = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_2.json}"
+}
+
+resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy_whitelist_1" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? var.number_of_users : 0}"
+
+  name   = "${var.iam_user_policy_name}S3BucketPolicy"
+  user   = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_whitelist_1.json}"
+}
+
+resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy_whitelist_2" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? var.number_of_users : 0}"
+
+  name   = "${var.iam_user_policy_name}S3ObjectPolicy"
+  user   = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_whitelist_2.json}"
 }
 
 resource "aws_iam_user_policy" "s3_bucket_user_policy" {
-  count = "${var.kms_alias == "" ? 1 : 0 }"
+  count = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 ? var.number_of_users : 0}"
 
-  name   = "${var.iam_user_policy_name}"
-  user   = "${aws_iam_user.s3_bucket_iam_user.name}"
+  name   = "${var.iam_user_policy_name}S3BucketPolicy"
+  user   = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
   policy = "${data.aws_iam_policy_document.s3_bucket_policy_document.json}"
 }
 
-data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document" {
-  count = "${var.kms_alias == "" ? 0 : 1}"
+resource "aws_iam_user_policy" "s3_bucket_user_policy_whitelist" {
+  count = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 ? var.number_of_users : 0}"
 
-  policy_id = "${var.bucket_iam_user}Policy"
-
-  statement {
-    sid    = "IAMS3BucketPermissions"
-    effect = "Allow"
-
-    resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-    ]
-
-    actions = [
-      "s3:ListBucket",
-    ]
-  }
-
-  statement {
-    sid    = "IAMS3ObjectPermissions"
-    effect = "Allow"
-
-    resources = [
-      "${aws_s3_bucket.s3_bucket.arn}/*",
-    ]
-
-    actions = [
-      "s3:PutObject",
-      "s3:GetObject",
-      "s3:DeleteObject",
-    ]
-  }
-
-  statement {
-    sid    = "KMSPermissions"
-    effect = "Allow"
-
-    resources = [
-      "${aws_kms_key.s3_bucket_kms_key.arn}",
-      "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:alias/${var.kms_alias}",
-    ]
-
-    actions = [
-      "kms:Decrypt",
-      "kms:DescribeKey",
-      "kms:Encrypt",
-      "kms:GenerateDataKey",
-      "kms:GenerateDataKeyWithoutPlaintext",
-      "kms:GenerateRandom",
-      "kms:GetKeyPolicy",
-      "kms:GetKeyRotationStatus",
-      "kms:ReEncrypt",
-    ]
-  }
-
-  statement {
-    sid    = "DenyCondition"
-    effect = "Deny"
-
-    resources = [
-      "${aws_s3_bucket.s3_bucket.arn}/*",
-    ]
-
-    actions = [
-      "s3:PutObject",
-    ]
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "s3:x-amz-server-side-encryption"
-
-      values = [
-        "aws:kms",
-      ]
-    }
-  }
-}
-
-data "aws_iam_policy_document" "s3_bucket_policy_document" {
-  policy_id = "${var.bucket_iam_user}Policy"
-
-  statement {
-    sid    = "IAMS3BucketPermissions"
-    effect = "Allow"
-
-    resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-    ]
-
-    actions = [
-      "s3:ListBucket",
-    ]
-  }
-
-  statement {
-    sid    = "IAMS3ObjectPermissions"
-    effect = "Allow"
-
-    resources = [
-      "${aws_s3_bucket.s3_bucket.arn}/*",
-    ]
-
-    actions = [
-      "s3:PutObject",
-      "s3:GetObject",
-      "s3:DeleteObject",
-    ]
-  }
-}
-
-data "aws_iam_policy_document" "kms_key_policy_document" {
-  count = "${var.kms_alias == "" ? 0 : 1 }"
-
-  policy_id = "${var.kms_alias}Policy"
-
-  statement {
-    sid    = "IAMPermissions"
-    effect = "Allow"
-
-    resources = ["*"]
-
-    actions = [
-      "kms:*",
-    ]
-
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
-  }
-
-  statement {
-    sid    = "KeyAdministratorsPermissions"
-    effect = "Allow"
-
-    resources = ["*"]
-
-    actions = [
-      "kms:Create*",
-      "kms:Describe*",
-      "kms:Enable*",
-      "kms:List*",
-      "kms:Put*",
-      "kms:Update*",
-      "kms:Revoke*",
-      "kms:Disable*",
-      "kms:Get*",
-      "kms:Delete*",
-      "kms:ScheduleKeyDeletion",
-      "kms:CancelKeyDeletion",
-    ]
-  }
+  name   = "${var.iam_user_policy_name}S3BucketPolicy"
+  user   = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy = "${data.aws_iam_policy_document.s3_bucket_policy_document_whitelist.json}"
 }

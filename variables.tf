@@ -10,6 +10,11 @@ variable "bucket_iam_user" {
   description = "The name of the iam user assigned to the created s3 bucket"
 }
 
+variable "number_of_users" {
+  description = "The number of user to generate credentials for"
+  default     = 1
+}
+
 variable "iam_user_policy_name" {
   description = "The policy name of attached to the user"
 }
@@ -24,13 +29,14 @@ variable "versioning_enabled" {
   default     = "true"
 }
 
-variable "mfa_delete_enabled" {
-  description = "If mfa is enabled for bucket deletion"
-  default     = "false"
-}
-
 variable "acl" {
   description = "The access control list assigned to this bucket"
+  default     = "public"
+}
+
+variable "whitelist_ip" {
+  description = "Whitelisted ip allowed to access the created s3 bucket (note: this allows all by default)"
+  default     = []
 }
 
 variable "tags" {
