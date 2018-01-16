@@ -14,8 +14,11 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
     ]
 
     principals {
-      type        = "AWS"
-      identifiers = ["*"]
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
     }
   }
 
@@ -34,8 +37,11 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
     ]
 
     principals {
-      type        = "AWS"
-      identifiers = ["*"]
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
     }
   }
 }
@@ -64,8 +70,11 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
     ]
 
     principals {
-      type        = "AWS"
-      identifiers = ["*"]
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
     }
   }
 
@@ -88,8 +97,11 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
     }
 
     principals {
-      type        = "AWS"
-      identifiers = ["*"]
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
     }
   }
 }
@@ -110,8 +122,11 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
     ]
 
     principals {
-      type        = "AWS"
-      identifiers = ["*"]
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
     }
   }
 
@@ -130,8 +145,11 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
     ]
 
     principals {
-      type        = "AWS"
-      identifiers = ["*"]
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
     }
   }
 }
@@ -180,8 +198,11 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
     ]
 
     principals {
-      type        = "AWS"
-      identifiers = ["*"]
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
     }
   }
 }
@@ -208,8 +229,11 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
     }
 
     principals {
-      type        = "AWS"
-      identifiers = ["*"]
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
     }
   }
 
@@ -234,8 +258,11 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
     }
 
     principals {
-      type        = "AWS"
-      identifiers = ["*"]
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
     }
   }
 }
@@ -270,8 +297,11 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
     }
 
     principals {
-      type        = "AWS"
-      identifiers = ["*"]
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
     }
   }
 
@@ -300,8 +330,11 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
     }
 
     principals {
-      type        = "AWS"
-      identifiers = ["*"]
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
     }
   }
 }
@@ -328,8 +361,11 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
     }
 
     principals {
-      type        = "AWS"
-      identifiers = ["*"]
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
     }
   }
 
@@ -354,8 +390,11 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
     }
 
     principals {
-      type        = "AWS"
-      identifiers = ["*"]
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
     }
   }
 }
@@ -410,8 +449,11 @@ data "aws_iam_policy_document" "kms_key_policy_document_whitelist" {
     }
 
     principals {
-      type        = "AWS"
-      identifiers = ["*"]
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
     }
   }
 }
