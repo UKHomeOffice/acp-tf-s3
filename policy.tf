@@ -12,6 +12,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
     actions = [
       "s3:ListBucket",
     ]
+
+    principals {}
   }
 
   statement {
@@ -27,6 +29,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
       "s3:GetObject",
       "s3:DeleteObject",
     ]
+
+    principals {}
   }
 }
 
@@ -52,6 +56,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
       "kms:GetKeyRotationStatus",
       "kms:ReEncrypt",
     ]
+
+    principals {}
   }
 
   statement {
@@ -71,6 +77,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
       variable = "s3:x-amz-server-side-encryption"
       values   = ["aws:kms"]
     }
+
+    principals {}
   }
 }
 
@@ -88,6 +96,8 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
     actions = [
       "s3:ListBucket",
     ]
+
+    principals {}
   }
 
   statement {
@@ -103,6 +113,8 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
       "s3:GetObject",
       "s3:DeleteObject",
     ]
+
+    principals {}
   }
 }
 
@@ -148,6 +160,8 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
       "kms:ScheduleKeyDeletion",
       "kms:CancelKeyDeletion",
     ]
+
+    principals {}
   }
 }
 
@@ -171,6 +185,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
     }
+
+    principals {}
   }
 
   statement {
@@ -192,6 +208,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
     }
+
+    principals {}
   }
 }
 
@@ -223,6 +241,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
     }
+
+    principals {}
   }
 
   statement {
@@ -248,6 +268,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
     }
+
+    principals {}
   }
 }
 
@@ -271,6 +293,8 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
     }
+
+    principals {}
   }
 
   statement {
@@ -292,6 +316,8 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
     }
+
+    principals {}
   }
 }
 
@@ -343,5 +369,7 @@ data "aws_iam_policy_document" "kms_key_policy_document_whitelist" {
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
     }
+
+    principals {}
   }
 }

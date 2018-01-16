@@ -31,5 +31,5 @@ module "s3-default-no-kms-whitelisting" {
   environment          = "testing"
   bucket_iam_user      = "testing-s3-bucket-user-no-kms-${var.drone_build_number}"
   iam_user_policy_name = "testing-s3-bucket-policy-no-kms-${var.drone_build_number}"
-  whitelist_ip        = ["10.10.0.0/16"]
+  whitelist_ip         = ["10.10.0.0/16"]
 }
