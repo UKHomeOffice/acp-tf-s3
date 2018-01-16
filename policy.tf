@@ -13,7 +13,10 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
       "s3:ListBucket",
     ]
 
-    principals {}
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 
   statement {
@@ -30,7 +33,10 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
       "s3:DeleteObject",
     ]
 
-    principals {}
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 }
 
@@ -57,7 +63,10 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
       "kms:ReEncrypt",
     ]
 
-    principals {}
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 
   statement {
@@ -78,7 +87,10 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
       values   = ["aws:kms"]
     }
 
-    principals {}
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 }
 
@@ -97,7 +109,10 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
       "s3:ListBucket",
     ]
 
-    principals {}
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 
   statement {
@@ -114,7 +129,10 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
       "s3:DeleteObject",
     ]
 
-    principals {}
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 }
 
@@ -161,7 +179,10 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
       "kms:CancelKeyDeletion",
     ]
 
-    principals {}
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 }
 
@@ -186,7 +207,10 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
       values   = ["${var.whitelist_ip}"]
     }
 
-    principals {}
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 
   statement {
@@ -209,7 +233,10 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
       values   = ["${var.whitelist_ip}"]
     }
 
-    principals {}
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 }
 
@@ -242,7 +269,10 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
       values   = ["${var.whitelist_ip}"]
     }
 
-    principals {}
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 
   statement {
@@ -269,7 +299,10 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
       values   = ["${var.whitelist_ip}"]
     }
 
-    principals {}
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 }
 
@@ -294,7 +327,10 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
       values   = ["${var.whitelist_ip}"]
     }
 
-    principals {}
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 
   statement {
@@ -317,7 +353,10 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
       values   = ["${var.whitelist_ip}"]
     }
 
-    principals {}
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 }
 
@@ -370,6 +409,9 @@ data "aws_iam_policy_document" "kms_key_policy_document_whitelist" {
       values   = ["${var.whitelist_ip}"]
     }
 
-    principals {}
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 }
