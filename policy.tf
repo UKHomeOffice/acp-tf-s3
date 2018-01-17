@@ -13,13 +13,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
       "s3:ListBucket",
     ]
 
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
   }
 
   statement {
@@ -36,13 +29,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
       "s3:DeleteObject",
     ]
 
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
   }
 }
 
@@ -69,13 +55,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
       "kms:ReEncrypt",
     ]
 
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
   }
 
   statement {
@@ -96,13 +75,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
       values   = ["aws:kms"]
     }
 
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
   }
 }
 
@@ -121,13 +93,6 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
       "s3:ListBucket",
     ]
 
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
   }
 
   statement {
@@ -144,13 +109,6 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
       "s3:DeleteObject",
     ]
 
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
   }
 }
 
@@ -228,13 +186,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
       values   = ["${var.whitelist_ip}"]
     }
 
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
   }
 
   statement {
@@ -257,13 +208,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
       values   = ["${var.whitelist_ip}"]
     }
 
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
   }
 }
 
@@ -296,13 +240,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
       values   = ["${var.whitelist_ip}"]
     }
 
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
   }
 
   statement {
@@ -329,13 +266,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
       values   = ["${var.whitelist_ip}"]
     }
 
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
   }
 }
 
@@ -360,13 +290,6 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
       values   = ["${var.whitelist_ip}"]
     }
 
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
   }
 
   statement {
@@ -389,13 +312,6 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
       values   = ["${var.whitelist_ip}"]
     }
 
-    principals {
-      type = "AWS"
-
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-      ]
-    }
   }
 }
 
