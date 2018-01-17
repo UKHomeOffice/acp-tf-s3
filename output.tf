@@ -5,5 +5,5 @@ output "s3_bucket_id" {
 
 output "s3_bucket_kms_key" {
   description = "The KMS ID used for the bucket"
-  value       = "${aws_kms_key.s3_bucket_kms_key.key_id}"
+  value       = "${aws_kms_key.s3_bucket_kms_key.*.key_id}"
 }
