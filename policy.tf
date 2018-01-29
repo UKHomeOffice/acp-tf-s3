@@ -12,7 +12,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
     actions = [
       "s3:ListBucket",
     ]
-
   }
 
   statement {
@@ -28,7 +27,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
       "s3:GetObject",
       "s3:DeleteObject",
     ]
-
   }
 }
 
@@ -55,7 +53,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
       "kms:GetKeyRotationStatus",
       "kms:ReEncrypt",
     ]
-
   }
 
   statement {
@@ -75,7 +72,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
       variable = "s3:x-amz-server-side-encryption"
       values   = ["aws:kms"]
     }
-
   }
 }
 
@@ -93,7 +89,6 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
     actions = [
       "s3:ListBucket",
     ]
-
   }
 
   statement {
@@ -109,7 +104,6 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
       "s3:GetObject",
       "s3:DeleteObject",
     ]
-
   }
 }
 
@@ -186,7 +180,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
     }
-
   }
 
   statement {
@@ -208,7 +201,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
     }
-
   }
 }
 
@@ -241,7 +233,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
     }
-
   }
 
   statement {
@@ -267,7 +258,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
     }
-
   }
 }
 
@@ -291,7 +281,6 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
     }
-
   }
 
   statement {
@@ -313,7 +302,6 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
     }
-
   }
 }
 

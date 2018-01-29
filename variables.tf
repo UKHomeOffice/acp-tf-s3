@@ -2,8 +2,8 @@ variable "name" {
   description = "A descriptive name for the S3 instance"
 }
 
-variable "environment" {
-  description = "The environment the S3 is running in i.e. dev, prod etc"
+variable "account_type" {
+  description = "The account the S3 bucket is running in i.e. notprod, ci, test etc"
 }
 
 variable "bucket_iam_user" {
@@ -87,4 +87,24 @@ variable "lifecycle_expiration_object_prefix" {
 variable "lifecycle_days_to_expiration" {
   description = "Specifies the number of days after object creation when the object expires."
   default     = "365"
+}
+
+variable "project_portfolio" {
+  description = "The name of the portfolio that the project belongs to."
+  default     = ""
+}
+
+variable "project_service" {
+  description = "The name of the service."
+  default     = ""
+}
+
+variable "environment" {
+  description = "The project's environment name e.g. dev, preprod, qa."
+  default     = ""
+}
+
+variable "cost_code" {
+  description = "The cost code of the project."
+  default     = ""
 }

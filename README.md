@@ -1,4 +1,3 @@
-
 Module usage:
 
      module "s3" {
@@ -7,10 +6,14 @@ Module usage:
 
         name                 = "fake"
         acl                  = "private"
-        environment          = "${var.environment}"
+        account_type         = "${var.environment}"
         kms_alias            = "mykey"
         bucket_iam_user      = "fake-s3-bucket-user"
         iam_user_policy_name = "fake-s3-bucket-policy"
+        project_portfolio    = "fake-project-portfolio"
+        project_service      = "fake-project-service"
+        environment          = "fake-project-environment"
+        cost_code            = "fake-cost-code"
 
      }
 
@@ -19,9 +22,11 @@ Module usage:
 
 | Name | Description | Default | Required |
 |------|-------------|:-----:|:-----:|
+| account_type | The account the S3 bucket is running in i.e. notprod, ci, test etc | - | yes |
 | acl | The access control list assigned to this bucket | `public` | no |
 | bucket_iam_user | The name of the iam user assigned to the created s3 bucket | - | yes |
-| environment | The environment the S3 is running in i.e. dev, prod etc | - | yes |
+| cost_code | The cost code of the project. | `` | no |
+| environment | The project's environment name e.g. dev, preprod, qa. | `` | no |
 | iam_user_policy_name | The policy name of attached to the user | - | yes |
 | kms_alias | The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects | `` | no |
 | lifecycle_days_to_expiration | Specifies the number of days after object creation when the object expires. | `365` | no |
@@ -35,9 +40,11 @@ Module usage:
 | lifecycle_infrequent_storage_transition_enabled | Specifies infrequent storage transition lifecycle rule status. | `false` | no |
 | name | A descriptive name for the S3 instance | - | yes |
 | number_of_users | The number of user to generate credentials for | `1` | no |
+| project_portfolio | The name of the portfolio that the project belongs to. | `` | no |
+| project_service | The name of the service. | `` | no |
 | tags | A map of tags to add to all resources | `<map>` | no |
 | versioning_enabled | If versioning is set for buckets in case of accidental deletion | `true` | no |
-| whitelist_ip | Whitelisted ip allowed to access the created s3 bucket | `<list>` | no |
+| whitelist_ip | Whitelisted ip allowed to access the created s3 bucket (note: this allows all by default) | `<list>` | no |
 
 ## Outputs
 
