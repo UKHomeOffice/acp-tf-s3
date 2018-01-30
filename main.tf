@@ -10,7 +10,7 @@ resource "aws_kms_key" "s3_bucket_kms_key" {
   description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
   policy      = "${data.aws_iam_policy_document.kms_key_policy_document.json}"
 
-  tags = "${merge(var.tags, map("Name", format("%s-%s", var.account_type, var.name)), map("TYPE", var.account_type), map("KubernetesCluster", var.account_type), map(${var.project_portfolio != "" ? "PROJECT-PORTFOLIO", var.project_portfolio : ""}), map(${var.project_service != "" ? "PROJECT-SERVICE", var.project_service : ""}), map(${var.environment != "" ? "ENV", var.environment : ""}), map(${var.cost_code != "" ? "COST-CODE", var.cost_code : ""}))}"
+  tags = "${merge(var.tags, map("Name", format("%s-%s", var.environment, var.name)), map("TYPE", var.environment), map("KubernetesCluster",var.environment))}"
 }
 
 resource "aws_kms_alias" "s3_bucket_kms_alias" {
@@ -26,7 +26,7 @@ resource "aws_kms_key" "s3_bucket_kms_key_whitelist" {
   description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
   policy      = "${data.aws_iam_policy_document.kms_key_policy_document_whitelist.json}"
 
-  tags = "${merge(var.tags, map("Name", format("%s-%s", var.account_type, var.name)), map("TYPE", var.account_type), map("KubernetesCluster", var.account_type), map(${var.project_portfolio != "" ? "PROJECT-PORTFOLIO", var.project_portfolio : ""}), map(${var.project_service != "" ? "PROJECT-SERVICE", var.project_service : ""}), map(${var.environment != "" ? "ENV", var.environment : ""}), map(${var.cost_code != "" ? "COST-CODE", var.cost_code : ""}))}"
+  tags = "${merge(var.tags, map("Name", format("%s-%s", var.environment, var.name)), map("TYPE", var.environment), map("KubernetesCluster",var.environment))}"
 }
 
 resource "aws_kms_alias" "s3_bucket_kms_alias_whitelist" {
@@ -79,7 +79,7 @@ resource "aws_s3_bucket" "s3_bucket" {
     }
   }
 
-  tags = "${merge(var.tags, map("Name", format("%s-%s", var.account_type, var.name)), map("TYPE", var.account_type), map("KubernetesCluster", var.account_type), map(${var.project_portfolio != "" ? "PROJECT-PORTFOLIO", var.project_portfolio : ""}), map(${var.project_service != "" ? "PROJECT-SERVICE", var.project_service : ""}), map(${var.environment != "" ? "ENV", var.environment : ""}), map(${var.cost_code != "" ? "COST-CODE", var.cost_code : ""}))}"
+  tags = "${merge(var.tags, map("Name", format("%s-%s", var.environment, var.name)), map("TYPE", var.environment), map("KubernetesCluster", var.environment))}"
 }
 
 resource "aws_iam_user" "s3_bucket_iam_user" {
