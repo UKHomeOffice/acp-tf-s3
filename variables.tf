@@ -3,7 +3,7 @@ variable "name" {
 }
 
 variable "environment" {
-  description = "The environment the S3 is running in i.e. dev, prod etc"
+  description = "The environment the S3 bucket is running in i.e. notprod, ci, test etc"
 }
 
 variable "bucket_iam_user" {

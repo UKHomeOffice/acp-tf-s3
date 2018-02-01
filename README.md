@@ -1,4 +1,3 @@
-
 Module usage:
 
      module "s3" {
@@ -21,7 +20,7 @@ Module usage:
 |------|-------------|:-----:|:-----:|
 | acl | The access control list assigned to this bucket | `public` | no |
 | bucket_iam_user | The name of the iam user assigned to the created s3 bucket | - | yes |
-| environment | The environment the S3 is running in i.e. dev, prod etc | - | yes |
+| environment | The environment the S3 bucket is running in i.e. notprod, ci, test etc | - | yes |
 | iam_user_policy_name | The policy name of attached to the user | - | yes |
 | kms_alias | The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects | `` | no |
 | lifecycle_days_to_expiration | Specifies the number of days after object creation when the object expires. | `365` | no |
@@ -37,7 +36,7 @@ Module usage:
 | number_of_users | The number of user to generate credentials for | `1` | no |
 | tags | A map of tags to add to all resources | `<map>` | no |
 | versioning_enabled | If versioning is set for buckets in case of accidental deletion | `true` | no |
-| whitelist_ip | Whitelisted ip allowed to access the created s3 bucket | `<list>` | no |
+| whitelist_ip | Whitelisted ip allowed to access the created s3 bucket (note: this allows all by default) | `<list>` | no |
 
 ## Outputs
 
