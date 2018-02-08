@@ -43,6 +43,7 @@ Module usage:
 
 | Name | Description |
 |------|-------------|
-| s3_bucket_id |  |
-| s3_bucket_kms_key |  |
+| s3_bucket_id | The S3 bucket ID |
+| s3_bucket_kms_key | The KMS key ID used for the bucket |
+| s3_bucket_kms_key_arn | The KMS key ARN used for the bucket |
 
