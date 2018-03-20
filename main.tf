@@ -1,8 +1,6 @@
 data "aws_caller_identity" "current" {}
 
-data "aws_region" "current" {
-  current = true
-}
+data "aws_region" "current" {}
 
 resource "aws_kms_key" "s3_bucket_kms_key" {
   count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? 1 : 0}"
