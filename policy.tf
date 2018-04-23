@@ -75,8 +75,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
 
     condition {
       test     = "StringNotEquals"
-      variable = "s3:x-amz-server-side-encryption"
-      values   = ["aws:kms"]
+      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+      values   = ["${aws_kms_key.s3_bucket_kms_key.arn}"]
     }
   }
 }
@@ -266,8 +266,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
 
     condition {
       test     = "StringNotEquals"
-      variable = "s3:x-amz-server-side-encryption"
-      values   = ["aws:kms"]
+      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+      values   = ["${aws_kms_key.s3_bucket_kms_key.arn}"]
     }
 
     condition {
