@@ -87,50 +87,92 @@ resource "aws_iam_user" "s3_bucket_iam_user" {
   path = "/"
 }
 
-resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy_1" {
+resource "aws_iam_policy" "s3_bucket_with_kms_iam_policy_1" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? 1 : 0}"
+
+  name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
+  policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_1.json}"
+  description = "Policy for bucket and object permissions when a KMS alias is specified"
+}
+
+resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_iam_policy_1" {
   count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? var.number_of_users : 0}"
 
-  name   = "${var.iam_user_policy_name}S3BucketPolicy"
-  user   = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
-  policy = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_1.json}"
+  user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy_arn = "${aws_iam_policy.s3_bucket_with_kms_iam_policy_1.arn}"
 }
 
-resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy_2" {
+resource "aws_iam_policy" "s3_bucket_with_kms_iam_policy_2" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? 1 : 0}"
+
+  name        = "${var.iam_user_policy_name}-S3BucketKMSPolicy"
+  policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_2.json}"
+  description = "Policy for KMS permissions when a KMS alias is specified"
+}
+
+resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_iam_policy_2" {
   count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? var.number_of_users : 0}"
 
-  name   = "${var.iam_user_policy_name}S3ObjectPolicy"
-  user   = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
-  policy = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_2.json}"
+  user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy_arn = "${aws_iam_policy.s3_bucket_with_kms_iam_policy_2.arn}"
 }
 
-resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy_whitelist_1" {
+resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_iam_policy_1" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? 1 : 0}"
+
+  name        = "${var.iam_user_policy_name}-WhitelistedS3BucketObjectPolicy"
+  policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_whitelist_1.json}"
+  description = "Policy for bucket and object permissions when a KMS alias and whitelist IP range is specified"
+}
+
+resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_iam_policy_1" {
   count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? var.number_of_users : 0}"
 
-  name   = "${var.iam_user_policy_name}S3BucketPolicy"
-  user   = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
-  policy = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_whitelist_1.json}"
+  user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy_arn = "${aws_iam_policy.s3_bucket_with_kms_and_whitelist_iam_policy_1.arn}"
 }
 
-resource "aws_iam_user_policy" "s3_bucket_with_kms_user_policy_whitelist_2" {
+resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_iam_policy_2" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? 1 : 0}"
+
+  name        = "${var.iam_user_policy_name}-WhitelistedS3BucketKMSPolicy"
+  policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_whitelist_2.json}"
+  description = "Policy for KMS permissions when a KMS alias and whitelist IP range is specified"
+}
+
+resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_iam_policy_2" {
   count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? var.number_of_users : 0}"
 
-  name   = "${var.iam_user_policy_name}S3ObjectPolicy"
-  user   = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
-  policy = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_whitelist_2.json}"
+  user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy_arn = "${aws_iam_policy.s3_bucket_with_kms_and_whitelist_iam_policy_2.arn}"
 }
 
-resource "aws_iam_user_policy" "s3_bucket_user_policy" {
+resource "aws_iam_policy" "s3_bucket_iam_policy" {
+  count = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 ? 1 : 0}"
+
+  name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
+  policy      = "${data.aws_iam_policy_document.s3_bucket_policy_document.json}"
+  description = "Policy for bucket and object permissions"
+}
+
+resource "aws_iam_user_policy_attachment" "attach_s3_bucket_iam_policy" {
   count = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 ? var.number_of_users : 0}"
 
-  name   = "${var.iam_user_policy_name}S3BucketPolicy"
-  user   = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
-  policy = "${data.aws_iam_policy_document.s3_bucket_policy_document.json}"
+  user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy_arn = "${aws_iam_policy.s3_bucket_iam_policy.arn}"
 }
 
-resource "aws_iam_user_policy" "s3_bucket_user_policy_whitelist" {
+resource "aws_iam_policy" "s3_bucket_iam_whitelist_policy" {
+  count = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 ? 1 : 0}"
+
+  name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
+  policy      = "${data.aws_iam_policy_document.s3_bucket_policy_document_whitelist.json}"
+  description = "Policy for bucket and object permissions when a whitelist IP range is specified"
+}
+
+resource "aws_iam_user_policy_attachment" "attach_s3_bucket_whitelist_iam_policy" {
   count = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 ? var.number_of_users : 0}"
 
-  name   = "${var.iam_user_policy_name}S3BucketPolicy"
-  user   = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
-  policy = "${data.aws_iam_policy_document.s3_bucket_policy_document_whitelist.json}"
+  user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy_arn = "${aws_iam_policy.s3_bucket_iam_whitelist_policy.arn}"
 }
