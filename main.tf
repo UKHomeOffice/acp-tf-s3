@@ -1,9 +1,26 @@
+/**
+* Module usage:
+*
+*      module "s3" {
+*
+*      source = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=master"
+*
+*      name                 = "fake"
+*      acl                  = "private"
+*      environment          = "${var.environment}"
+*      kms_alias            = "mykey"
+*      bucket_iam_user      = "fake-s3-bucket-user"
+*      iam_user_policy_name = "fake-s3-bucket-policy"
+*
+*       }
+*/
+
 data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
 resource "aws_kms_key" "s3_bucket_kms_key" {
-  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? 1 : 0}"
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
 
   description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
   policy      = "${data.aws_iam_policy_document.kms_key_policy_document.json}"
@@ -12,14 +29,14 @@ resource "aws_kms_key" "s3_bucket_kms_key" {
 }
 
 resource "aws_kms_alias" "s3_bucket_kms_alias" {
-  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? 1 : 0}"
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
 
   name          = "alias/${var.kms_alias}"
   target_key_id = "${aws_kms_key.s3_bucket_kms_key.key_id}"
 }
 
 resource "aws_kms_key" "s3_bucket_kms_key_whitelist" {
-  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? 1 : 0}"
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
 
   description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
   policy      = "${data.aws_iam_policy_document.kms_key_policy_document_whitelist.json}"
@@ -28,10 +45,42 @@ resource "aws_kms_key" "s3_bucket_kms_key_whitelist" {
 }
 
 resource "aws_kms_alias" "s3_bucket_kms_alias_whitelist" {
-  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? 1 : 0}"
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
 
   name          = "alias/${var.kms_alias}"
   target_key_id = "${aws_kms_key.s3_bucket_kms_key_whitelist.key_id}"
+}
+
+resource "aws_kms_key" "s3_bucket_kms_key_whitelist_vpc" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+
+  description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
+  policy      = "${data.aws_iam_policy_document.kms_key_with_whitelist_vpc_policy_document.json}"
+
+  tags = "${merge(var.tags, map("Name", format("%s-%s", var.environment, var.name)), map("Env", var.environment))}"
+}
+
+resource "aws_kms_alias" "s3_bucket_kms_alias_whitelist_vpc" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+
+  name          = "alias/${var.kms_alias}"
+  target_key_id = "${aws_kms_key.s3_bucket_kms_key_whitelist_vpc.key_id}"
+}
+
+resource "aws_kms_key" "s3_bucket_kms_key_whitelist_ip_and_vpc" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+
+  description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
+  policy      = "${data.aws_iam_policy_document.kms_key_with_whitelist_ip_and_vpc_policy_document.json}"
+
+  tags = "${merge(var.tags, map("Name", format("%s-%s", var.environment, var.name)), map("Env", var.environment))}"
+}
+
+resource "aws_kms_alias" "s3_bucket_kms_alias_whitelist_ip_and_vpc" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+
+  name          = "alias/${var.kms_alias}"
+  target_key_id = "${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.key_id}"
 }
 
 resource "aws_s3_bucket" "s3_bucket" {
@@ -88,7 +137,7 @@ resource "aws_iam_user" "s3_bucket_iam_user" {
 }
 
 resource "aws_iam_policy" "s3_bucket_with_kms_iam_policy_1" {
-  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? 1 : 0}"
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
 
   name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
   policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_1.json}"
@@ -96,14 +145,14 @@ resource "aws_iam_policy" "s3_bucket_with_kms_iam_policy_1" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_iam_policy_1" {
-  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? var.number_of_users : 0}"
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? var.number_of_users : 0}"
 
   user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
   policy_arn = "${aws_iam_policy.s3_bucket_with_kms_iam_policy_1.arn}"
 }
 
 resource "aws_iam_policy" "s3_bucket_with_kms_iam_policy_2" {
-  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? 1 : 0}"
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
 
   name        = "${var.iam_user_policy_name}-S3BucketKMSPolicy"
   policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_2.json}"
@@ -111,14 +160,14 @@ resource "aws_iam_policy" "s3_bucket_with_kms_iam_policy_2" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_iam_policy_2" {
-  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? var.number_of_users : 0}"
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? var.number_of_users : 0}"
 
   user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
   policy_arn = "${aws_iam_policy.s3_bucket_with_kms_iam_policy_2.arn}"
 }
 
 resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_iam_policy_1" {
-  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? 1 : 0}"
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
 
   name        = "${var.iam_user_policy_name}-WhitelistedS3BucketObjectPolicy"
   policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_whitelist_1.json}"
@@ -126,14 +175,14 @@ resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_iam_policy_1" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_iam_policy_1" {
-  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? var.number_of_users : 0}"
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? var.number_of_users : 0}"
 
   user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
   policy_arn = "${aws_iam_policy.s3_bucket_with_kms_and_whitelist_iam_policy_1.arn}"
 }
 
 resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_iam_policy_2" {
-  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? 1 : 0}"
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
 
   name        = "${var.iam_user_policy_name}-WhitelistedS3BucketKMSPolicy"
   policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_whitelist_2.json}"
@@ -141,14 +190,14 @@ resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_iam_policy_2" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_iam_policy_2" {
-  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? var.number_of_users : 0}"
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? var.number_of_users : 0}"
 
   user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
   policy_arn = "${aws_iam_policy.s3_bucket_with_kms_and_whitelist_iam_policy_2.arn}"
 }
 
 resource "aws_iam_policy" "s3_bucket_iam_policy" {
-  count = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 ? 1 : 0}"
+  count = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
 
   name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
   policy      = "${data.aws_iam_policy_document.s3_bucket_policy_document.json}"
@@ -156,14 +205,14 @@ resource "aws_iam_policy" "s3_bucket_iam_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_iam_policy" {
-  count = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 ? var.number_of_users : 0}"
+  count = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? var.number_of_users : 0}"
 
   user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
   policy_arn = "${aws_iam_policy.s3_bucket_iam_policy.arn}"
 }
 
 resource "aws_iam_policy" "s3_bucket_iam_whitelist_policy" {
-  count = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 ? 1 : 0}"
+  count = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
 
   name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
   policy      = "${data.aws_iam_policy_document.s3_bucket_policy_document_whitelist.json}"
@@ -171,8 +220,98 @@ resource "aws_iam_policy" "s3_bucket_iam_whitelist_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_whitelist_iam_policy" {
-  count = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 ? var.number_of_users : 0}"
+  count = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? var.number_of_users : 0}"
 
   user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
   policy_arn = "${aws_iam_policy.s3_bucket_iam_whitelist_policy.arn}"
+}
+
+resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_vpc_iam_policy_1" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+
+  name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
+  policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_and_whitelist_vpc_policy_document_1.json}"
+  description = "Policy for bucket and object permissions when a KMS alias and VPC is specified"
+}
+
+resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_vpc_iam_policy_1" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0}"
+
+  user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy_arn = "${aws_iam_policy.s3_bucket_with_kms_and_whitelist_vpc_iam_policy_1.arn}"
+}
+
+resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_vpc_iam_policy_2" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+
+  name        = "${var.iam_user_policy_name}-S3BucketKMSPolicy"
+  policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_and_whitelist_vpc_policy_document_2.json}"
+  description = "Policy for KMS permissions when a KMS alias and VPC is specified"
+}
+
+resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_vpc_iam_policy_2" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0}"
+
+  user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy_arn = "${aws_iam_policy.s3_bucket_with_kms_and_whitelist_vpc_iam_policy_2.arn}"
+}
+
+resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_1" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+
+  name        = "${var.iam_user_policy_name}-WhitelistedS3BucketObjectPolicy"
+  policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_and_whitelist_ip_and_vpc_policy_document_1.json}"
+  description = "Policy for bucket and object permissions when a KMS alias and whitelist IP range and VPC is specified"
+}
+
+resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_1" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0}"
+
+  user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy_arn = "${aws_iam_policy.s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_1.arn}"
+}
+
+resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_2" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+
+  name        = "${var.iam_user_policy_name}-WhitelistedS3BucketKMSPolicy"
+  policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_and_whitelist_ip_and_vpc_policy_document_2.json}"
+  description = "Policy for KMS permissions when a KMS alias and whitelist IP range and VPC is specified"
+}
+
+resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_2" {
+  count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0}"
+
+  user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy_arn = "${aws_iam_policy.s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_2.arn}"
+}
+
+resource "aws_iam_policy" "s3_bucket_with_whitelist_vpc_iam_policy" {
+  count = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+
+  name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
+  policy      = "${data.aws_iam_policy_document.s3_bucket_with_whitelist_vpc_policy_document.json}"
+  description = "Policy for bucket and object permissions when a VPC is specified"
+}
+
+resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_whitelist_vpc_iam_policy" {
+  count = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0}"
+
+  user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy_arn = "${aws_iam_policy.s3_bucket_with_whitelist_vpc_iam_policy.arn}"
+}
+
+resource "aws_iam_policy" "s3_bucket_iam_whitelist_ip_and_vpc_policy" {
+  count = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+
+  name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
+  policy      = "${data.aws_iam_policy_document.s3_bucket_with_whitelist_ip_and_vpc_policy_document.json}"
+  description = "Policy for bucket and object permissions when a whitelist IP range and VPC is specified"
+}
+
+resource "aws_iam_user_policy_attachment" "attach_s3_bucket_whitelist_ip_and_vpc_iam_policy" {
+  count = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0}"
+
+  user       = "${element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)}"
+  policy_arn = "${aws_iam_policy.s3_bucket_iam_whitelist_ip_and_vpc_policy.arn}"
 }

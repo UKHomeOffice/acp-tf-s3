@@ -1,18 +1,17 @@
-
 Module usage:
 
      module "s3" {
 
-        source = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=master"
+     source = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=master"
 
-        name                 = "fake"
-        acl                  = "private"
-        environment          = "${var.environment}"
-        kms_alias            = "mykey"
-        bucket_iam_user      = "fake-s3-bucket-user"
-        iam_user_policy_name = "fake-s3-bucket-policy"
+     name                 = "fake"
+     acl                  = "private"
+     environment          = "${var.environment}"
+     kms_alias            = "mykey"
+     bucket_iam_user      = "fake-s3-bucket-user"
+     iam_user_policy_name = "fake-s3-bucket-policy"
 
-     }
+      }
 
 
 ## Inputs
@@ -37,13 +36,15 @@ Module usage:
 | number_of_users | The number of user to generate credentials for | `1` | no |
 | tags | A map of tags to add to all resources | `<map>` | no |
 | versioning_enabled | If versioning is set for buckets in case of accidental deletion | `true` | no |
-| whitelist_ip | Whitelisted ip allowed to access the created s3 bucket | `<list>` | no |
+| whitelist_ip | Whitelisted ip allowed to access the created s3 bucket (note: this allows all by default) | `<list>` | no |
+| whitelist_vpc | Whitelisted vpc allowed to access the created s3 bucket | `` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| s3_bucket_id | The S3 bucket ID |
-| s3_bucket_kms_key | The KMS key ID used for the bucket |
-| s3_bucket_kms_key_arn | The KMS key ARN used for the bucket |
+| s3_bucket_arn |  |
+| s3_bucket_id |  |
+| s3_bucket_kms_key |  |
+| s3_bucket_kms_key_arn |  |
 

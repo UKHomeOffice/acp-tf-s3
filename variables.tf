@@ -39,6 +39,11 @@ variable "whitelist_ip" {
   default     = []
 }
 
+variable "whitelist_vpc" {
+  description = "Whitelisted vpc allowed to access the created s3 bucket"
+  default     = ""
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   default     = {}
