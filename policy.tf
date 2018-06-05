@@ -60,25 +60,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
       "kms:ReEncrypt",
     ]
   }
-
-  statement {
-    sid    = "DenyCondition"
-    effect = "Deny"
-
-    resources = [
-      "${aws_s3_bucket.s3_bucket.arn}/*",
-    ]
-
-    actions = [
-      "s3:PutObject",
-    ]
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = ["${aws_kms_key.s3_bucket_kms_key.arn}"]
-    }
-  }
 }
 
 data "aws_iam_policy_document" "s3_bucket_policy_document" {
@@ -207,8 +188,26 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
     actions = [
       "s3:AbortMultipartUpload",
       "s3:DeleteObject",
-      "s3:GetObject",
       "s3:ListMultipartUploadParts",
+    ]
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+      values   = ["${var.whitelist_ip}"]
+    }
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPutGetPermissions"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:GetObject",
       "s3:PutObject",
     ]
 
@@ -216,6 +215,12 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
       test     = "IpAddress"
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
     }
   }
 }
@@ -244,31 +249,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
       "kms:GetKeyRotationStatus",
       "kms:ReEncrypt",
     ]
-
-    condition {
-      test     = "IpAddress"
-      variable = "aws:SourceIp"
-      values   = ["${var.whitelist_ip}"]
-    }
-  }
-
-  statement {
-    sid    = "DenyCondition"
-    effect = "Deny"
-
-    resources = [
-      "${aws_s3_bucket.s3_bucket.arn}/*",
-    ]
-
-    actions = [
-      "s3:PutObject",
-    ]
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = ["${aws_kms_key.s3_bucket_kms_key.arn}"]
-    }
 
     condition {
       test     = "IpAddress"
@@ -314,8 +294,26 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
     actions = [
       "s3:AbortMultipartUpload",
       "s3:DeleteObject",
-      "s3:GetObject",
       "s3:ListMultipartUploadParts",
+    ]
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+      values   = ["${var.whitelist_ip}"]
+    }
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPutGetPermissions"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:GetObject",
       "s3:PutObject",
     ]
 
@@ -323,6 +321,12 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
       test     = "IpAddress"
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
     }
   }
 }
@@ -422,8 +426,26 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
     actions = [
       "s3:AbortMultipartUpload",
       "s3:DeleteObject",
-      "s3:GetObject",
       "s3:ListMultipartUploadParts",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceVpce"
+      values   = ["${var.whitelist_vpc}"]
+    }
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPutGetPermissionsVPC"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:GetObject",
       "s3:PutObject",
     ]
 
@@ -431,6 +453,12 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
       test     = "StringEquals"
       variable = "aws:SourceVpce"
       values   = ["${var.whitelist_vpc}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
     }
   }
 }
@@ -462,31 +490,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
 
     condition {
       test     = "StringEquals"
-      variable = "aws:SourceVpce"
-      values   = ["${var.whitelist_vpc}"]
-    }
-  }
-
-  statement {
-    sid    = "DenyConditionVPC"
-    effect = "Deny"
-
-    resources = [
-      "${aws_s3_bucket.s3_bucket.arn}/*",
-    ]
-
-    actions = [
-      "s3:PutObject",
-    ]
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_vpc.arn}"]
-    }
-
-    condition {
-      test     = "StringNotEquals"
       variable = "aws:SourceVpce"
       values   = ["${var.whitelist_vpc}"]
     }
@@ -529,8 +532,26 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
     actions = [
       "s3:AbortMultipartUpload",
       "s3:DeleteObject",
-      "s3:GetObject",
       "s3:ListMultipartUploadParts",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceVpce"
+      values   = ["${var.whitelist_vpc}"]
+    }
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPutGetPermissionsVPC"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:GetObject",
       "s3:PutObject",
     ]
 
@@ -538,6 +559,12 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
       test     = "StringEquals"
       variable = "aws:SourceVpce"
       values   = ["${var.whitelist_vpc}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
     }
   }
 }
@@ -637,8 +664,26 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     actions = [
       "s3:AbortMultipartUpload",
       "s3:DeleteObject",
-      "s3:GetObject",
       "s3:ListMultipartUploadParts",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceVpce"
+      values   = ["${var.whitelist_vpc}"]
+    }
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPutGetPermissionsVPC"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:GetObject",
       "s3:PutObject",
     ]
 
@@ -646,6 +691,12 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
       test     = "StringEquals"
       variable = "aws:SourceVpce"
       values   = ["${var.whitelist_vpc}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
     }
   }
 
@@ -682,8 +733,26 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     actions = [
       "s3:AbortMultipartUpload",
       "s3:DeleteObject",
-      "s3:GetObject",
       "s3:ListMultipartUploadParts",
+    ]
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+      values   = ["${var.whitelist_ip}"]
+    }
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPutGetPermissionsIP"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:GetObject",
       "s3:PutObject",
     ]
 
@@ -691,6 +760,12 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
       test     = "IpAddress"
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
     }
   }
 }
@@ -728,31 +803,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
   }
 
   statement {
-    sid    = "DenyConditionVPC"
-    effect = "Deny"
-
-    resources = [
-      "${aws_s3_bucket.s3_bucket.arn}/*",
-    ]
-
-    actions = [
-      "s3:PutObject",
-    ]
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
-    }
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "aws:SourceVpce"
-      values   = ["${var.whitelist_vpc}"]
-    }
-  }
-
-  statement {
     sid    = "KMSPermissionsIP"
     effect = "Allow"
 
@@ -772,31 +822,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
       "kms:GetKeyRotationStatus",
       "kms:ReEncrypt",
     ]
-
-    condition {
-      test     = "IpAddress"
-      variable = "aws:SourceIp"
-      values   = ["${var.whitelist_ip}"]
-    }
-  }
-
-  statement {
-    sid    = "DenyConditionIP"
-    effect = "Deny"
-
-    resources = [
-      "${aws_s3_bucket.s3_bucket.arn}/*",
-    ]
-
-    actions = [
-      "s3:PutObject",
-    ]
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
-    }
 
     condition {
       test     = "IpAddress"
@@ -842,8 +867,26 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
     actions = [
       "s3:AbortMultipartUpload",
       "s3:DeleteObject",
-      "s3:GetObject",
       "s3:ListMultipartUploadParts",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceVpce"
+      values   = ["${var.whitelist_vpc}"]
+    }
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPutGetPermissionsVPC"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:GetObject",
       "s3:PutObject",
     ]
 
@@ -851,6 +894,12 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
       test     = "StringEquals"
       variable = "aws:SourceVpce"
       values   = ["${var.whitelist_vpc}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
     }
   }
 
@@ -887,8 +936,26 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
     actions = [
       "s3:AbortMultipartUpload",
       "s3:DeleteObject",
-      "s3:GetObject",
       "s3:ListMultipartUploadParts",
+    ]
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+      values   = ["${var.whitelist_ip}"]
+    }
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPutGetPermissionsIP"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:GetObject",
       "s3:PutObject",
     ]
 
@@ -896,6 +963,12 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
       test     = "IpAddress"
       variable = "aws:SourceIp"
       values   = ["${var.whitelist_ip}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
     }
   }
 }
