@@ -229,7 +229,7 @@ resource "aws_iam_user_policy_attachment" "attach_s3_bucket_whitelist_iam_policy
 resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_vpc_iam_policy_1" {
   count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
 
-  name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
+  name        = "${var.iam_user_policy_name}-S3BucketObjectPolicyVPC"
   policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_and_whitelist_vpc_policy_document_1.json}"
   description = "Policy for bucket and object permissions when a KMS alias and VPC is specified"
 }
@@ -244,7 +244,7 @@ resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whiteli
 resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_vpc_iam_policy_2" {
   count = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
 
-  name        = "${var.iam_user_policy_name}-S3BucketKMSPolicy"
+  name        = "${var.iam_user_policy_name}-S3BucketKMSPolicyVPC"
   policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_and_whitelist_vpc_policy_document_2.json}"
   description = "Policy for KMS permissions when a KMS alias and VPC is specified"
 }
@@ -259,7 +259,7 @@ resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whiteli
 resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_1" {
   count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
 
-  name        = "${var.iam_user_policy_name}-WhitelistedS3BucketObjectPolicy"
+  name        = "${var.iam_user_policy_name}-WhitelistedS3BucketObjectPolicyIPandVPC"
   policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_and_whitelist_ip_and_vpc_policy_document_1.json}"
   description = "Policy for bucket and object permissions when a KMS alias and whitelist IP range and VPC is specified"
 }
@@ -274,7 +274,7 @@ resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whiteli
 resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_2" {
   count = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
 
-  name        = "${var.iam_user_policy_name}-WhitelistedS3BucketKMSPolicy"
+  name        = "${var.iam_user_policy_name}-WhitelistedS3BucketKMSPolicyIPandVPC"
   policy      = "${data.aws_iam_policy_document.s3_bucket_with_kms_and_whitelist_ip_and_vpc_policy_document_2.json}"
   description = "Policy for KMS permissions when a KMS alias and whitelist IP range and VPC is specified"
 }
@@ -289,7 +289,7 @@ resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whiteli
 resource "aws_iam_policy" "s3_bucket_with_whitelist_vpc_iam_policy" {
   count = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
 
-  name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
+  name        = "${var.iam_user_policy_name}-S3BucketObjectPolicyVPC"
   policy      = "${data.aws_iam_policy_document.s3_bucket_with_whitelist_vpc_policy_document.json}"
   description = "Policy for bucket and object permissions when a VPC is specified"
 }
@@ -304,7 +304,7 @@ resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_whitelist_vpc_i
 resource "aws_iam_policy" "s3_bucket_iam_whitelist_ip_and_vpc_policy" {
   count = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
 
-  name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
+  name        = "${var.iam_user_policy_name}-S3BucketObjectPolicyIPandVPC"
   policy      = "${data.aws_iam_policy_document.s3_bucket_with_whitelist_ip_and_vpc_policy_document.json}"
   description = "Policy for bucket and object permissions when a whitelist IP range and VPC is specified"
 }

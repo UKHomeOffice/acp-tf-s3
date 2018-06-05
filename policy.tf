@@ -387,10 +387,10 @@ data "aws_iam_policy_document" "kms_key_policy_document_whitelist" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_document_1" {
-  policy_id = "${var.bucket_iam_user}S3BucketPolicy"
+  policy_id = "${var.bucket_iam_user}S3BucketPolicyVPC"
 
   statement {
-    sid    = "IAMS3BucketPermissions"
+    sid    = "IAMS3BucketPermissionsVPC"
     effect = "Allow"
 
     resources = [
@@ -412,7 +412,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
   }
 
   statement {
-    sid    = "IAMS3ObjectPermissions"
+    sid    = "IAMS3ObjectPermissionsVPC"
     effect = "Allow"
 
     resources = [
@@ -437,10 +437,10 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_document_2" {
   count     = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
-  policy_id = "${var.bucket_iam_user}KMSPolicy"
+  policy_id = "${var.bucket_iam_user}KMSPolicyVPC"
 
   statement {
-    sid    = "KMSPermissions"
+    sid    = "KMSPermissionsVPC"
     effect = "Allow"
 
     resources = [
@@ -468,7 +468,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
   }
 
   statement {
-    sid    = "DenyCondition"
+    sid    = "DenyConditionVPC"
     effect = "Deny"
 
     resources = [
@@ -494,10 +494,10 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
-  policy_id = "${var.bucket_iam_user}S3BucketPolicy"
+  policy_id = "${var.bucket_iam_user}S3BucketPolicyVPC"
 
   statement {
-    sid    = "IAMS3BucketPermissions"
+    sid    = "IAMS3BucketPermissionsVPC"
     effect = "Allow"
 
     resources = [
@@ -519,7 +519,7 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
   }
 
   statement {
-    sid    = "IAMS3ObjectPermissions"
+    sid    = "IAMS3ObjectPermissionsVPC"
     effect = "Allow"
 
     resources = [
@@ -546,7 +546,7 @@ data "aws_iam_policy_document" "kms_key_with_whitelist_vpc_policy_document" {
   policy_id = "${var.kms_alias}KMSPolicy"
 
   statement {
-    sid    = "IAMPermissions"
+    sid    = "IAMPermissionsVPC"
     effect = "Allow"
 
     resources = ["*"]
@@ -565,7 +565,7 @@ data "aws_iam_policy_document" "kms_key_with_whitelist_vpc_policy_document" {
   }
 
   statement {
-    sid    = "KeyAdministratorsPermissions"
+    sid    = "KeyAdministratorsPermissionsVPC"
     effect = "Allow"
 
     resources = ["*"]
@@ -602,7 +602,7 @@ data "aws_iam_policy_document" "kms_key_with_whitelist_vpc_policy_document" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_policy_document_1" {
-  policy_id = "${var.bucket_iam_user}S3BucketPolicy"
+  policy_id = "${var.bucket_iam_user}S3BucketPolicyIPandVPC"
 
   statement {
     sid    = "IAMS3BucketPermissionsVPC"
@@ -697,7 +697,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_policy_document_2" {
   count     = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
-  policy_id = "${var.bucket_iam_user}KMSPolicy"
+  policy_id = "${var.bucket_iam_user}KMSPolicyIPandVPC"
 
   statement {
     sid    = "KMSPermissionsVPC"
@@ -807,7 +807,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_document" {
-  policy_id = "${var.bucket_iam_user}S3BucketPolicy"
+  policy_id = "${var.bucket_iam_user}S3BucketPolicyIPandVPC"
 
   statement {
     sid    = "IAMS3BucketPermissionsVPC"
@@ -901,10 +901,10 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
 }
 
 data "aws_iam_policy_document" "kms_key_with_whitelist_ip_and_vpc_policy_document" {
-  policy_id = "${var.kms_alias}KMSPolicy"
+  policy_id = "${var.kms_alias}KMSPolicyIPandVPC"
 
   statement {
-    sid    = "IAMPermissions"
+    sid    = "IAMPermissionsIPandVPC"
     effect = "Allow"
 
     resources = ["*"]
