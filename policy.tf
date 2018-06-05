@@ -428,7 +428,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
     ]
 
     condition {
-      test     = "StringNotEquals"
+      test     = "StringEquals"
       variable = "aws:SourceVpce"
       values   = ["${var.whitelist_vpc}"]
     }
@@ -461,7 +461,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
     ]
 
     condition {
-      test     = "StringNotEquals"
+      test     = "StringEquals"
       variable = "aws:SourceVpce"
       values   = ["${var.whitelist_vpc}"]
     }
@@ -512,7 +512,7 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
     ]
 
     condition {
-      test     = "StringNotEquals"
+      test     = "StringEquals"
       variable = "aws:SourceVpce"
       values   = ["${var.whitelist_vpc}"]
     }
@@ -620,7 +620,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     ]
 
     condition {
-      test     = "StringNotEquals"
+      test     = "StringEquals"
       variable = "aws:SourceVpce"
       values   = ["${var.whitelist_vpc}"]
     }
@@ -721,7 +721,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     ]
 
     condition {
-      test     = "StringNotEquals"
+      test     = "StringEquals"
       variable = "aws:SourceVpce"
       values   = ["${var.whitelist_vpc}"]
     }
@@ -825,7 +825,7 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
     ]
 
     condition {
-      test     = "StringNotEquals"
+      test     = "StringEquals"
       variable = "aws:SourceVpce"
       values   = ["${var.whitelist_vpc}"]
     }
