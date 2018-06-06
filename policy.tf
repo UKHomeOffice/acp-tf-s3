@@ -220,7 +220,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
     condition {
       test     = "StringEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
+      values   = ["${aws_kms_key.s3_bucket_kms_key.arn}"]
     }
   }
 }
@@ -326,7 +326,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
     condition {
       test     = "StringEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
+      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip.arn}"]
     }
   }
 }
@@ -458,7 +458,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
     condition {
       test     = "StringEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
+      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_vpc.arn}"]
     }
   }
 }
@@ -564,7 +564,7 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
     condition {
       test     = "StringEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
+      values   = ["${aws_kms_key.s3_bucket_whitelist_vpc.arn}"]
     }
   }
 }
@@ -899,7 +899,7 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
     condition {
       test     = "StringEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
+      values   = ["${aws_kms_key.s3_bucket_whitelist_ip_and_vpc.arn}"]
     }
   }
 
@@ -968,7 +968,7 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
     condition {
       test     = "StringEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = ["${aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.arn}"]
+      values   = ["${aws_kms_key.s3_bucket_whitelist_ip_and_vpc.arn}"]
     }
   }
 }
