@@ -13,16 +13,6 @@ module "s3-default-kms" {
   iam_user_policy_name = "testing-s3-bucket-policy-kms-${var.drone_build_number}"
 }
 
-module "s3-default-no-kms" {
-  source = "/workdir/src/github.com/UKHomeOffice/acp-tf-s3"
-
-  name                 = "testing-no-kms-${var.drone_build_number}"
-  acl                  = "private"
-  environment          = "testing"
-  bucket_iam_user      = "testing-s3-bucket-user-no-kms-${var.drone_build_number}"
-  iam_user_policy_name = "testing-s3-bucket-policy-no-kms-${var.drone_build_number}"
-}
-
 module "s3-default-no-kms-whitelisting" {
   source = "/workdir/src/github.com/UKHomeOffice/acp-tf-s3"
 
