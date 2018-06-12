@@ -20,7 +20,7 @@ variable "iam_user_policy_name" {
 }
 
 variable "kms_alias" {
-  description = "The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects"
+  description = "The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects (if none specified, uses aws default key)."
   default     = ""
 }
 

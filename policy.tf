@@ -1,3 +1,278 @@
+# Policies using shared KMS
+data "aws_iam_policy_document" "s3_bucket_policy_document" {
+  count     = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
+  policy_id = "${var.bucket_iam_user}S3BucketPolicy"
+
+  statement {
+    sid    = "IAMS3BucketPermissions"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}",
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+      "s3:ListBucketMultipartUploads",
+      "s3:ListBucketVersions",
+      "s3:AbortMultipartUpload",
+      "s3:DeleteObject",
+      "s3:GetObject",
+      "s3:ListMultipartUploadParts",
+    ]
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPermissions"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}",
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:PutObject",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-server-side-encryption"
+      values   = ["aws:kms"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
+  count     = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
+  policy_id = "${var.bucket_iam_user}S3BucketPolicy"
+
+  statement {
+    sid    = "IAMS3BucketPermissionsIP"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}",
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+      "s3:ListBucketMultipartUploads",
+      "s3:ListBucketVersions",
+      "s3:AbortMultipartUpload",
+      "s3:DeleteObject",
+      "s3:GetObject",
+      "s3:ListMultipartUploadParts",
+    ]
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+      values   = ["${var.whitelist_ip}"]
+    }
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPermissionsIP"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}",
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:PutObject",
+    ]
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+      values   = ["${var.whitelist_ip}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-server-side-encryption"
+      values   = ["aws:kms"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "s3_bucket_whitelist_vpc_policy_document" {
+  count     = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+  policy_id = "${var.bucket_iam_user}S3BucketPolicy"
+
+  statement {
+    sid    = "IAMS3BucketPermissionsVPC"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}",
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+      "s3:ListBucketMultipartUploads",
+      "s3:ListBucketVersions",
+      "s3:AbortMultipartUpload",
+      "s3:DeleteObject",
+      "s3:GetObject",
+      "s3:ListMultipartUploadParts",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceVpce"
+      values   = ["${var.whitelist_vpc}"]
+    }
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPermissionsVPC"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}",
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:PutObject",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceVpce"
+      values   = ["${var.whitelist_vpc}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-server-side-encryption"
+      values   = ["aws:kms"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "s3_bucket_whitelist_ip_and_vpc_policy_document" {
+  count     = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+  policy_id = "${var.bucket_iam_user}S3BucketPolicy"
+
+  statement {
+    sid    = "IAMS3BucketPermissionsVPC"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}",
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+      "s3:ListBucketMultipartUploads",
+      "s3:ListBucketVersions",
+      "s3:AbortMultipartUpload",
+      "s3:DeleteObject",
+      "s3:GetObject",
+      "s3:ListMultipartUploadParts",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceVpce"
+      values   = ["${var.whitelist_vpc}"]
+    }
+  }
+
+  statement {
+    sid    = "IAMS3BucketPermissionsIP"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}",
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+      "s3:ListBucketMultipartUploads",
+      "s3:ListBucketVersions",
+      "s3:AbortMultipartUpload",
+      "s3:DeleteObject",
+      "s3:GetObject",
+      "s3:ListMultipartUploadParts",
+    ]
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+      values   = ["${var.whitelist_ip}"]
+    }
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPermissionsVPC"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}",
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:PutObject",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceVpce"
+      values   = ["${var.whitelist_vpc}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-server-side-encryption"
+      values   = ["aws:kms"]
+    }
+  }
+
+  statement {
+    sid    = "IAMS3ObjectPermissionsIP"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_bucket.arn}",
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:PutObject",
+    ]
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+      values   = ["${var.whitelist_ip}"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-server-side-encryption"
+      values   = ["aws:kms"]
+    }
+  }
+}
+
+# Policies using unique KMS
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
   count     = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
   policy_id = "${var.bucket_iam_user}S3BucketPolicy"
@@ -411,5 +686,230 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
       "kms:GetKeyRotationStatus",
       "kms:ReEncrypt*",
     ]
+  }
+}
+
+# Policies attached to KMS key
+data "aws_iam_policy_document" "kms_key_policy_document" {
+  policy_id = "${var.kms_alias}KMSPolicy"
+
+  statement {
+    sid    = "IAMPermissions"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    actions = [
+      "kms:*",
+    ]
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
+    }
+  }
+
+  statement {
+    sid    = "KeyAdministratorsPermissions"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    actions = [
+      "kms:Create*",
+      "kms:Describe*",
+      "kms:Enable*",
+      "kms:List*",
+      "kms:Put*",
+      "kms:Update*",
+      "kms:Revoke*",
+      "kms:Disable*",
+      "kms:Get*",
+      "kms:Delete*",
+      "kms:ScheduleKeyDeletion",
+      "kms:CancelKeyDeletion",
+    ]
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "kms_key_policy_document_whitelist" {
+  policy_id = "${var.kms_alias}KMSPolicy"
+
+  statement {
+    sid    = "IAMPermissions"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    actions = [
+      "kms:*",
+    ]
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
+    }
+  }
+
+  statement {
+    sid    = "KeyAdministratorsPermissions"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    actions = [
+      "kms:Create*",
+      "kms:Describe*",
+      "kms:Enable*",
+      "kms:List*",
+      "kms:Put*",
+      "kms:Update*",
+      "kms:Revoke*",
+      "kms:Disable*",
+      "kms:Get*",
+      "kms:Delete*",
+      "kms:ScheduleKeyDeletion",
+      "kms:CancelKeyDeletion",
+    ]
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+      values   = ["${var.whitelist_ip}"]
+    }
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "kms_key_with_whitelist_vpc_policy_document" {
+  policy_id = "${var.kms_alias}KMSPolicy"
+
+  statement {
+    sid    = "IAMPermissionsVPC"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    actions = [
+      "kms:*",
+    ]
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
+    }
+  }
+
+  statement {
+    sid    = "KeyAdministratorsPermissionsVPC"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    actions = [
+      "kms:Create*",
+      "kms:Describe*",
+      "kms:Enable*",
+      "kms:List*",
+      "kms:Put*",
+      "kms:Update*",
+      "kms:Revoke*",
+      "kms:Disable*",
+      "kms:Get*",
+      "kms:Delete*",
+      "kms:ScheduleKeyDeletion",
+      "kms:CancelKeyDeletion",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceVpce"
+      values   = ["${var.whitelist_vpc}"]
+    }
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "kms_key_with_whitelist_ip_and_vpc_policy_document" {
+  policy_id = "${var.kms_alias}KMSPolicyIPandVPC"
+
+  statement {
+    sid    = "IAMPermissionsIPandVPC"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    actions = [
+      "kms:*",
+    ]
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
+    }
+  }
+
+  statement {
+    sid    = "KeyAdministratorsPermissionsVPC"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    actions = [
+      "kms:Create*",
+      "kms:Describe*",
+      "kms:Enable*",
+      "kms:List*",
+      "kms:Put*",
+      "kms:Update*",
+      "kms:Revoke*",
+      "kms:Disable*",
+      "kms:Get*",
+      "kms:Delete*",
+      "kms:ScheduleKeyDeletion",
+      "kms:CancelKeyDeletion",
+    ]
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+      ]
+    }
   }
 }

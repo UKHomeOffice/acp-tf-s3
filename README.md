@@ -1,15 +1,13 @@
 Module usage:
 
-     module "s3" {
+      module "s3" {
 
-     source = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=master"
-
-     name                 = "fake"
-     acl                  = "private"
-     environment          = "${var.environment}"
-     kms_alias            = "mykey"
-     bucket_iam_user      = "fake-s3-bucket-user"
-     iam_user_policy_name = "fake-s3-bucket-policy"
+          source = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=master"
+          name                 = "fake"
+          acl                  = "private"
+          environment          = "${var.environment}"
+          bucket_iam_user      = "fake-s3-bucket-user"
+          iam_user_policy_name = "fake-s3-bucket-policy"
 
       }
 
@@ -22,7 +20,7 @@ Module usage:
 | bucket_iam_user | The name of the iam user assigned to the created s3 bucket | - | yes |
 | environment | The environment the S3 is running in i.e. dev, prod etc | - | yes |
 | iam_user_policy_name | The policy name of attached to the user | - | yes |
-| kms_alias | The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects | `` | no |
+| kms_alias | The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects (if none specified, uses aws default key). | `` | no |
 | lifecycle_days_to_expiration | Specifies the number of days after object creation when the object expires. | `365` | no |
 | lifecycle_days_to_glacier_transition | Specifies the number of days after object creation when it will be moved to Glacier storage. | `180` | no |
 | lifecycle_days_to_infrequent_storage_transition | Specifies the number of days after object creation when it will be moved to standard infrequent access storage. | `60` | no |
