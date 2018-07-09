@@ -35,7 +35,7 @@ Module usage:
 | name | A descriptive name for the S3 instance | - | yes |
 | number_of_users | The number of user to generate credentials for | `1` | no |
 | tags | A map of tags to add to all resources | `<map>` | no |
-| versioning_enabled | If versioning is set for buckets in case of accidental deletion | `true` | no |
+| versioning_enabled | If versioning is set for buckets in case of accidental deletion | `false` | no |
 | whitelist_ip | Whitelisted ip allowed to access the created s3 bucket (note: this allows all by default) | `<list>` | no |
 | whitelist_vpc | Whitelisted vpc allowed to access the created s3 bucket | `` | no |
 
