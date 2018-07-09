@@ -26,7 +26,7 @@ variable "kms_alias" {
 
 variable "versioning_enabled" {
   description = "If versioning is set for buckets in case of accidental deletion"
-  default     = "true"
+  default     = "false"
 }
 
 variable "acl" {
