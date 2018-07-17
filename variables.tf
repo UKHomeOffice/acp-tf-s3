@@ -31,7 +31,7 @@ variable "versioning_enabled" {
 
 variable "acl" {
   description = "The access control list assigned to this bucket"
-  default     = "public"
+  default     = "private"
 }
 
 variable "whitelist_ip" {

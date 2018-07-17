@@ -18,7 +18,7 @@ Module usage:
 
 | Name | Description | Default | Required |
 |------|-------------|:-----:|:-----:|
-| acl | The access control list assigned to this bucket | `public` | no |
+| acl | The access control list assigned to this bucket | `private` | no |
 | bucket_iam_user | The name of the iam user assigned to the created s3 bucket | - | yes |
 | environment | The environment the S3 is running in i.e. dev, prod etc | - | yes |
 | iam_user_policy_name | The policy name of attached to the user | - | yes |
