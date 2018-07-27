@@ -257,12 +257,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
       "kms:GetKeyRotationStatus",
       "kms:ReEncrypt*",
     ]
-
-    condition {
-      test     = "IpAddress"
-      variable = "aws:SourceIp"
-      values   = ["${var.whitelist_ip}"]
-    }
   }
 }
 
