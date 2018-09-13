@@ -36,6 +36,9 @@ Module usage:
 | number_of_users | The number of user to generate credentials for | `1` | no |
 | tags | A map of tags to add to all resources | `<map>` | no |
 | versioning_enabled | If versioning is set for buckets in case of accidental deletion | `false` | no |
+| website_error_document | The path to the document to return in case of a 4XX error for static website hosting | `error.html` | no |
+| website_hosting | Specifies if the bucket will be used for static website hosting | `false` | no |
+| website_index_document | The path of index document when requests are made for static website hosting | `index.html` | no |
 | whitelist_ip | Whitelisted ip allowed to access the created s3 bucket (note: this allows all by default) | `<list>` | no |
 | whitelist_vpc | Whitelisted vpc allowed to access the created s3 bucket | `` | no |
 
@@ -47,4 +50,6 @@ Module usage:
 | s3_bucket_id |  |
 | s3_bucket_kms_key |  |
 | s3_bucket_kms_key_arn |  |
+| s3_website_bucket_arn |  |
+| s3_website_bucket_id |  |
 
