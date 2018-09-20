@@ -93,3 +93,18 @@ variable "lifecycle_days_to_expiration" {
   description = "Specifies the number of days after object creation when the object expires."
   default     = "365"
 }
+
+variable "website_hosting" {
+  description = "Specifies if the bucket will be used for static website hosting"
+  default     = "false"
+}
+
+variable "website_index_document" {
+  description = "The path of index document when requests are made for static website hosting"
+  default     = "index.html"
+}
+
+variable "website_error_document" {
+  description = "The path to the document to return in case of a 4XX error for static website hosting"
+  default     = "error.html"
+}

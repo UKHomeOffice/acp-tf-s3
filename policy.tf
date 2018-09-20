@@ -1,5 +1,5 @@
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
-  count     = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
+  count     = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0}"
   policy_id = "${var.bucket_iam_user}S3BucketPolicy"
 
   statement {
@@ -51,7 +51,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
-  count     = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? 1 : 0}"
+  count     = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0}"
   policy_id = "${var.bucket_iam_user}KMSPolicy"
 
   statement {
@@ -78,6 +78,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_policy_document" {
+  count     = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0}"
   policy_id = "${var.bucket_iam_user}S3BucketPolicy"
 
   statement {
@@ -170,7 +171,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" {
-  count     = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0? 1 : 0}"
+  count     = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0}"
   policy_id = "${var.bucket_iam_user}S3BucketPolicy"
 
   statement {
@@ -234,7 +235,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" {
-  count     = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0? 1 : 0}"
+  count     = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false"? 1 : 0}"
   policy_id = "${var.bucket_iam_user}KMSPolicy"
 
   statement {
@@ -261,6 +262,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
 }
 
 data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
+  count     = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false"? 1 : 0}"
   policy_id = "${var.bucket_iam_user}S3BucketPolicy"
 
   statement {
@@ -371,7 +373,7 @@ data "aws_iam_policy_document" "kms_key_policy_document_whitelist" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_document_1" {
-  count     = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+  count     = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0}"
   policy_id = "${var.bucket_iam_user}S3BucketPolicyVPC"
 
   statement {
@@ -435,7 +437,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_document_2" {
-  count     = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+  count     = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0}"
   policy_id = "${var.bucket_iam_user}KMSPolicyVPC"
 
   statement {
@@ -462,6 +464,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
+  count     = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0}"
   policy_id = "${var.bucket_iam_user}S3BucketPolicyVPC"
 
   statement {
@@ -572,7 +575,7 @@ data "aws_iam_policy_document" "kms_key_with_whitelist_vpc_policy_document" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_policy_document_1" {
-  count     = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+  count     = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0}"
   policy_id = "${var.bucket_iam_user}S3BucketPolicyIPandVPC"
 
   statement {
@@ -695,7 +698,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_policy_document_2" {
-  count     = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0}"
+  count     = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0}"
   policy_id = "${var.bucket_iam_user}KMSPolicyIPandVPC"
 
   statement {
@@ -722,6 +725,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_document" {
+  count     = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0}"
   policy_id = "${var.bucket_iam_user}S3BucketPolicyIPandVPC"
 
   statement {
@@ -899,5 +903,32 @@ data "aws_iam_policy_document" "kms_key_with_whitelist_ip_and_vpc_policy_documen
         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
       ]
     }
+  }
+}
+
+data "aws_iam_policy_document" "s3_bucket_with_kms_website_policy_document_1" {
+  count     = "${var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "true" ? 1 : 0}"
+  policy_id = "${var.bucket_iam_user}S3BucketPolicy"
+
+  statement {
+    sid    = "IAMS3BucketPermissions"
+    effect = "Allow"
+
+    resources = [
+      "${aws_s3_bucket.s3_website_bucket.arn}",
+      "${aws_s3_bucket.s3_website_bucket.arn}/*",
+    ]
+
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+      "s3:ListBucketMultipartUploads",
+      "s3:ListBucketVersions",
+      "s3:AbortMultipartUpload",
+      "s3:DeleteObject",
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:ListMultipartUploadParts",
+    ]
   }
 }
