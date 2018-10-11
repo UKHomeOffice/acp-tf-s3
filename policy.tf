@@ -20,6 +20,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
       "s3:DeleteObject",
       "s3:GetObject",
       "s3:ListMultipartUploadParts",
+      "s3:RestoreObject",
     ]
   }
 
@@ -99,6 +100,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
       "s3:DeleteObject",
       "s3:GetObject",
       "s3:ListMultipartUploadParts",
+      "s3:RestoreObject",
     ]
   }
 
@@ -192,6 +194,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
       "s3:DeleteObject",
       "s3:GetObject",
       "s3:ListMultipartUploadParts",
+      "s3:RestoreObject",
     ]
 
     condition {
@@ -283,6 +286,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
       "s3:DeleteObject",
       "s3:GetObject",
       "s3:ListMultipartUploadParts",
+      "s3:RestoreObject",
     ]
 
     condition {
@@ -394,6 +398,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
       "s3:DeleteObject",
       "s3:GetObject",
       "s3:ListMultipartUploadParts",
+      "s3:RestoreObject",
     ]
 
     condition {
@@ -485,6 +490,7 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
       "s3:DeleteObject",
       "s3:GetObject",
       "s3:ListMultipartUploadParts",
+      "s3:RestoreObject",
     ]
 
     condition {
@@ -596,6 +602,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
       "s3:DeleteObject",
       "s3:GetObject",
       "s3:ListMultipartUploadParts",
+      "s3:RestoreObject",
     ]
 
     condition {
@@ -655,6 +662,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
       "s3:DeleteObject",
       "s3:GetObject",
       "s3:ListMultipartUploadParts",
+      "s3:RestoreObject",
     ]
 
     condition {
@@ -746,6 +754,7 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
       "s3:DeleteObject",
       "s3:GetObject",
       "s3:ListMultipartUploadParts",
+      "s3:RestoreObject",
     ]
 
     condition {
@@ -793,6 +802,7 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
       "s3:DeleteObject",
       "s3:GetObject",
       "s3:ListMultipartUploadParts",
+      "s3:RestoreObject",
     ]
 
     condition {
@@ -929,6 +939,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_website_policy_document_1" {
       "s3:GetObject",
       "s3:PutObject",
       "s3:ListMultipartUploadParts",
+      "s3:RestoreObject",
     ]
   }
 }
