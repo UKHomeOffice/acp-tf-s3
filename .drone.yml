@@ -1,57 +1,7 @@
-workspace:
-  base: /workdir
-
 pipeline:
   validate:
-    image: quay.io/ukhomeofficedigital/acp-toolset:v0.0.11
-    pull: true
+    image: quay.io/ukhomeofficedigital/terraform-toolset:v0.2.0
     commands:
-    - if [ ! -z "$(terraform fmt)" ]; then echo "the above files have formatting error, please run a 'terraform fmt'"; fi
-    - if [ ! -z "$(terraform validate -check-variables=false)" ]; then echo "the above files have formatting error, please run a 'terraform fmt'"; fi
+    - /acp/scripts/tf-validate.sh
     when:
-      event: pull_request
-
-  plan:
-    image: quay.io/ukhomeofficedigital/acp-toolset:v0.0.11
-    secrets:
-    - source: testing_aws_access_key
-      target: aws_access_key_id
-    - source: testing_aws_secret_key
-      target: aws_secret_access_key
-    environment:
-    - AWS_DEFAULT_REGION=eu-west-2
-    - ENVIRONMENT=testing
-    - TF_CLI_ARGS_plan="-var-file=../environments/testing.tfvars"
-    - TF_VAR_drone_build_number=${DRONE_BUILD_NUMBER}
-    - TF_VAR_terraform_bucket_name=acp-tf-s3-terraform-state-${DRONE_BUILD_NUMBER}
-    - TF_VAR_terraform_lock_table=acp-tf-s3-terraform-state-${DRONE_BUILD_NUMBER}
-    commands:
-    - cd terraform
-    - terraform init -get=true
-    - terraform plan
-    when:
-      event: push
-      branch: master
-
-  run:
-    image: quay.io/ukhomeofficedigital/acp-toolset:v0.0.11
-    secrets:
-    - source: testing_aws_access_key
-      target: aws_access_key_id
-    - source: testing_aws_secret_key
-      target: aws_secret_access_key
-    environment:
-    - AWS_DEFAULT_REGION=eu-west-2
-    - ENVIRONMENT=testing
-    - TF_CLI_ARGS_apply="-var-file=../environments/testing.tfvars"
-    - TF_VAR_drone_build_number=${DRONE_BUILD_NUMBER}
-    - TF_VAR_terraform_bucket_name=acp-tf-s3-terraform-state-${DRONE_BUILD_NUMBER}
-    commands:
-    - cd terraform
-    - terraform init --get
-    - terraform apply &
-    - wait
-    - terraform destroy --force
-    when:
-      event: push
-      branch: master
+      event: [pull_request, push]
