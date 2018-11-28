@@ -24,7 +24,7 @@ Module usage:
 | cors_allowed_methods | Specifies which methods are allowed. Can be GET, PUT, POST, DELETE or HEAD. | `<list>` | no |
 | cors_allowed_origins | Specifies which origins are allowed. | `<list>` | no |
 | cors_expose_headers | Specifies expose header in the response. | `<list>` | no |
-| cors_max_age_seconds | Specifies time in seconds that browser can cache the response for a preflight request. | `3000` | no |
+| cors_max_age_seconds | Specifies time in seconds that browser can cache the response for a preflight request. | `<list>` | no |
 | environment | The environment the S3 is running in i.e. dev, prod etc | - | yes |
 | iam_user_policy_name | The policy name of attached to the user | - | yes |
 | kms_alias | The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects | `` | no |

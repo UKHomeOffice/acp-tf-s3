@@ -36,17 +36,17 @@ variable "acl" {
 
 variable "cors_allowed_headers" {
   description = "Specifies which headers are allowed."
-  default     = ["Authorization"]
+  default     = []
 }
 
 variable "cors_allowed_methods" {
   description = "Specifies which methods are allowed. Can be GET, PUT, POST, DELETE or HEAD."
-  default     = ["GET"]
+  default     = []
 }
 
 variable "cors_allowed_origins" {
   description = "Specifies which origins are allowed."
-  default     = ["*"]
+  default     = []
 }
 
 variable "cors_expose_headers" {
@@ -56,7 +56,7 @@ variable "cors_expose_headers" {
 
 variable "cors_max_age_seconds" {
   description = "Specifies time in seconds that browser can cache the response for a preflight request."
-  default     = "3000"
+  default     = "0"
 }
 
 variable "whitelist_ip" {
