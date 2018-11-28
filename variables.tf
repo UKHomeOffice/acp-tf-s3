@@ -34,6 +34,31 @@ variable "acl" {
   default     = "private"
 }
 
+variable "cors_allowed_headers" {
+  description = "Specifies which headers are allowed."
+  default     = ["Authorization"]
+}
+
+variable "cors_allowed_methods" {
+  description = "Specifies which methods are allowed. Can be GET, PUT, POST, DELETE or HEAD."
+  default     = ["GET"]
+}
+
+variable "cors_allowed_origins" {
+  description = "Specifies which origins are allowed."
+  default     = ["*"]
+}
+
+variable "cors_expose_headers" {
+  description = "Specifies expose header in the response."
+  default     = []
+}
+
+variable "cors_max_age_seconds" {
+  description = "Specifies time in seconds that browser can cache the response for a preflight request."
+  default     = "3000"
+}
+
 variable "whitelist_ip" {
   description = "Whitelisted ip allowed to access the created s3 bucket (note: this allows all by default)"
   default     = []
