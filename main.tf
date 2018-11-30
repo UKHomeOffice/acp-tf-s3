@@ -144,7 +144,7 @@ resource "aws_s3_bucket" "s3_website_bucket" {
 
   bucket = "${var.name}"
   acl    = "${var.acl}"
-  
+
   cors_rule {
     allowed_headers = "${var.cors_allowed_headers}"
     allowed_methods = "${var.cors_allowed_methods}"
