@@ -1,37 +1,19 @@
-variable "name" {
-  description = "A descriptive name for the S3 instance"
+variable "acl" {
+  description = "The access control list assigned to this bucket"
+  default     = "private"
 }
 
-variable "environment" {
-  description = "The environment the S3 is running in i.e. dev, prod etc"
+variable "acceleration_status" {
+  description = "Sets the accelerate configuration of an existing bucket. Can be Enabled or Suspended."
+  default     = "Suspended"
 }
 
 variable "bucket_iam_user" {
   description = "The name of the iam user assigned to the created s3 bucket"
 }
 
-variable "number_of_users" {
-  description = "The number of user to generate credentials for"
-  default     = 1
-}
-
-variable "iam_user_policy_name" {
-  description = "The policy name of attached to the user"
-}
-
-variable "kms_alias" {
-  description = "The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects"
-  default     = ""
-}
-
-variable "versioning_enabled" {
-  description = "If versioning is set for buckets in case of accidental deletion"
-  default     = "false"
-}
-
-variable "acl" {
-  description = "The access control list assigned to this bucket"
-  default     = "private"
+variable "environment" {
+  description = "The environment the S3 is running in i.e. dev, prod etc"
 }
 
 variable "cors_allowed_headers" {
@@ -59,19 +41,13 @@ variable "cors_max_age_seconds" {
   default     = "3000"
 }
 
-variable "whitelist_ip" {
-  description = "Whitelisted ip allowed to access the created s3 bucket (note: this allows all by default)"
-  default     = []
+variable "iam_user_policy_name" {
+  description = "The policy name of attached to the user"
 }
 
-variable "whitelist_vpc" {
-  description = "Whitelisted vpc allowed to access the created s3 bucket"
+variable "kms_alias" {
+  description = "The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects"
   default     = ""
-}
-
-variable "tags" {
-  description = "A map of tags to add to all resources"
-  default     = {}
 }
 
 variable "lifecycle_infrequent_storage_transition_enabled" {
@@ -119,6 +95,25 @@ variable "lifecycle_days_to_expiration" {
   default     = "365"
 }
 
+variable "name" {
+  description = "A descriptive name for the S3 instance"
+}
+
+variable "number_of_users" {
+  description = "The number of user to generate credentials for"
+  default     = 1
+}
+
+variable "tags" {
+  description = "A map of tags to add to all resources"
+  default     = {}
+}
+
+variable "versioning_enabled" {
+  description = "If versioning is set for buckets in case of accidental deletion"
+  default     = "false"
+}
+
 variable "website_hosting" {
   description = "Specifies if the bucket will be used for static website hosting"
   default     = "false"
@@ -132,4 +127,14 @@ variable "website_index_document" {
 variable "website_error_document" {
   description = "The path to the document to return in case of a 4XX error for static website hosting"
   default     = "error.html"
+}
+
+variable "whitelist_ip" {
+  description = "Whitelisted ip allowed to access the created s3 bucket (note: this allows all by default)"
+  default     = []
+}
+
+variable "whitelist_vpc" {
+  description = "Whitelisted vpc allowed to access the created s3 bucket"
+  default     = ""
 }
