@@ -18,6 +18,7 @@ Module usage:
 
 | Name | Description | Default | Required |
 |------|-------------|:-----:|:-----:|
+| acceleration_status | Sets the accelerate configuration of an existing bucket. Can be Enabled or Suspended. | `Suspended` | no |
 | acl | The access control list assigned to this bucket | `private` | no |
 | bucket_iam_user | The name of the iam user assigned to the created s3 bucket | - | yes |
 | cors_allowed_headers | Specifies which headers are allowed. | `<list>` | no |
