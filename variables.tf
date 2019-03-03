@@ -104,6 +104,11 @@ variable "number_of_users" {
   default     = 1
 }
 
+variable "server_side_encryption_configuration" {
+  description = "Provides access to override the server side encryption configuration"
+  default     = []
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   default     = {}
