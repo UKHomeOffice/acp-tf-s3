@@ -138,6 +138,8 @@ resource "aws_s3_bucket" "s3_bucket" {
     }
   }
 
+  server_side_encryption_configuration = "${var.server_side_encryption_configuration}"
+
   tags = "${merge(var.tags, map("Name", format("%s-%s", var.environment, var.name)), map("Env", var.environment))}"
 }
 
@@ -200,6 +202,8 @@ resource "aws_s3_bucket" "s3_website_bucket" {
     index_document = "${var.website_index_document}"
     error_document = "${var.website_error_document}"
   }
+
+  server_side_encryption_configuration = "${var.server_side_encryption_configuration}"
 
   tags = "${merge(var.tags, map("Name", format("%s-%s", var.environment, var.name)), map("Env", var.environment))}"
 }
