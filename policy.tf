@@ -13,6 +13,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
 
     actions = [
       "s3:AbortMultipartUpload",
+      "s3:CreateMultipartUpload",
       "s3:DeleteObject",
       "s3:DeleteObjectTagging",
       "s3:DeleteObjectVersion",
@@ -99,6 +100,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
 
     actions = [
       "s3:AbortMultipartUpload",
+      "s3:CreateMultipartUpload",
       "s3:DeleteObject",
       "s3:DeleteObjectTagging",
       "s3:DeleteObjectVersion",
@@ -199,6 +201,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
 
     actions = [
       "s3:AbortMultipartUpload",
+      "s3:CreateMultipartUpload",
       "s3:DeleteObject",
       "s3:DeleteObjectTagging",
       "s3:DeleteObjectVersion",
@@ -297,6 +300,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
 
     actions = [
       "s3:AbortMultipartUpload",
+      "s3:CreateMultipartUpload",
       "s3:DeleteObject",
       "s3:DeleteObjectTagging",
       "s3:DeleteObjectVersion",
@@ -311,6 +315,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
       "s3:ListMultipartUploadParts",
       "s3:PutObjectAcl",
       "s3:RestoreObject",
+      "s3:CreateMultipartUpload",
     ]
 
     condition {
@@ -415,6 +420,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
 
     actions = [
       "s3:AbortMultipartUpload",
+      "s3:CreateMultipartUpload",
       "s3:DeleteObject",
       "s3:DeleteObjectTagging",
       "s3:DeleteObjectVersion",
@@ -429,6 +435,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
       "s3:ListMultipartUploadParts",
       "s3:PutObjectAcl",
       "s3:RestoreObject",
+      "s3:CreateMultipartUpload",
     ]
 
     condition {
@@ -513,6 +520,7 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
 
     actions = [
       "s3:AbortMultipartUpload",
+      "s3:CreateMultipartUpload",
       "s3:DeleteObject",
       "s3:DeleteObjectTagging",
       "s3:DeleteObjectVersion",
@@ -527,6 +535,7 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
       "s3:ListMultipartUploadParts",
       "s3:PutObjectAcl",
       "s3:RestoreObject",
+      "s3:CreateMultipartUpload",
     ]
 
     condition {
@@ -631,6 +640,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
 
     actions = [
       "s3:AbortMultipartUpload",
+      "s3:CreateMultipartUpload",
       "s3:DeleteObject",
       "s3:DeleteObjectTagging",
       "s3:DeleteObjectVersion",
@@ -645,6 +655,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
       "s3:ListMultipartUploadParts",
       "s3:PutObjectAcl",
       "s3:RestoreObject",
+      "s3:CreateMultipartUpload",
     ]
 
     condition {
@@ -697,6 +708,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
 
     actions = [
       "s3:AbortMultipartUpload",
+      "s3:CreateMultipartUpload",
       "s3:DeleteObject",
       "s3:DeleteObjectTagging",
       "s3:DeleteObjectVersion",
@@ -711,6 +723,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
       "s3:ListMultipartUploadParts",
       "s3:PutObjectAcl",
       "s3:RestoreObject",
+      "s3:CreateMultipartUpload",
     ]
 
     condition {
@@ -795,6 +808,7 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
 
     actions = [
       "s3:AbortMultipartUpload",
+      "s3:CreateMultipartUpload",
       "s3:DeleteObject",
       "s3:DeleteObjectTagging",
       "s3:DeleteObjectVersion",
@@ -849,6 +863,7 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
 
     actions = [
       "s3:AbortMultipartUpload",
+      "s3:CreateMultipartUpload",
       "s3:DeleteObject",
       "s3:DeleteObjectTagging",
       "s3:DeleteObjectVersion",
@@ -991,6 +1006,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_website_policy_document_1" {
 
     actions = [
       "s3:AbortMultipartUpload",
+      "s3:CreateMultipartUpload",
       "s3:DeleteObject",
       "s3:DeleteObjectTagging",
       "s3:DeleteObjectVersion",
