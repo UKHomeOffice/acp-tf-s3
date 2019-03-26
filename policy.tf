@@ -315,7 +315,6 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
       "s3:ListMultipartUploadParts",
       "s3:PutObjectAcl",
       "s3:RestoreObject",
-      "s3:CreateMultipartUpload",
     ]
 
     condition {
@@ -435,7 +434,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
       "s3:ListMultipartUploadParts",
       "s3:PutObjectAcl",
       "s3:RestoreObject",
-      "s3:CreateMultipartUpload",
     ]
 
     condition {
@@ -535,7 +533,6 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
       "s3:ListMultipartUploadParts",
       "s3:PutObjectAcl",
       "s3:RestoreObject",
-      "s3:CreateMultipartUpload",
     ]
 
     condition {
@@ -655,7 +652,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
       "s3:ListMultipartUploadParts",
       "s3:PutObjectAcl",
       "s3:RestoreObject",
-      "s3:CreateMultipartUpload",
     ]
 
     condition {
@@ -723,7 +719,6 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
       "s3:ListMultipartUploadParts",
       "s3:PutObjectAcl",
       "s3:RestoreObject",
-      "s3:CreateMultipartUpload",
     ]
 
     condition {
