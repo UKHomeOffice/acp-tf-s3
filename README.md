@@ -40,6 +40,7 @@ Module usage:
 | lifecycle_infrequent_storage_transition_enabled | Specifies infrequent storage transition lifecycle rule status. | `false` | no |
 | name | A descriptive name for the S3 instance | - | yes |
 | number_of_users | The number of user to generate credentials for | `1` | no |
+| server_side_encryption_configuration | Provides access to override the server side encryption configuration | `<list>` | no |
 | tags | A map of tags to add to all resources | `<map>` | no |
 | versioning_enabled | If versioning is set for buckets in case of accidental deletion | `false` | no |
 | website_error_document | The path to the document to return in case of a 4XX error for static website hosting | `error.html` | no |
