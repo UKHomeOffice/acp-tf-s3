@@ -8,6 +8,16 @@ output "s3_bucket_arn" {
   value       = "${element(concat(aws_s3_bucket.s3_bucket.*.arn, list("")), 0)}"
 }
 
+output "s3_bucket_with_logging_id" {
+  description = "ID of generated S3 bucket with server access logging enabled"
+  value       = "${element(concat(aws_s3_bucket.s3_bucket_with_logging.*.id, list("")), 0)}"
+}
+
+output "s3_bucket_with_logging_arn" {
+  description = "ARN of generated S3 bucket with server access logging enabled"
+  value       = "${element(concat(aws_s3_bucket.s3_bucket_with_logging.*.arn, list("")), 0)}"
+}
+
 output "s3_website_bucket_id" {
   description = "ID of generated S3 bucket with website hosting enabled"
   value       = "${element(concat(aws_s3_bucket.s3_website_bucket.*.id, list("")), 0)}"

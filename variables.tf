@@ -95,6 +95,21 @@ variable "lifecycle_days_to_expiration" {
   default     = "365"
 }
 
+variable "logging_enabled" {
+  description = "Specifies whether server access logging is enabled or not."
+  default     = "false"
+}
+
+variable "log_target_bucket" {
+  description = "The S3 bucket that access logs should be sent to."
+  default     = ""
+}
+
+variable "log_target_prefix" {
+  description = "The object prefix for access logs"
+  default     = ""
+}
+
 variable "name" {
   description = "A descriptive name for the S3 instance"
 }

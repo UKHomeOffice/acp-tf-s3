@@ -37,6 +37,9 @@ Module usage:
 | lifecycle\_glacier\_transition\_enabled | Specifies Glacier transition lifecycle rule status. | string | `"false"` | no |
 | lifecycle\_infrequent\_storage\_object\_prefix | Object key prefix identifying one or more objects to which the lifecycle rule applies. | string | `""` | no |
 | lifecycle\_infrequent\_storage\_transition\_enabled | Specifies infrequent storage transition lifecycle rule status. | string | `"false"` | no |
+| log\_target\_bucket | The S3 bucket that access logs should be sent to. | string | `""` | no |
+| log\_target\_prefix | The object prefix for access logs | string | `""` | no |
+| logging\_enabled | Specifies whether server access logging is enabled or not. | string | `"false"` | no |
 | name | A descriptive name for the S3 instance | string | n/a | yes |
 | number\_of\_users | The number of user to generate credentials for | string | `"1"` | no |
 | server\_side\_encryption\_configuration | Provides access to override the server side encryption configuration | list | `<list>` | no |
@@ -62,6 +65,8 @@ Module usage:
 | s3\_bucket\_whitelist\_kms\_key | KMS Key ID of the whitelist ip generated bucket |
 | s3\_bucket\_whitelist\_vpc\_arn\_kms\_key\_arn | KMS Key ARN of the whitelist vpc generated bucket |
 | s3\_bucket\_whitelist\_vpc\_kms\_key | KMS Key ID of the whitelist vpc generated bucket |
+| s3\_bucket\_with\_logging\_arn | ARN of generated S3 bucket with server access logging enabled |
+| s3\_bucket\_with\_logging\_id | ID of generated S3 bucket with server access logging enabled |
 | s3\_website\_bucket\_arn | ARN of generated S3 bucket with website hosting enabled |
 | s3\_website\_bucket\_id | ID of generated S3 bucket with website hosting enabled |
 
