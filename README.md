@@ -13,50 +13,55 @@ Module usage:
 
       }
 
-
 ## Inputs
 
-| Name | Description | Default | Required |
-|------|-------------|:-----:|:-----:|
-| acceleration_status | Sets the accelerate configuration of an existing bucket. Can be Enabled or Suspended. | `Suspended` | no |
-| acl | The access control list assigned to this bucket | `private` | no |
-| bucket_iam_user | The name of the iam user assigned to the created s3 bucket | - | yes |
-| cors_allowed_headers | Specifies which headers are allowed. | `<list>` | no |
-| cors_allowed_methods | Specifies which methods are allowed. Can be GET, PUT, POST, DELETE or HEAD. | `<list>` | no |
-| cors_allowed_origins | Specifies which origins are allowed. | `<list>` | no |
-| cors_expose_headers | Specifies expose header in the response. | `<list>` | no |
-| cors_max_age_seconds | Specifies time in seconds that browser can cache the response for a preflight request. | `3000` | no |
-| environment | The environment the S3 is running in i.e. dev, prod etc | - | yes |
-| iam_user_policy_name | The policy name of attached to the user | - | yes |
-| kms_alias | The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects | `` | no |
-| lifecycle_days_to_expiration | Specifies the number of days after object creation when the object expires. | `365` | no |
-| lifecycle_days_to_glacier_transition | Specifies the number of days after object creation when it will be moved to Glacier storage. | `180` | no |
-| lifecycle_days_to_infrequent_storage_transition | Specifies the number of days after object creation when it will be moved to standard infrequent access storage. | `60` | no |
-| lifecycle_expiration_enabled | Specifies expiration lifecycle rule status. | `false` | no |
-| lifecycle_expiration_object_prefix | Object key prefix identifying one or more objects to which the lifecycle rule applies. | `` | no |
-| lifecycle_glacier_object_prefix | Object key prefix identifying one or more objects to which the lifecycle rule applies. | `` | no |
-| lifecycle_glacier_transition_enabled | Specifies Glacier transition lifecycle rule status. | `false` | no |
-| lifecycle_infrequent_storage_object_prefix | Object key prefix identifying one or more objects to which the lifecycle rule applies. | `` | no |
-| lifecycle_infrequent_storage_transition_enabled | Specifies infrequent storage transition lifecycle rule status. | `false` | no |
-| name | A descriptive name for the S3 instance | - | yes |
-| number_of_users | The number of user to generate credentials for | `1` | no |
-| server_side_encryption_configuration | Provides access to override the server side encryption configuration | `<list>` | no |
-| tags | A map of tags to add to all resources | `<map>` | no |
-| versioning_enabled | If versioning is set for buckets in case of accidental deletion | `false` | no |
-| website_error_document | The path to the document to return in case of a 4XX error for static website hosting | `error.html` | no |
-| website_hosting | Specifies if the bucket will be used for static website hosting | `false` | no |
-| website_index_document | The path of index document when requests are made for static website hosting | `index.html` | no |
-| whitelist_ip | Whitelisted ip allowed to access the created s3 bucket (note: this allows all by default) | `<list>` | no |
-| whitelist_vpc | Whitelisted vpc allowed to access the created s3 bucket | `` | no |
+| Name | Description | Type | Default | Required |
+|------|-------------|:----:|:-----:|:-----:|
+| acceleration\_status | Sets the accelerate configuration of an existing bucket. Can be Enabled or Suspended. | string | `"Suspended"` | no |
+| acl | The access control list assigned to this bucket | string | `"private"` | no |
+| bucket\_iam\_user | The name of the iam user assigned to the created s3 bucket | string | n/a | yes |
+| cors\_allowed\_headers | Specifies which headers are allowed. | list | `<list>` | no |
+| cors\_allowed\_methods | Specifies which methods are allowed. Can be GET, PUT, POST, DELETE or HEAD. | list | `<list>` | no |
+| cors\_allowed\_origins | Specifies which origins are allowed. | list | `<list>` | no |
+| cors\_expose\_headers | Specifies expose header in the response. | list | `<list>` | no |
+| cors\_max\_age\_seconds | Specifies time in seconds that browser can cache the response for a preflight request. | string | `"3000"` | no |
+| environment | The environment the S3 is running in i.e. dev, prod etc | string | n/a | yes |
+| iam\_user\_policy\_name | The policy name of attached to the user | string | n/a | yes |
+| kms\_alias | The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects | string | `""` | no |
+| lifecycle\_days\_to\_expiration | Specifies the number of days after object creation when the object expires. | string | `"365"` | no |
+| lifecycle\_days\_to\_glacier\_transition | Specifies the number of days after object creation when it will be moved to Glacier storage. | string | `"180"` | no |
+| lifecycle\_days\_to\_infrequent\_storage\_transition | Specifies the number of days after object creation when it will be moved to standard infrequent access storage. | string | `"60"` | no |
+| lifecycle\_expiration\_enabled | Specifies expiration lifecycle rule status. | string | `"false"` | no |
+| lifecycle\_expiration\_object\_prefix | Object key prefix identifying one or more objects to which the lifecycle rule applies. | string | `""` | no |
+| lifecycle\_glacier\_object\_prefix | Object key prefix identifying one or more objects to which the lifecycle rule applies. | string | `""` | no |
+| lifecycle\_glacier\_transition\_enabled | Specifies Glacier transition lifecycle rule status. | string | `"false"` | no |
+| lifecycle\_infrequent\_storage\_object\_prefix | Object key prefix identifying one or more objects to which the lifecycle rule applies. | string | `""` | no |
+| lifecycle\_infrequent\_storage\_transition\_enabled | Specifies infrequent storage transition lifecycle rule status. | string | `"false"` | no |
+| name | A descriptive name for the S3 instance | string | n/a | yes |
+| number\_of\_users | The number of user to generate credentials for | string | `"1"` | no |
+| server\_side\_encryption\_configuration | Provides access to override the server side encryption configuration | list | `<list>` | no |
+| tags | A map of tags to add to all resources | map | `<map>` | no |
+| versioning\_enabled | If versioning is set for buckets in case of accidental deletion | string | `"false"` | no |
+| website\_error\_document | The path to the document to return in case of a 4XX error for static website hosting | string | `"error.html"` | no |
+| website\_hosting | Specifies if the bucket will be used for static website hosting | string | `"false"` | no |
+| website\_index\_document | The path of index document when requests are made for static website hosting | string | `"index.html"` | no |
+| whitelist\_ip | Whitelisted ip allowed to access the created s3 bucket (note: this allows all by default) | list | `<list>` | no |
+| whitelist\_vpc | Whitelisted vpc allowed to access the created s3 bucket | string | `""` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| s3_bucket_arn |  |
-| s3_bucket_id |  |
-| s3_bucket_kms_key |  |
-| s3_bucket_kms_key_arn |  |
-| s3_website_bucket_arn |  |
-| s3_website_bucket_id |  |
+| s3\_bucket\_arn | ARN of generated S3 bucket |
+| s3\_bucket\_id | ID of generated S3 bucket |
+| s3\_bucket\_kms\_key | KMS Key ID of the generated bucket |
+| s3\_bucket\_kms\_key\_arn | KMS Key ARN of the generated bucket |
+| s3\_bucket\_whitelist\_arn\_kms\_key\_arn | KMS Key ARN of the whitelist ip generated bucket |
+| s3\_bucket\_whitelist\_ip\_and\_vpc\_kms\_key | KMS Key ID of the whitelist ip and vpc generated bucket |
+| s3\_bucket\_whitelist\_ip\_and\_vpc\_kms\_key\_arn | KMS Key ARN of the whitelist ip and vpc generated bucket |
+| s3\_bucket\_whitelist\_kms\_key | KMS Key ID of the whitelist ip generated bucket |
+| s3\_bucket\_whitelist\_vpc\_arn\_kms\_key\_arn | KMS Key ARN of the whitelist vpc generated bucket |
+| s3\_bucket\_whitelist\_vpc\_kms\_key | KMS Key ID of the whitelist vpc generated bucket |
+| s3\_website\_bucket\_arn | ARN of generated S3 bucket with website hosting enabled |
+| s3\_website\_bucket\_id | ID of generated S3 bucket with website hosting enabled |
 
