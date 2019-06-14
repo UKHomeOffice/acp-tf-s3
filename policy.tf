@@ -7,8 +7,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -36,8 +36,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -94,8 +94,8 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}/*",
-      "${aws_s3_bucket.s3_bucket.arn}",
+      "${local.s3_bucket_arn}/*",
+      "${local.s3_bucket_arn}",
     ]
 
     actions = [
@@ -123,8 +123,8 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -195,8 +195,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -230,8 +230,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -259,7 +259,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" {
-  count     = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false"? 1 : 0}"
+  count     = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0}"
   policy_id = "${var.bucket_iam_user}KMSPolicy"
 
   statement {
@@ -286,7 +286,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
 }
 
 data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
-  count     = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false"? 1 : 0}"
+  count     = "${var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0}"
   policy_id = "${var.bucket_iam_user}S3BucketPolicy"
 
   statement {
@@ -294,8 +294,8 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -329,8 +329,8 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -413,8 +413,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -448,8 +448,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -512,8 +512,8 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -547,8 +547,8 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -631,8 +631,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -666,8 +666,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -698,8 +698,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -733,8 +733,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -797,8 +797,8 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -832,8 +832,8 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -852,8 +852,8 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -887,8 +887,8 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
-      "${aws_s3_bucket.s3_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
@@ -995,8 +995,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_website_policy_document_1" {
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_website_bucket.arn}",
-      "${aws_s3_bucket.s3_website_bucket.arn}/*",
+      "${local.s3_bucket_arn}",
+      "${local.s3_bucket_arn}/*",
     ]
 
     actions = [
