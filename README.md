@@ -49,7 +49,7 @@ Module usage:
 | website\_hosting | Specifies if the bucket will be used for static website hosting | string | `"false"` | no |
 | website\_index\_document | The path of index document when requests are made for static website hosting | string | `"index.html"` | no |
 | whitelist\_ip | Whitelisted ip allowed to access the created s3 bucket (note: this allows all by default) | list | `<list>` | no |
-| whitelist\_vpc | Whitelisted vpc allowed to access the created s3 bucket | string | `""` | no |
+| whitelist\_vpc | Whitelisted vpc allowed to access the created s3 bucket | list | `<list>` | no |
 
 ## Outputs
 
