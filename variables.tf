@@ -156,5 +156,5 @@ variable "whitelist_ip" {
 
 variable "whitelist_vpc" {
   description = "Whitelisted vpc allowed to access the created s3 bucket"
-  default     = ""
+  default     = []
 }
