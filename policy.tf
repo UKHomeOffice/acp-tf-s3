@@ -32,6 +32,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
       "s3:ListMultipartUploadParts",
       "s3:PutObject",
       "s3:RestoreObject",
+      "s3:PutObjectTagging",
+      "s3:GetObjectTagging",
     ]
   }
 }
@@ -116,6 +118,8 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
       "s3:ListMultipartUploadParts",
       "s3:PutObject",
       "s3:RestoreObject",
+      "s3:PutObjectTagging",
+      "s3:GetObjectTagging",
     ]
   }
 }
@@ -213,6 +217,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
       "s3:ListMultipartUploadParts",
       "s3:PutObject",
       "s3:RestoreObject",
+      "s3:PutObjectTagging",
+      "s3:GetObjectTagging",
     ]
 
     condition {
@@ -321,6 +327,8 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
       "s3:ListMultipartUploadParts",
       "s3:PutObject",
       "s3:RestoreObject",
+      "s3:PutObjectTagging",
+      "s3:GetObjectTagging",
     ]
 
     condition {
