@@ -60,6 +60,11 @@ variable "lifecycle_infrequent_storage_object_prefix" {
   default     = ""
 }
 
+variable "lifecycle_infrequent_storage_object_tags" {
+  description = "Object tags to filter on for the transition to infrequent storage lifecycle rule."
+  default     = {}
+}
+
 variable "lifecycle_days_to_infrequent_storage_transition" {
   description = "Specifies the number of days after object creation when it will be moved to standard infrequent access storage."
   default     = "60"
@@ -75,6 +80,11 @@ variable "lifecycle_glacier_object_prefix" {
   default     = ""
 }
 
+variable "lifecycle_glacier_object_tags" {
+  description = "Object tags to filter on for the transition to glacier lifecycle rule."
+  default     = {}
+}
+
 variable "lifecycle_days_to_glacier_transition" {
   description = "Specifies the number of days after object creation when it will be moved to Glacier storage."
   default     = "180"
@@ -88,6 +98,11 @@ variable "lifecycle_expiration_enabled" {
 variable "lifecycle_expiration_object_prefix" {
   description = "Object key prefix identifying one or more objects to which the lifecycle rule applies."
   default     = ""
+}
+
+variable "lifecycle_expiration_object_tags" {
+  description = "Object tags to filter on for the expire object lifecycle rule."
+  default     = {}
 }
 
 variable "lifecycle_days_to_expiration" {

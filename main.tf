@@ -3,16 +3,16 @@
 *
 *      module "s3" {
 *
-*      source = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=master"
+*         source = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=master"
 *
-*      name                 = "fake"
-*      acl                  = "private"
-*      environment          = "${var.environment}"
-*      kms_alias            = "mykey"
-*      bucket_iam_user      = "fake-s3-bucket-user"
-*      iam_user_policy_name = "fake-s3-bucket-policy"
+*         name                 = "fake"
+*         acl                  = "private"
+*         environment          = "${var.environment}"
+*         kms_alias            = "mykey"
+*         bucket_iam_user      = "fake-s3-bucket-user"
+*         iam_user_policy_name = "fake-s3-bucket-policy"
 *
-*       }
+*      }
 */
 
 locals {
@@ -114,6 +114,8 @@ resource "aws_s3_bucket" "s3_bucket" {
 
     prefix = "${var.lifecycle_infrequent_storage_object_prefix}"
 
+    tags = "${var.lifecycle_infrequent_storage_object_tags}"
+
     transition {
       days          = "${var.lifecycle_days_to_infrequent_storage_transition}"
       storage_class = "STANDARD_IA"
@@ -126,6 +128,8 @@ resource "aws_s3_bucket" "s3_bucket" {
 
     prefix = "${var.lifecycle_glacier_object_prefix}"
 
+    tags = "${var.lifecycle_glacier_object_tags}"
+
     transition {
       days          = "${var.lifecycle_days_to_glacier_transition}"
       storage_class = "GLACIER"
@@ -137,6 +141,8 @@ resource "aws_s3_bucket" "s3_bucket" {
     enabled = "${var.lifecycle_expiration_enabled}"
 
     prefix = "${var.lifecycle_expiration_object_prefix}"
+
+    tags = "${var.lifecycle_expiration_object_tags}"
 
     expiration {
       days = "${var.lifecycle_days_to_expiration}"
@@ -174,6 +180,8 @@ resource "aws_s3_bucket" "s3_bucket_with_logging" {
 
     prefix = "${var.lifecycle_infrequent_storage_object_prefix}"
 
+    tags = "${var.lifecycle_infrequent_storage_object_tags}"
+
     transition {
       days          = "${var.lifecycle_days_to_infrequent_storage_transition}"
       storage_class = "STANDARD_IA"
@@ -186,6 +194,8 @@ resource "aws_s3_bucket" "s3_bucket_with_logging" {
 
     prefix = "${var.lifecycle_glacier_object_prefix}"
 
+    tags = "${var.lifecycle_glacier_object_tags}"
+
     transition {
       days          = "${var.lifecycle_days_to_glacier_transition}"
       storage_class = "GLACIER"
@@ -197,6 +207,8 @@ resource "aws_s3_bucket" "s3_bucket_with_logging" {
     enabled = "${var.lifecycle_expiration_enabled}"
 
     prefix = "${var.lifecycle_expiration_object_prefix}"
+
+    tags = "${var.lifecycle_expiration_object_tags}"
 
     expiration {
       days = "${var.lifecycle_days_to_expiration}"
@@ -239,6 +251,8 @@ resource "aws_s3_bucket" "s3_website_bucket" {
 
     prefix = "${var.lifecycle_infrequent_storage_object_prefix}"
 
+    tags = "${var.lifecycle_infrequent_storage_object_tags}"
+
     transition {
       days          = "${var.lifecycle_days_to_infrequent_storage_transition}"
       storage_class = "STANDARD_IA"
@@ -251,6 +265,8 @@ resource "aws_s3_bucket" "s3_website_bucket" {
 
     prefix = "${var.lifecycle_glacier_object_prefix}"
 
+    tags = "${var.lifecycle_glacier_object_tags}"
+
     transition {
       days          = "${var.lifecycle_days_to_glacier_transition}"
       storage_class = "GLACIER"
@@ -262,6 +278,8 @@ resource "aws_s3_bucket" "s3_website_bucket" {
     enabled = "${var.lifecycle_expiration_enabled}"
 
     prefix = "${var.lifecycle_expiration_object_prefix}"
+
+    tags = "${var.lifecycle_expiration_object_tags}"
 
     expiration {
       days = "${var.lifecycle_days_to_expiration}"
@@ -304,6 +322,8 @@ resource "aws_s3_bucket" "s3_website_bucket_with_logging" {
 
     prefix = "${var.lifecycle_infrequent_storage_object_prefix}"
 
+    tags = "${var.lifecycle_infrequent_storage_object_tags}"
+
     transition {
       days          = "${var.lifecycle_days_to_infrequent_storage_transition}"
       storage_class = "STANDARD_IA"
@@ -316,6 +336,8 @@ resource "aws_s3_bucket" "s3_website_bucket_with_logging" {
 
     prefix = "${var.lifecycle_glacier_object_prefix}"
 
+    tags = "${var.lifecycle_glacier_object_tags}"
+
     transition {
       days          = "${var.lifecycle_days_to_glacier_transition}"
       storage_class = "GLACIER"
@@ -327,6 +349,8 @@ resource "aws_s3_bucket" "s3_website_bucket_with_logging" {
     enabled = "${var.lifecycle_expiration_enabled}"
 
     prefix = "${var.lifecycle_expiration_object_prefix}"
+
+    tags = "${var.lifecycle_expiration_object_tags}"
 
     expiration {
       days = "${var.lifecycle_days_to_expiration}"
