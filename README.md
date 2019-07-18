@@ -2,16 +2,16 @@ Module usage:
 
      module "s3" {
 
-     source = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=master"
+        source = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=master"
 
-     name                 = "fake"
-     acl                  = "private"
-     environment          = "${var.environment}"
-     kms_alias            = "mykey"
-     bucket_iam_user      = "fake-s3-bucket-user"
-     iam_user_policy_name = "fake-s3-bucket-policy"
+        name                 = "fake"
+        acl                  = "private"
+        environment          = "${var.environment}"
+        kms_alias            = "mykey"
+        bucket_iam_user      = "fake-s3-bucket-user"
+        iam_user_policy_name = "fake-s3-bucket-policy"
 
-      }
+     }
 
 ## Inputs
 
@@ -33,9 +33,12 @@ Module usage:
 | lifecycle\_days\_to\_infrequent\_storage\_transition | Specifies the number of days after object creation when it will be moved to standard infrequent access storage. | string | `"60"` | no |
 | lifecycle\_expiration\_enabled | Specifies expiration lifecycle rule status. | string | `"false"` | no |
 | lifecycle\_expiration\_object\_prefix | Object key prefix identifying one or more objects to which the lifecycle rule applies. | string | `""` | no |
+| lifecycle\_expiration\_object\_tags | Object tags to filter on for the expire object lifecycle rule. | map | `<map>` | no |
 | lifecycle\_glacier\_object\_prefix | Object key prefix identifying one or more objects to which the lifecycle rule applies. | string | `""` | no |
+| lifecycle\_glacier\_object\_tags | Object tags to filter on for the transition to glacier lifecycle rule. | map | `<map>` | no |
 | lifecycle\_glacier\_transition\_enabled | Specifies Glacier transition lifecycle rule status. | string | `"false"` | no |
 | lifecycle\_infrequent\_storage\_object\_prefix | Object key prefix identifying one or more objects to which the lifecycle rule applies. | string | `""` | no |
+| lifecycle\_infrequent\_storage\_object\_tags | Object tags to filter on for the transition to infrequent storage lifecycle rule. | map | `<map>` | no |
 | lifecycle\_infrequent\_storage\_transition\_enabled | Specifies infrequent storage transition lifecycle rule status. | string | `"false"` | no |
 | log\_target\_bucket | The S3 bucket that access logs should be sent to. | string | `""` | no |
 | log\_target\_prefix | The object prefix for access logs | string | `""` | no |
