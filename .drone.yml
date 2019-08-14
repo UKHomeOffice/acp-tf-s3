@@ -1,7 +1,7 @@
 pipeline:
   validate:
-    image: quay.io/ukhomeofficedigital/terraform-toolset:v0.2.7
+    image: quay.io/ukhomeofficedigital/terraform-toolset:v0.12.6
     commands:
-    - /acp/scripts/tf-validate.sh
+    - /acp/scripts/tf-validate.sh --no-docs
     when:
       event: [pull_request, push]
