@@ -103,3 +103,4 @@ variable "lifecycle_days_to_expiration" {
   description = "Specifies the number of days after object creation when the object expires."
   default     = "365"
 }
+

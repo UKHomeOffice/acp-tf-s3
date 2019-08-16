@@ -6,7 +6,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
+      aws_s3_bucket.s3_bucket.arn,
     ]
 
     actions = [
@@ -39,7 +39,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
-  count     = "${var.kms_alias != "" && length(var.whitelist_ip) == 0 ? 1 : 0}"
+  count     = var.kms_alias != "" && length(var.whitelist_ip) == 0 ? 1 : 0
   policy_id = "${var.bucket_iam_user}KMSPolicy"
 
   statement {
@@ -47,7 +47,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
     effect = "Allow"
 
     resources = [
-      "${aws_kms_key.s3_bucket_kms_key.arn}",
+      aws_kms_key.s3_bucket_kms_key[0].arn,
       "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:alias/${var.kms_alias}",
     ]
 
@@ -92,7 +92,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
+      aws_s3_bucket.s3_bucket.arn,
     ]
 
     actions = [
@@ -185,7 +185,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
+      aws_s3_bucket.s3_bucket.arn,
     ]
 
     actions = [
@@ -198,7 +198,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ["${var.whitelist_ip}"]
+      values   = var.whitelist_ip
     }
   }
 
@@ -224,13 +224,13 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ["${var.whitelist_ip}"]
+      values   = var.whitelist_ip
     }
   }
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" {
-  count     = "${var.kms_alias != "" && length(var.whitelist_ip) != 0 ? 1 : 0}"
+  count     = var.kms_alias != "" && length(var.whitelist_ip) != 0 ? 1 : 0
   policy_id = "${var.bucket_iam_user}KMSPolicy"
 
   statement {
@@ -238,7 +238,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
     effect = "Allow"
 
     resources = [
-      "${aws_kms_key.s3_bucket_kms_key_whitelist.arn}",
+      aws_kms_key.s3_bucket_kms_key_whitelist[0].arn,
       "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:alias/${var.kms_alias}",
     ]
 
@@ -257,7 +257,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ["${var.whitelist_ip}"]
+      values   = var.whitelist_ip
     }
   }
 
@@ -282,7 +282,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ["${var.whitelist_ip}"]
+      values   = var.whitelist_ip
     }
   }
 }
@@ -295,7 +295,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
     effect = "Allow"
 
     resources = [
-      "${aws_s3_bucket.s3_bucket.arn}",
+      aws_s3_bucket.s3_bucket.arn,
     ]
 
     actions = [
@@ -308,7 +308,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ["${var.whitelist_ip}"]
+      values   = var.whitelist_ip
     }
   }
 
@@ -334,7 +334,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ["${var.whitelist_ip}"]
+      values   = var.whitelist_ip
     }
   }
 }
@@ -385,7 +385,7 @@ data "aws_iam_policy_document" "kms_key_policy_document_whitelist" {
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = ["${var.whitelist_ip}"]
+      values   = var.whitelist_ip
     }
 
     principals {
@@ -397,3 +397,4 @@ data "aws_iam_policy_document" "kms_key_policy_document_whitelist" {
     }
   }
 }
+
