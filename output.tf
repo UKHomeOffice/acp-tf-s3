@@ -30,41 +30,40 @@ output "s3_website_bucket_arn" {
 
 output "s3_bucket_kms_key" {
   description = "KMS Key ID of the generated bucket"
-  value       = aws_kms_key.s3_bucket_kms_key.*.key_id
+  value       = element(concat(aws_kms_key.s3_bucket_kms_key.*.key_id, [""]), 0)
 }
 
 output "s3_bucket_kms_key_arn" {
   description = "KMS Key ARN of the generated bucket"
-  value       = aws_kms_key.s3_bucket_kms_key.*.arn
+  value       = element(concat(aws_kms_key.s3_bucket_kms_key.*.arn, [""]), 0)
 }
 
 output "s3_bucket_whitelist_kms_key" {
   description = "KMS Key ID of the whitelist ip generated bucket"
-  value       = aws_kms_key.s3_bucket_kms_key_whitelist.*.key_id
+  value       = element(concat(aws_kms_key.s3_bucket_kms_key_whitelist.*.key_id, [""]), 0)
 }
 
 output "s3_bucket_whitelist_arn_kms_key_arn" {
   description = "KMS Key ARN of the whitelist ip generated bucket"
-  value       = aws_kms_key.s3_bucket_kms_key_whitelist.*.arn
+  value       = element(concat(aws_kms_key.s3_bucket_kms_key_whitelist.*.arn, [""]), 0)
 }
 
 output "s3_bucket_whitelist_vpc_kms_key" {
   description = "KMS Key ID of the whitelist vpc generated bucket"
-  value       = aws_kms_key.s3_bucket_kms_key_whitelist_vpc.*.key_id
+  value       = element(concat(aws_kms_key.s3_bucket_kms_key_whitelist_vpc.*.key_id, [""]), 0)
 }
 
 output "s3_bucket_whitelist_vpc_arn_kms_key_arn" {
   description = "KMS Key ARN of the whitelist vpc generated bucket"
-  value       = aws_kms_key.s3_bucket_kms_key_whitelist_vpc.*.arn
+  value       = element(concat(aws_kms_key.s3_bucket_kms_key_whitelist_vpc.*.arn, [""]), 0)
 }
 
 output "s3_bucket_whitelist_ip_and_vpc_kms_key" {
   description = "KMS Key ID of the whitelist ip and vpc generated bucket"
-  value       = aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.*.key_id
+  value       = element(concat(aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.*.key_id, [""]), 0)
 }
 
 output "s3_bucket_whitelist_ip_and_vpc_kms_key_arn" {
   description = "KMS Key ARN of the whitelist ip and vpc generated bucket"
-  value       = aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.*.arn
+  value       = element(concat(aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc.*.arn, [""]), 0)
 }
-
