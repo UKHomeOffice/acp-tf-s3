@@ -10,11 +10,10 @@ output "s3_bucket_arn" {
 
 output "s3_bucket_kms_key" {
   description = "The KMS key ID used for the bucket"
-  value       = aws_kms_key.s3_bucket_kms_key.*.key_id
+  value       = element(concat(aws_kms_key.s3_bucket_kms_key.*.key_id, [""]), 0)
 }
 
 output "s3_bucket_kms_key_arn" {
   description = "The KMS key ARN used for the bucket"
-  value       = aws_kms_key.s3_bucket_kms_key.*.arn
+  value       = element(concat(aws_kms_key.s3_bucket_kms_key.*.arn, [""]), 0)
 }
-
