@@ -43,7 +43,7 @@ resource "aws_kms_key" "s3_bucket_kms_key" {
   count = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
 
   description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
-  policy      = data.aws_iam_policy_document.kms_key_policy_document.json
+  policy      = var.kms_key_policy != "" ? var.kms_key_policy : data.aws_iam_policy_document.kms_key_policy_document.json
 
   tags = merge(
     var.tags,
@@ -67,7 +67,7 @@ resource "aws_kms_key" "s3_bucket_kms_key_whitelist" {
   count = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
 
   description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
-  policy      = data.aws_iam_policy_document.kms_key_policy_document_whitelist.json
+  policy      = var.kms_key_policy != "" ? var.kms_key_policy : data.aws_iam_policy_document.kms_key_policy_document_whitelist.json
 
   tags = merge(
     var.tags,
@@ -91,7 +91,7 @@ resource "aws_kms_key" "s3_bucket_kms_key_whitelist_vpc" {
   count = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
 
   description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
-  policy      = data.aws_iam_policy_document.kms_key_with_whitelist_vpc_policy_document.json
+  policy      = var.kms_key_policy != "" ? var.kms_key_policy : data.aws_iam_policy_document.kms_key_with_whitelist_vpc_policy_document.json
 
   tags = merge(
     var.tags,
@@ -115,7 +115,7 @@ resource "aws_kms_key" "s3_bucket_kms_key_whitelist_ip_and_vpc" {
   count = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
 
   description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
-  policy      = data.aws_iam_policy_document.kms_key_with_whitelist_ip_and_vpc_policy_document.json
+  policy      = var.kms_key_policy != "" ? var.kms_key_policy : data.aws_iam_policy_document.kms_key_with_whitelist_ip_and_vpc_policy_document.json
 
   tags = merge(
     var.tags,

@@ -50,6 +50,11 @@ variable "kms_alias" {
   default     = ""
 }
 
+variable "kms_key_policy" {
+  description = "KMS key policy (uses a default policy if omitted)"
+  default     = ""
+}
+
 variable "lifecycle_infrequent_storage_transition_enabled" {
   description = "Specifies infrequent storage transition lifecycle rule status."
   default     = "false"
@@ -173,4 +178,3 @@ variable "whitelist_vpc" {
   description = "Whitelisted vpc allowed to access the created s3 bucket"
   default     = []
 }
-
