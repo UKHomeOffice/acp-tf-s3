@@ -167,6 +167,14 @@ resource "aws_s3_bucket" "s3_bucket" {
       days          = var.lifecycle_days_to_infrequent_storage_transition
       storage_class = "STANDARD_IA"
     }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days          = var.lifecycle_days_to_infrequent_storage_transition
+        storage_class = "STANDARD_IA"
+      }
+    }
   }
 
   lifecycle_rule {
@@ -181,6 +189,14 @@ resource "aws_s3_bucket" "s3_bucket" {
       days          = var.lifecycle_days_to_glacier_transition
       storage_class = "GLACIER"
     }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days          = var.lifecycle_days_to_glacier_transition
+        storage_class = "GLACIER"
+      }
+    }
   }
 
   lifecycle_rule {
@@ -193,6 +209,13 @@ resource "aws_s3_bucket" "s3_bucket" {
 
     expiration {
       days = var.lifecycle_days_to_expiration
+    }
+
+    dynamic "noncurrent_version_expiration" {
+      for_each = var.expire_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days = var.lifecycle_days_to_expiration
+      }
     }
   }
 
@@ -257,6 +280,14 @@ resource "aws_s3_bucket" "s3_bucket_with_logging" {
       days          = var.lifecycle_days_to_infrequent_storage_transition
       storage_class = "STANDARD_IA"
     }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days          = var.lifecycle_days_to_infrequent_storage_transition
+        storage_class = "STANDARD_IA"
+      }
+    }
   }
 
   lifecycle_rule {
@@ -271,6 +302,14 @@ resource "aws_s3_bucket" "s3_bucket_with_logging" {
       days          = var.lifecycle_days_to_glacier_transition
       storage_class = "GLACIER"
     }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days          = var.lifecycle_days_to_glacier_transition
+        storage_class = "GLACIER"
+      }
+    }
   }
 
   lifecycle_rule {
@@ -283,6 +322,13 @@ resource "aws_s3_bucket" "s3_bucket_with_logging" {
 
     expiration {
       days = var.lifecycle_days_to_expiration
+    }
+
+    dynamic "noncurrent_version_expiration" {
+      for_each = var.expire_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days = var.lifecycle_days_to_expiration
+      }
     }
   }
 
@@ -352,6 +398,14 @@ resource "aws_s3_bucket" "s3_website_bucket" {
       days          = var.lifecycle_days_to_infrequent_storage_transition
       storage_class = "STANDARD_IA"
     }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days          = var.lifecycle_days_to_infrequent_storage_transition
+        storage_class = "STANDARD_IA"
+      }
+    }
   }
 
   lifecycle_rule {
@@ -366,6 +420,14 @@ resource "aws_s3_bucket" "s3_website_bucket" {
       days          = var.lifecycle_days_to_glacier_transition
       storage_class = "GLACIER"
     }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days          = var.lifecycle_days_to_glacier_transition
+        storage_class = "GLACIER"
+      }
+    }
   }
 
   lifecycle_rule {
@@ -378,6 +440,13 @@ resource "aws_s3_bucket" "s3_website_bucket" {
 
     expiration {
       days = var.lifecycle_days_to_expiration
+    }
+
+    dynamic "noncurrent_version_expiration" {
+      for_each = var.expire_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days = var.lifecycle_days_to_expiration
+      }
     }
   }
 
@@ -447,6 +516,14 @@ resource "aws_s3_bucket" "s3_website_bucket_with_logging" {
       days          = var.lifecycle_days_to_infrequent_storage_transition
       storage_class = "STANDARD_IA"
     }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days          = var.lifecycle_days_to_infrequent_storage_transition
+        storage_class = "STANDARD_IA"
+      }
+    }
   }
 
   lifecycle_rule {
@@ -461,6 +538,14 @@ resource "aws_s3_bucket" "s3_website_bucket_with_logging" {
       days          = var.lifecycle_days_to_glacier_transition
       storage_class = "GLACIER"
     }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days          = var.lifecycle_days_to_glacier_transition
+        storage_class = "GLACIER"
+      }
+    }
   }
 
   lifecycle_rule {
@@ -473,6 +558,13 @@ resource "aws_s3_bucket" "s3_website_bucket_with_logging" {
 
     expiration {
       days = var.lifecycle_days_to_expiration
+    }
+
+    dynamic "noncurrent_version_expiration" {
+      for_each = var.expire_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days = var.lifecycle_days_to_expiration
+      }
     }
   }
 
