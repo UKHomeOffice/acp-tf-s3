@@ -41,6 +41,11 @@ variable "cors_max_age_seconds" {
   default     = "3000"
 }
 
+variable "expire_noncurrent_versions" {
+  description = "Allow expiration/retention rules to apply for all non-current version objects"
+  default     = "true"
+}
+
 variable "iam_user_policy_name" {
   description = "The policy name of attached to the user"
 }
@@ -147,6 +152,11 @@ variable "server_side_encryption_configuration" {
 variable "tags" {
   description = "A map of tags to add to all resources"
   default     = {}
+}
+
+variable "transition_noncurrent_versions" {
+  description = "Allow lifecycle rules to apply for all non-current version objects"
+  default     = "true"
 }
 
 variable "versioning_enabled" {

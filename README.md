@@ -25,6 +25,7 @@ Module usage:
 | cors\_allowed\_origins | Specifies which origins are allowed. | list | `<list>` | no |
 | cors\_expose\_headers | Specifies expose header in the response. | list | `<list>` | no |
 | cors\_max\_age\_seconds | Specifies time in seconds that browser can cache the response for a preflight request. | string | `"3000"` | no |
+| expire\_noncurrent\_versions | Allow expiration/retention rules to apply for all non-current version objects | string | `"true"` | no |
 | environment | The environment the S3 is running in i.e. dev, prod etc | string | n/a | yes |
 | iam\_user\_policy\_name | The policy name of attached to the user | string | n/a | yes |
 | kms\_alias | The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects | string | `""` | no |
@@ -47,6 +48,7 @@ Module usage:
 | number\_of\_users | The number of user to generate credentials for | string | `"1"` | no |
 | server\_side\_encryption\_configuration | Provides access to override the server side encryption configuration | list | `<list>` | no |
 | tags | A map of tags to add to all resources | map | `<map>` | no |
+| transition\_noncurrent\_versions | Allow lifecycle rules to apply for all non-current version objects | string | `"true"` | no |
 | versioning\_enabled | If versioning is set for buckets in case of accidental deletion | string | `"false"` | no |
 | website\_error\_document | The path to the document to return in case of a 4XX error for static website hosting | string | `"error.html"` | no |
 | website\_hosting | Specifies if the bucket will be used for static website hosting | string | `"false"` | no |
