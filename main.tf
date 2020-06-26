@@ -24,12 +24,16 @@ locals {
     join("", aws_s3_bucket.s3_bucket_with_logging.*.arn),
     join("", aws_s3_bucket.s3_website_bucket.*.arn),
     join("", aws_s3_bucket.s3_website_bucket_with_logging.*.arn),
+    join("", aws_s3_bucket.s3_tls_bucket.*.arn),
+    join("", aws_s3_bucket.s3_tls_bucket_with_logging.*.arn),
   )
   s3_bucket_id = coalesce(
     join("", aws_s3_bucket.s3_bucket.*.id),
     join("", aws_s3_bucket.s3_bucket_with_logging.*.id),
     join("", aws_s3_bucket.s3_website_bucket.*.id),
     join("", aws_s3_bucket.s3_website_bucket_with_logging.*.id),
+    join("", aws_s3_bucket.s3_tls_bucket.*.id),
+    join("", aws_s3_bucket.s3_tls_bucket_with_logging.*.id),
   )
 }
 
@@ -607,25 +611,249 @@ resource "aws_s3_bucket" "s3_website_bucket_with_logging" {
   )
 }
 
-resource "aws_s3_bucket_policy" "s3_website_bucket" {
-  count  = var.website_hosting == "true" ? 1 : 0
+resource "aws_s3_bucket" "s3_tls_bucket" {
+  count = var.website_hosting == "false" && var.enforce_tls == "true" && var.logging_enabled == "false" ? 1 : 0
+
+  bucket = var.name
+  acl    = var.acl
+
+  acceleration_status = var.acceleration_status
+
+  cors_rule {
+    allowed_headers = var.cors_allowed_headers
+    allowed_methods = var.cors_allowed_methods
+    allowed_origins = var.cors_allowed_origins
+    expose_headers  = var.cors_expose_headers
+    max_age_seconds = var.cors_max_age_seconds
+  }
+
+  versioning {
+    enabled = var.versioning_enabled
+  }
+
+  lifecycle_rule {
+    id      = "transition-to-infrequent-access-storage"
+    enabled = var.lifecycle_infrequent_storage_transition_enabled
+
+    prefix = var.lifecycle_infrequent_storage_object_prefix
+
+    tags = var.lifecycle_infrequent_storage_object_tags
+
+    transition {
+      days          = var.lifecycle_days_to_infrequent_storage_transition
+      storage_class = "STANDARD_IA"
+    }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days          = var.lifecycle_days_to_infrequent_storage_transition
+        storage_class = "STANDARD_IA"
+      }
+    }
+  }
+
+  lifecycle_rule {
+    id      = "transition-to-glacier"
+    enabled = var.lifecycle_glacier_transition_enabled
+
+    prefix = var.lifecycle_glacier_object_prefix
+
+    tags = var.lifecycle_glacier_object_tags
+
+    transition {
+      days          = var.lifecycle_days_to_glacier_transition
+      storage_class = "GLACIER"
+    }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days          = var.lifecycle_days_to_glacier_transition
+        storage_class = "GLACIER"
+      }
+    }
+  }
+
+  lifecycle_rule {
+    id      = "expire-objects"
+    enabled = var.lifecycle_expiration_enabled
+
+    prefix = var.lifecycle_expiration_object_prefix
+
+    tags = var.lifecycle_expiration_object_tags
+
+    expiration {
+      days = var.lifecycle_days_to_expiration
+    }
+
+    dynamic "noncurrent_version_expiration" {
+      for_each = var.expire_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days = var.lifecycle_days_to_expiration
+      }
+    }
+  }
+
+  dynamic "server_side_encryption_configuration" {
+    for_each = var.server_side_encryption_configuration
+    content {
+      dynamic "rule" {
+        for_each = lookup(server_side_encryption_configuration.value, "rule", [])
+        content {
+          dynamic "apply_server_side_encryption_by_default" {
+            for_each = lookup(rule.value, "apply_server_side_encryption_by_default", [])
+            content {
+              kms_master_key_id = lookup(apply_server_side_encryption_by_default.value, "kms_master_key_id", null)
+              sse_algorithm     = apply_server_side_encryption_by_default.value.sse_algorithm
+            }
+          }
+        }
+      }
+    }
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      "Name" = format("%s-%s", var.environment, var.name)
+    },
+    {
+      "Env" = var.environment
+    },
+  )
+}
+
+resource "aws_s3_bucket" "s3_tls_bucket_with_logging" {
+  count = var.website_hosting == "false" && var.enforce_tls == "true" && var.logging_enabled ? 1 : 0
+
+  bucket = var.name
+  acl    = var.acl
+
+  acceleration_status = var.acceleration_status
+
+  cors_rule {
+    allowed_headers = var.cors_allowed_headers
+    allowed_methods = var.cors_allowed_methods
+    allowed_origins = var.cors_allowed_origins
+    expose_headers  = var.cors_expose_headers
+    max_age_seconds = var.cors_max_age_seconds
+  }
+
+  versioning {
+    enabled = var.versioning_enabled
+  }
+
+  lifecycle_rule {
+    id      = "transition-to-infrequent-access-storage"
+    enabled = var.lifecycle_infrequent_storage_transition_enabled
+
+    prefix = var.lifecycle_infrequent_storage_object_prefix
+
+    tags = var.lifecycle_infrequent_storage_object_tags
+
+    transition {
+      days          = var.lifecycle_days_to_infrequent_storage_transition
+      storage_class = "STANDARD_IA"
+    }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days          = var.lifecycle_days_to_infrequent_storage_transition
+        storage_class = "STANDARD_IA"
+      }
+    }
+  }
+
+  lifecycle_rule {
+    id      = "transition-to-glacier"
+    enabled = var.lifecycle_glacier_transition_enabled
+
+    prefix = var.lifecycle_glacier_object_prefix
+
+    tags = var.lifecycle_glacier_object_tags
+
+    transition {
+      days          = var.lifecycle_days_to_glacier_transition
+      storage_class = "GLACIER"
+    }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days          = var.lifecycle_days_to_glacier_transition
+        storage_class = "GLACIER"
+      }
+    }
+  }
+
+  lifecycle_rule {
+    id      = "expire-objects"
+    enabled = var.lifecycle_expiration_enabled
+
+    prefix = var.lifecycle_expiration_object_prefix
+
+    tags = var.lifecycle_expiration_object_tags
+
+    expiration {
+      days = var.lifecycle_days_to_expiration
+    }
+
+    dynamic "noncurrent_version_expiration" {
+      for_each = var.expire_noncurrent_versions == "false" ? [] : [1]
+      content {
+        days = var.lifecycle_days_to_expiration
+      }
+    }
+  }
+
+  logging {
+    target_bucket = var.log_target_bucket
+    target_prefix = var.log_target_prefix
+  }
+
+  dynamic "server_side_encryption_configuration" {
+    for_each = var.server_side_encryption_configuration
+    content {
+      dynamic "rule" {
+        for_each = lookup(server_side_encryption_configuration.value, "rule", [])
+        content {
+          dynamic "apply_server_side_encryption_by_default" {
+            for_each = lookup(rule.value, "apply_server_side_encryption_by_default", [])
+            content {
+              kms_master_key_id = lookup(apply_server_side_encryption_by_default.value, "kms_master_key_id", null)
+              sse_algorithm     = apply_server_side_encryption_by_default.value.sse_algorithm
+            }
+          }
+        }
+      }
+    }
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      "Name" = format("%s-%s", var.environment, var.name)
+    },
+    {
+      "Env" = var.environment
+    },
+  )
+}
+
+resource "aws_s3_bucket_policy" "website_bucket_policy" {
+  count  = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "true" && var.enforce_tls == "false" ? 1 : 0
   bucket = local.s3_bucket_id
 
-  policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "PublicReadGetObject",
-      "Effect": "Allow",
-      "Principal": "*",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::${var.name}/*"
-    }
-  ]
+  policy = var.website_hosting != "true" ? var.bucket_policy : data.aws_iam_policy_document.website_hosting_policy_document[0].json
 }
-POLICY
 
+resource "aws_s3_bucket_policy" "enforce_tls_bucet_policy" {
+  count  = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" && var.enforce_tls == "true" ? 1 : 0
+  bucket = local.s3_bucket_id
+
+  policy = var.enforce_tls != "true" ? var.bucket_policy : data.aws_iam_policy_document.enforce_tls_policy_document[0].json
 }
 
 resource "aws_iam_user" "s3_bucket_iam_user" {

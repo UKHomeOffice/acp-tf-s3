@@ -12,6 +12,11 @@ variable "bucket_iam_user" {
   description = "The name of the iam user assigned to the created s3 bucket"
 }
 
+variable "bucket_policy" {
+  description = "The JSON policy for the S3 bucket"
+  default     = ""
+}
+
 variable "environment" {
   description = "The environment the S3 is running in i.e. dev, prod etc"
 }
@@ -39,6 +44,11 @@ variable "cors_expose_headers" {
 variable "cors_max_age_seconds" {
   description = "Specifies time in seconds that browser can cache the response for a preflight request."
   default     = "3000"
+}
+
+variable "enforce_tls" {
+  description = "Enforces a bucket policy to use TLS/SSL"
+  default     = "true"
 }
 
 variable "expire_noncurrent_versions" {
