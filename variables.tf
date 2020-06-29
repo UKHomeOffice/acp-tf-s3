@@ -16,6 +16,11 @@ variable "environment" {
   description = "The environment the S3 is running in i.e. dev, prod etc"
 }
 
+variable "enforce_tls" {
+  description = "Specifies if the bucket will be enforce a TLS bucket policy"
+  default     = "false"
+}
+
 variable "cors_allowed_headers" {
   description = "Specifies which headers are allowed."
   default     = ["Authorization"]

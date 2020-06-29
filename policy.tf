@@ -84,10 +84,20 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
       "kms:Encrypt",
       "kms:GenerateDataKey",
       "kms:GenerateDataKeyWithoutPlaintext",
-      "kms:GenerateRandom",
       "kms:GetKeyPolicy",
       "kms:GetKeyRotationStatus",
       "kms:ReEncrypt*",
+    ]
+  }
+
+  statement {
+    sid    = "KMSPermissions2"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    actions = [
+      "kms:GenerateRandom",
     ]
   }
 }
@@ -298,10 +308,20 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
       "kms:Encrypt",
       "kms:GenerateDataKey",
       "kms:GenerateDataKeyWithoutPlaintext",
-      "kms:GenerateRandom",
       "kms:GetKeyPolicy",
       "kms:GetKeyRotationStatus",
       "kms:ReEncrypt*",
+    ]
+  }
+
+  statement {
+    sid    = "KMSPermissions2"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    actions = [
+      "kms:GenerateRandom",
     ]
   }
 }
@@ -530,10 +550,20 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
       "kms:Encrypt",
       "kms:GenerateDataKey",
       "kms:GenerateDataKeyWithoutPlaintext",
-      "kms:GenerateRandom",
       "kms:GetKeyPolicy",
       "kms:GetKeyRotationStatus",
       "kms:ReEncrypt*",
+    ]
+  }
+
+  statement {
+    sid    = "KMSPermissions2"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    actions = [
+      "kms:GenerateRandom",
     ]
   }
 }
@@ -836,10 +866,20 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
       "kms:Encrypt",
       "kms:GenerateDataKey",
       "kms:GenerateDataKeyWithoutPlaintext",
-      "kms:GenerateRandom",
       "kms:GetKeyPolicy",
       "kms:GetKeyRotationStatus",
       "kms:ReEncrypt*",
+    ]
+  }
+
+  statement {
+    sid    = "KMSPermissions2"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    actions = [
+      "kms:GenerateRandom",
     ]
   }
 }
@@ -1098,3 +1138,29 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_website_policy_document_1" {
   }
 }
 
+data "aws_iam_policy_document" "s3_tls_bucket_policy_document" {
+  count     = var.enforce_tls == "true" ? 1 : 0
+  policy_id = "${var.bucket_iam_user}S3BucketPolicy"
+
+  statement {
+    sid    = "AllowSSLRequestsOnly"
+    effect = "Deny"
+
+    actions = [
+      "s3:*",
+    ]
+    resources = [
+      local.s3_bucket_arn,
+      "${local.s3_bucket_arn}/*",
+    ]
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+
+      values = [
+        "false",
+      ]
+    }
+  }
+
+}

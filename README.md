@@ -26,6 +26,7 @@ Module usage:
 | cors\_expose\_headers | Specifies expose header in the response. | list | `<list>` | no |
 | cors\_max\_age\_seconds | Specifies time in seconds that browser can cache the response for a preflight request. | string | `"3000"` | no |
 | expire\_noncurrent\_versions | Allow expiration/retention rules to apply for all non-current version objects | string | `"true"` | no |
+| enforce\_tls | Specifies if the bucket policy will enforce TLS/SSL requests only | string | `"false"` | no |
 | environment | The environment the S3 is running in i.e. dev, prod etc | string | n/a | yes |
 | iam\_user\_policy\_name | The policy name of attached to the user | string | n/a | yes |
 | kms\_alias | The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects | string | `""` | no |
@@ -74,4 +75,3 @@ Module usage:
 | s3\_bucket\_with\_logging\_id | ID of generated S3 bucket with server access logging enabled |
 | s3\_website\_bucket\_arn | ARN of generated S3 bucket with website hosting enabled |
 | s3\_website\_bucket\_id | ID of generated S3 bucket with website hosting enabled |
-
