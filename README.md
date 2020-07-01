@@ -18,6 +18,7 @@ Module usage:
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | acl | The access control list assigned to this bucket | string | `"public"` | no |
+| acceleration_status | Sets the accelerate configuration of an existing bucket. Can be Enabled or Suspended. | `Suspended` | no |
 | bucket\_iam\_user | The name of the iam user assigned to the created s3 bucket | string | n/a | yes |
 | environment | The environment the S3 is running in i.e. dev, prod etc | string | n/a | yes |
 | iam\_user\_policy\_name | The policy name of attached to the user | string | n/a | yes |

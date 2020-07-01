@@ -76,6 +76,8 @@ resource "aws_s3_bucket" "s3_bucket" {
   bucket = var.name
   acl    = var.acl
 
+  acceleration_status = var.acceleration_status
+
   versioning {
     enabled = var.versioning_enabled
   }

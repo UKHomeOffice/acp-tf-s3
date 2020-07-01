@@ -104,3 +104,7 @@ variable "lifecycle_days_to_expiration" {
   default     = "365"
 }
 
+variable "acceleration_status" {
+  description = "Sets the accelerate configuration of an existing bucket. Can be Enabled or Suspended."
+  default     = "Suspended"
+}
