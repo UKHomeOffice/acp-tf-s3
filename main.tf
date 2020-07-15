@@ -608,7 +608,7 @@ resource "aws_s3_bucket" "s3_website_bucket_with_logging" {
 }
 
 resource "aws_s3_bucket_policy" "s3_website_bucket" {
-  count  = var.website_hosting == "true" ? 1 : 0
+  count  = var.website_hosting == "true" && var.enforce_tls == "false" ? 1 : 0
   bucket = local.s3_bucket_id
 
   policy = <<POLICY
@@ -621,6 +621,35 @@ resource "aws_s3_bucket_policy" "s3_website_bucket" {
       "Principal": "*",
       "Action": "s3:GetObject",
       "Resource": "arn:aws:s3:::${var.name}/*"
+    }
+  ]
+}
+POLICY
+
+}
+
+resource "aws_s3_bucket_policy" "enforce_tls_bucket_policy" {
+  count  = var.website_hosting == "false" && var.enforce_tls == "true" ? 1 : 0
+  bucket = local.s3_bucket_id
+
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowSSLRequestsOnly",
+      "Action": "s3:*",
+      "Effect": "Deny",
+      "Resource": [
+        "arn:aws:s3:::${var.name}",
+        "arn:aws:s3:::${var.name}/*"
+      ],
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      },
+      "Principal": "*"
     }
   ]
 }
@@ -828,4 +857,19 @@ resource "aws_iam_user_policy_attachment" "attach_s3_website_bucket_iam_policy_1
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_iam_website_policy_1[0].arn
+}
+
+resource "aws_iam_policy" "s3_tls_bucket_policy" {
+  count = var.enforce_tls == "true" ? 1 : 0
+
+  name        = "${var.iam_user_policy_name}-S3EnforceTLSPolicy"
+  policy      = data.aws_iam_policy_document.s3_tls_bucket_policy_document[0].json
+  description = "Policy to enforce TLS on S3 bucket"
+}
+
+resource "aws_iam_user_policy_attachment" "attach_s3_tls_bucket_policy" {
+  count = var.enforce_tls == "true" ? var.number_of_users : 0
+
+  user       = aws_iam_user.s3_bucket_iam_user[count.index].name
+  policy_arn = aws_iam_policy.s3_tls_bucket_policy[0].arn
 }
