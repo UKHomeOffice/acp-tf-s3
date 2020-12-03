@@ -1,7 +1,21 @@
-pipeline:
-  validate:
-    image: quay.io/ukhomeofficedigital/terraform-toolset:v0.12.6
-    commands:
-    - /acp/scripts/tf-validate.sh --no-docs
-    when:
-      event: [pull_request, push]
+---
+kind: pipeline
+name: default
+type: kubernetes
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: validate
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/terraform-toolset:v0.12.26
+  commands:
+  - /acp/scripts/tf-validate.sh --no-docs
+  when:
+    event:
+    - pull_request
+    - push
+
+...
