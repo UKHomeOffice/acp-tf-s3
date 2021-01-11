@@ -230,3 +230,47 @@ resource "aws_iam_user_policy_attachment" "attach_s3_bucket_whitelist_iam_policy
   user       = element(aws_iam_user.s3_bucket_iam_user.*.name, count.index)
   policy_arn = aws_iam_policy.s3_bucket_iam_whitelist_policy[0].arn
 }
+
+resource "aws_s3_bucket_policy" "enforce_tls_bucket_policy" {
+  count  = var.enforce_tls == "true" ? 1 : 0
+  bucket = aws_s3_bucket.s3_bucket.id
+
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowSSLRequestsOnly",
+      "Action": "s3:*",
+      "Effect": "Deny",
+      "Resource": [
+        "arn:aws:s3:::${var.name}",
+        "arn:aws:s3:::${var.name}/*"
+      ],
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      },
+      "Principal": "*"
+    }
+  ]
+}
+POLICY
+
+}
+
+resource "aws_iam_policy" "s3_tls_bucket_policy" {
+  count = var.enforce_tls == "true" ? 1 : 0
+
+  name        = "${var.iam_user_policy_name}-S3EnforceTLSPolicy"
+  policy      = data.aws_iam_policy_document.s3_tls_bucket_policy_document[0].json
+  description = "Policy to enforce TLS on S3 bucket"
+}
+
+resource "aws_iam_user_policy_attachment" "attach_s3_tls_bucket_policy" {
+  count = var.enforce_tls == "true" ? var.number_of_users : 0
+
+  user       = aws_iam_user.s3_bucket_iam_user[count.index].name
+  policy_arn = aws_iam_policy.s3_tls_bucket_policy[0].arn
+}
