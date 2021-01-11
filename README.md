@@ -20,6 +20,7 @@ Module usage:
 | acl | The access control list assigned to this bucket | string | `"public"` | no |
 | acceleration_status | Sets the accelerate configuration of an existing bucket. Can be Enabled or Suspended. | `Suspended` | no |
 | bucket\_iam\_user | The name of the iam user assigned to the created s3 bucket | string | n/a | yes |
+| enforce\_tls | Specifies if the bucket policy will enforce TLS/SSL requests only | string | `"true"` | no |
 | environment | The environment the S3 is running in i.e. dev, prod etc | string | n/a | yes |
 | iam\_user\_policy\_name | The policy name of attached to the user | string | n/a | yes |
 | kms\_alias | The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects | string | `""` | no |
@@ -49,4 +50,3 @@ Module usage:
 | s3\_bucket\_id | The S3 bucket ID we just created |
 | s3\_bucket\_kms\_key | The KMS key ID used for the bucket |
 | s3\_bucket\_kms\_key\_arn | The KMS key ARN used for the bucket |
-

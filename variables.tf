@@ -2,6 +2,11 @@ variable "name" {
   description = "A descriptive name for the S3 instance"
 }
 
+variable "enforce_tls" {
+  description = "Specifies if the bucket will be enforce a TLS bucket policy"
+  default     = "true"
+}
+
 variable "environment" {
   description = "The environment the S3 is running in i.e. dev, prod etc"
 }
