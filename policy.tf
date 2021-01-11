@@ -57,10 +57,20 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
       "kms:Encrypt",
       "kms:GenerateDataKey",
       "kms:GenerateDataKeyWithoutPlaintext",
-      "kms:GenerateRandom",
       "kms:GetKeyPolicy",
       "kms:GetKeyRotationStatus",
       "kms:ReEncrypt",
+    ]
+  }
+
+  statement {
+    sid    = "KMSPermissions2"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    actions = [
+      "kms:GenerateRandom",
     ]
   }
 
@@ -248,10 +258,20 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
       "kms:Encrypt",
       "kms:GenerateDataKey",
       "kms:GenerateDataKeyWithoutPlaintext",
-      "kms:GenerateRandom",
       "kms:GetKeyPolicy",
       "kms:GetKeyRotationStatus",
       "kms:ReEncrypt",
+    ]
+  }
+
+  statement {
+    sid    = "KMSPermissions2"
+    effect = "Allow"
+
+    resources = ["*"]
+
+    actions = [
+      "kms:GenerateRandom",
     ]
   }
 
@@ -392,3 +412,29 @@ data "aws_iam_policy_document" "kms_key_policy_document_whitelist" {
   }
 }
 
+data "aws_iam_policy_document" "s3_tls_bucket_policy_document" {
+  count     = var.enforce_tls == "true" ? 1 : 0
+  policy_id = "${var.bucket_iam_user}S3BucketPolicy"
+
+  statement {
+    sid    = "AllowSSLRequestsOnly"
+    effect = "Deny"
+
+    actions = [
+      "s3:*",
+    ]
+    resources = [
+      aws_s3_bucket.s3_bucket.arn,
+      "${aws_s3_bucket.s3_bucket.arn}/*",
+    ]
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+
+      values = [
+        "false",
+      ]
+    }
+  }
+
+}
