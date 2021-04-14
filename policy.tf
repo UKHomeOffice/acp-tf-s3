@@ -10,6 +10,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
     ]
 
     actions = [
+      "s3:GetBucketAcl",
       "s3:GetBucketLocation",
       "s3:ListBucket",
       "s3:ListBucketMultipartUploads",
@@ -106,6 +107,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
     ]
 
     actions = [
+      "s3:GetBucketAcl",
       "s3:GetBucketLocation",
       "s3:ListBucket",
       "s3:ListBucketMultipartUploads",
@@ -199,6 +201,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
     ]
 
     actions = [
+      "s3:GetBucketAcl",
       "s3:GetBucketLocation",
       "s3:ListBucket",
       "s3:ListBucketMultipartUploads",
@@ -313,6 +316,7 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
     ]
 
     actions = [
+      "s3:GetBucketAcl",
       "s3:GetBucketLocation",
       "s3:ListBucket",
       "s3:ListBucketMultipartUploads",
