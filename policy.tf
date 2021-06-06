@@ -1164,3 +1164,26 @@ data "aws_iam_policy_document" "s3_tls_bucket_policy_document" {
   }
 
 }
+
+data "aws_iam_policy_document" "key_management_policy_document" {
+  count = var.number_of_users
+
+  policy_id = "${var.bucket_iam_user}KeyManagementPolicy"
+
+  statement {
+    sid    = "ManageOwnIAMKeys"
+    effect = "Allow"
+
+    actions = [
+      "iam:CreateAccessKey",
+      "iam:DeleteAccessKey",
+      "iam:ListAccessKeys",
+      "iam:UpdateAccessKey"
+    ]
+
+    resources = [
+      aws_iam_user.s3_bucket_iam_user[count.index].arn
+    ]
+  }
+
+}
