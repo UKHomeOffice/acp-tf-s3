@@ -46,6 +46,11 @@ variable "cors_max_age_seconds" {
   default     = "3000"
 }
 
+variable "email_addresses" {
+  description = "A list of email addresses for key rotation notifications."
+  default     = []
+}
+
 variable "expire_noncurrent_versions" {
   description = "Allow expiration/retention rules to apply for all non-current version objects"
   default     = "true"
@@ -53,6 +58,11 @@ variable "expire_noncurrent_versions" {
 
 variable "iam_user_policy_name" {
   description = "The policy name of attached to the user"
+}
+
+variable "key_rotation" {
+  description = "Enable email notifications for old IAM keys."
+  default     = "true"
 }
 
 variable "kms_alias" {
