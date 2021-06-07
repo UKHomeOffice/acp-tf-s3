@@ -18,6 +18,10 @@ terraform {
   required_version = ">= 0.12"
 }
 
+locals {
+  email_tags = { for i, email in var.email_addresses : "email${i}" => email }
+}
+
 data "aws_caller_identity" "current" {
 }
 
@@ -139,6 +143,14 @@ resource "aws_iam_user" "s3_bucket_iam_user" {
 
   name = "${var.bucket_iam_user}${var.number_of_users != 1 ? "-${count.index}" : ""}"
   path = "/"
+
+  tags = merge(
+    var.tags,
+    local.email_tags,
+    {
+      "key_rotation" = var.key_rotation
+    },
+  )
 }
 
 resource "aws_iam_policy" "s3_bucket_with_kms_iam_policy_1" {

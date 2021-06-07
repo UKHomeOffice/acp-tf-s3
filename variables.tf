@@ -2,6 +2,11 @@ variable "name" {
   description = "A descriptive name for the S3 instance"
 }
 
+variable "email_addresses" {
+  description = "A list of email addresses for key rotation notifications."
+  default     = []
+}
+
 variable "enforce_tls" {
   description = "Specifies if the bucket will be enforce a TLS bucket policy"
   default     = "true"
@@ -22,6 +27,11 @@ variable "number_of_users" {
 
 variable "iam_user_policy_name" {
   description = "The policy name of attached to the user"
+}
+
+variable "key_rotation" {
+  description = "Enable email notifications for old IAM keys."
+  default     = "true"
 }
 
 variable "kms_alias" {
