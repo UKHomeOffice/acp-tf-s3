@@ -1,19 +1,20 @@
-/**
-* Module usage:
-*
-*      module "s3" {
-*
-*         source = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=master"
-*
-*         name                 = "fake"
-*         acl                  = "private"
-*         environment          = "${var.environment}"
-*         kms_alias            = "mykey"
-*         bucket_iam_user      = "fake-s3-bucket-user"
-*         iam_user_policy_name = "fake-s3-bucket-policy"
-*
-*      }
+/*
+Module usage:
+
+module "s3" {
+
+        source = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=master"
+
+        name                 = "fake"
+        acl                  = "private"
+        environment          = "${var.environment}"
+        kms_alias            = "mykey"
+        bucket_iam_user      = "fake-s3-bucket-user"
+        iam_user_policy_name = "fake-s3-bucket-policy"
+
+     }
 */
+
 terraform {
   required_version = ">= 0.12"
 }
