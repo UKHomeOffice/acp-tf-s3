@@ -884,17 +884,8 @@ resource "aws_iam_user_policy_attachment" "attach_s3_tls_bucket_policy" {
   policy_arn = aws_iam_policy.s3_tls_bucket_policy[0].arn
 }
 
-resource "aws_iam_policy" "manage_access_keys_policy" {
-  count = var.number_of_users
+module "self_serve_access_keys" {
+  source = "git::https://github.com/UKHomeOffice/acp-tf-self-serve-access-keys?ref=v0.1.0"
 
-  name        = "${var.iam_user_policy_name}-AccessKeysPolicy-${count.index}"
-  policy      = data.aws_iam_policy_document.key_management_policy_document[count.index].json
-  description = "Policy to allow users to manage their own access keys"
-}
-
-resource "aws_iam_user_policy_attachment" "attach_manage_access_keys_policy" {
-  count = var.number_of_users
-
-  user       = aws_iam_user.s3_bucket_iam_user[count.index].name
-  policy_arn = aws_iam_policy.manage_access_keys_policy[count.index].arn
+  user_names = aws_iam_user.s3_bucket_iam_user.*.name
 }
