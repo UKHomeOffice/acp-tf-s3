@@ -20,19 +20,8 @@ terraform {
 }
 
 locals {
-  s3_bucket_arn = coalesce(
-    join("", aws_s3_bucket.s3_bucket.*.arn),
-    join("", aws_s3_bucket.s3_bucket_with_logging.*.arn),
-    join("", aws_s3_bucket.s3_website_bucket.*.arn),
-    join("", aws_s3_bucket.s3_website_bucket_with_logging.*.arn),
-  )
-  s3_bucket_id = coalesce(
-    join("", aws_s3_bucket.s3_bucket.*.id),
-    join("", aws_s3_bucket.s3_bucket_with_logging.*.id),
-    join("", aws_s3_bucket.s3_website_bucket.*.id),
-    join("", aws_s3_bucket.s3_website_bucket_with_logging.*.id),
-  )
-  email_tags = { for i, email in var.email_addresses : "email${i}" => email }
+  email_tags         = { for i, email in var.email_addresses : "email${i}" => email }
+  use_kms_encryption = var.kms_alias != "" && ! var.website_hosting
 }
 
 data "aws_caller_identity" "current" {
@@ -41,35 +30,12 @@ data "aws_caller_identity" "current" {
 data "aws_region" "current" {
 }
 
-resource "aws_kms_key" "s3_bucket_kms_key" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
+resource "aws_kms_key" "this" {
+  count = local.use_kms_encryption ? 1 : 0
 
-  description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
-  policy      = var.kms_key_policy != "" ? var.kms_key_policy : data.aws_iam_policy_document.kms_key_policy_document.json
-
-  tags = merge(
-    var.tags,
-    {
-      "Name" = format("%s-%s", var.environment, var.name)
-    },
-    {
-      "Env" = var.environment
-    },
-  )
-}
-
-resource "aws_kms_alias" "s3_bucket_kms_alias" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
-
-  name          = "alias/${var.kms_alias}"
-  target_key_id = aws_kms_key.s3_bucket_kms_key[0].key_id
-}
-
-resource "aws_kms_key" "s3_bucket_kms_key_whitelist" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
-
-  description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
-  policy      = var.kms_key_policy != "" ? var.kms_key_policy : data.aws_iam_policy_document.kms_key_policy_document_whitelist.json
+  description         = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
+  enable_key_rotation = var.cmk_enable_key_rotation
+  policy              = var.kms_key_policy != "" ? var.kms_key_policy : data.aws_iam_policy_document.kms_key_policy_document.json
 
   tags = merge(
     var.tags,
@@ -82,64 +48,14 @@ resource "aws_kms_key" "s3_bucket_kms_key_whitelist" {
   )
 }
 
-resource "aws_kms_alias" "s3_bucket_kms_alias_whitelist" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
+resource "aws_kms_alias" "this" {
+  count = local.use_kms_encryption ? 1 : 0
 
   name          = "alias/${var.kms_alias}"
-  target_key_id = aws_kms_key.s3_bucket_kms_key_whitelist[0].key_id
+  target_key_id = aws_kms_key.this[0].key_id
 }
 
-resource "aws_kms_key" "s3_bucket_kms_key_whitelist_vpc" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
-
-  description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
-  policy      = var.kms_key_policy != "" ? var.kms_key_policy : data.aws_iam_policy_document.kms_key_with_whitelist_vpc_policy_document.json
-
-  tags = merge(
-    var.tags,
-    {
-      "Name" = format("%s-%s", var.environment, var.name)
-    },
-    {
-      "Env" = var.environment
-    },
-  )
-}
-
-resource "aws_kms_alias" "s3_bucket_kms_alias_whitelist_vpc" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
-
-  name          = "alias/${var.kms_alias}"
-  target_key_id = aws_kms_key.s3_bucket_kms_key_whitelist_vpc[0].key_id
-}
-
-resource "aws_kms_key" "s3_bucket_kms_key_whitelist_ip_and_vpc" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
-
-  description = "A kms key for encrypting/decrypting S3 bucket ${var.name}"
-  policy      = var.kms_key_policy != "" ? var.kms_key_policy : data.aws_iam_policy_document.kms_key_with_whitelist_ip_and_vpc_policy_document.json
-
-  tags = merge(
-    var.tags,
-    {
-      "Name" = format("%s-%s", var.environment, var.name)
-    },
-    {
-      "Env" = var.environment
-    },
-  )
-}
-
-resource "aws_kms_alias" "s3_bucket_kms_alias_whitelist_ip_and_vpc" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
-
-  name          = "alias/${var.kms_alias}"
-  target_key_id = aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc[0].key_id
-}
-
-resource "aws_s3_bucket" "s3_bucket" {
-  count = var.website_hosting == "false" && var.logging_enabled == "false" ? 1 : 0
-
+resource "aws_s3_bucket" "this" {
   bucket = var.name
   acl    = var.acl
 
@@ -171,7 +87,7 @@ resource "aws_s3_bucket" "s3_bucket" {
     }
 
     dynamic "noncurrent_version_transition" {
-      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
+      for_each = var.transition_noncurrent_versions ? [1] : []
       content {
         days          = var.lifecycle_days_to_infrequent_storage_transition
         storage_class = "STANDARD_IA"
@@ -193,7 +109,7 @@ resource "aws_s3_bucket" "s3_bucket" {
     }
 
     dynamic "noncurrent_version_transition" {
-      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
+      for_each = var.transition_noncurrent_versions ? [1] : []
       content {
         days          = var.lifecycle_days_to_glacier_transition
         storage_class = "GLACIER"
@@ -214,26 +130,52 @@ resource "aws_s3_bucket" "s3_bucket" {
     }
 
     dynamic "noncurrent_version_expiration" {
-      for_each = var.expire_noncurrent_versions == "false" ? [] : [1]
+      for_each = var.expire_noncurrent_versions ? [1] : []
       content {
         days = var.lifecycle_days_to_expiration
       }
     }
   }
 
-  dynamic "server_side_encryption_configuration" {
-    for_each = var.server_side_encryption_configuration
+  dynamic "logging" {
+    for_each = var.logging_enabled ? [1] : []
     content {
-      dynamic "rule" {
-        for_each = lookup(server_side_encryption_configuration.value, "rule", [])
-        content {
-          dynamic "apply_server_side_encryption_by_default" {
-            for_each = lookup(rule.value, "apply_server_side_encryption_by_default", [])
-            content {
-              kms_master_key_id = lookup(apply_server_side_encryption_by_default.value, "kms_master_key_id", null)
-              sse_algorithm     = apply_server_side_encryption_by_default.value.sse_algorithm
-            }
-          }
+      target_bucket = var.log_target_bucket
+      target_prefix = var.log_target_prefix
+    }
+  }
+
+  dynamic "website" {
+    for_each = var.website_hosting ? [1] : []
+    content {
+      index_document = var.website_index_document
+      error_document = var.website_error_document
+    }
+  }
+
+  # dynamic block for default KMS encryption
+  dynamic "server_side_encryption_configuration" {
+    for_each = local.use_kms_encryption ? [1] : []
+    content {
+      rule {
+        bucket_key_enabled = true
+
+        apply_server_side_encryption_by_default {
+          sse_algorithm     = "aws:kms"
+          kms_master_key_id = aws_kms_key.this[0].id
+        }
+      }
+    }
+  }
+
+  # dynamic block for default AES256 encryption
+  # condition is negation of the one for the block above
+  dynamic "server_side_encryption_configuration" {
+    for_each = ! local.use_kms_encryption ? [1] : []
+    content {
+      rule {
+        apply_server_side_encryption_by_default {
+          sse_algorithm = "AES256"
         }
       }
     }
@@ -250,368 +192,10 @@ resource "aws_s3_bucket" "s3_bucket" {
   )
 }
 
-resource "aws_s3_bucket" "s3_bucket_with_logging" {
-  count = var.website_hosting == "false" && var.logging_enabled ? 1 : 0
-
-  bucket = var.name
-  acl    = var.acl
-
-  acceleration_status = var.acceleration_status
-
-  cors_rule {
-    allowed_headers = var.cors_allowed_headers
-    allowed_methods = var.cors_allowed_methods
-    allowed_origins = var.cors_allowed_origins
-    expose_headers  = var.cors_expose_headers
-    max_age_seconds = var.cors_max_age_seconds
-  }
-
-  versioning {
-    enabled = var.versioning_enabled
-  }
-
-  lifecycle_rule {
-    id      = "transition-to-infrequent-access-storage"
-    enabled = var.lifecycle_infrequent_storage_transition_enabled
-
-    prefix = var.lifecycle_infrequent_storage_object_prefix
-
-    tags = var.lifecycle_infrequent_storage_object_tags
-
-    transition {
-      days          = var.lifecycle_days_to_infrequent_storage_transition
-      storage_class = "STANDARD_IA"
-    }
-
-    dynamic "noncurrent_version_transition" {
-      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
-      content {
-        days          = var.lifecycle_days_to_infrequent_storage_transition
-        storage_class = "STANDARD_IA"
-      }
-    }
-  }
-
-  lifecycle_rule {
-    id      = "transition-to-glacier"
-    enabled = var.lifecycle_glacier_transition_enabled
-
-    prefix = var.lifecycle_glacier_object_prefix
-
-    tags = var.lifecycle_glacier_object_tags
-
-    transition {
-      days          = var.lifecycle_days_to_glacier_transition
-      storage_class = "GLACIER"
-    }
-
-    dynamic "noncurrent_version_transition" {
-      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
-      content {
-        days          = var.lifecycle_days_to_glacier_transition
-        storage_class = "GLACIER"
-      }
-    }
-  }
-
-  lifecycle_rule {
-    id      = "expire-objects"
-    enabled = var.lifecycle_expiration_enabled
-
-    prefix = var.lifecycle_expiration_object_prefix
-
-    tags = var.lifecycle_expiration_object_tags
-
-    expiration {
-      days = var.lifecycle_days_to_expiration
-    }
-
-    dynamic "noncurrent_version_expiration" {
-      for_each = var.expire_noncurrent_versions == "false" ? [] : [1]
-      content {
-        days = var.lifecycle_days_to_expiration
-      }
-    }
-  }
-
-  logging {
-    target_bucket = var.log_target_bucket
-    target_prefix = var.log_target_prefix
-  }
-
-  dynamic "server_side_encryption_configuration" {
-    for_each = var.server_side_encryption_configuration
-    content {
-      dynamic "rule" {
-        for_each = lookup(server_side_encryption_configuration.value, "rule", [])
-        content {
-          dynamic "apply_server_side_encryption_by_default" {
-            for_each = lookup(rule.value, "apply_server_side_encryption_by_default", [])
-            content {
-              kms_master_key_id = lookup(apply_server_side_encryption_by_default.value, "kms_master_key_id", null)
-              sse_algorithm     = apply_server_side_encryption_by_default.value.sse_algorithm
-            }
-          }
-        }
-      }
-    }
-  }
-
-  tags = merge(
-    var.tags,
-    {
-      "Name" = format("%s-%s", var.environment, var.name)
-    },
-    {
-      "Env" = var.environment
-    },
-  )
-}
-
-resource "aws_s3_bucket" "s3_website_bucket" {
-  count = var.website_hosting == "true" && var.logging_enabled == "false" ? 1 : 0
-
-  bucket = var.name
-  acl    = var.acl
-
-  acceleration_status = var.acceleration_status
-
-  cors_rule {
-    allowed_headers = var.cors_allowed_headers
-    allowed_methods = var.cors_allowed_methods
-    allowed_origins = var.cors_allowed_origins
-    expose_headers  = var.cors_expose_headers
-    max_age_seconds = var.cors_max_age_seconds
-  }
-
-  versioning {
-    enabled = var.versioning_enabled
-  }
-
-  lifecycle_rule {
-    id      = "transition-to-infrequent-access-storage"
-    enabled = var.lifecycle_infrequent_storage_transition_enabled
-
-    prefix = var.lifecycle_infrequent_storage_object_prefix
-
-    tags = var.lifecycle_infrequent_storage_object_tags
-
-    transition {
-      days          = var.lifecycle_days_to_infrequent_storage_transition
-      storage_class = "STANDARD_IA"
-    }
-
-    dynamic "noncurrent_version_transition" {
-      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
-      content {
-        days          = var.lifecycle_days_to_infrequent_storage_transition
-        storage_class = "STANDARD_IA"
-      }
-    }
-  }
-
-  lifecycle_rule {
-    id      = "transition-to-glacier"
-    enabled = var.lifecycle_glacier_transition_enabled
-
-    prefix = var.lifecycle_glacier_object_prefix
-
-    tags = var.lifecycle_glacier_object_tags
-
-    transition {
-      days          = var.lifecycle_days_to_glacier_transition
-      storage_class = "GLACIER"
-    }
-
-    dynamic "noncurrent_version_transition" {
-      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
-      content {
-        days          = var.lifecycle_days_to_glacier_transition
-        storage_class = "GLACIER"
-      }
-    }
-  }
-
-  lifecycle_rule {
-    id      = "expire-objects"
-    enabled = var.lifecycle_expiration_enabled
-
-    prefix = var.lifecycle_expiration_object_prefix
-
-    tags = var.lifecycle_expiration_object_tags
-
-    expiration {
-      days = var.lifecycle_days_to_expiration
-    }
-
-    dynamic "noncurrent_version_expiration" {
-      for_each = var.expire_noncurrent_versions == "false" ? [] : [1]
-      content {
-        days = var.lifecycle_days_to_expiration
-      }
-    }
-  }
-
-  website {
-    index_document = var.website_index_document
-    error_document = var.website_error_document
-  }
-
-  dynamic "server_side_encryption_configuration" {
-    for_each = var.server_side_encryption_configuration
-    content {
-      dynamic "rule" {
-        for_each = lookup(server_side_encryption_configuration.value, "rule", [])
-        content {
-          dynamic "apply_server_side_encryption_by_default" {
-            for_each = lookup(rule.value, "apply_server_side_encryption_by_default", [])
-            content {
-              kms_master_key_id = lookup(apply_server_side_encryption_by_default.value, "kms_master_key_id", null)
-              sse_algorithm     = apply_server_side_encryption_by_default.value.sse_algorithm
-            }
-          }
-        }
-      }
-    }
-  }
-
-  tags = merge(
-    var.tags,
-    {
-      "Name" = format("%s-%s", var.environment, var.name)
-    },
-    {
-      "Env" = var.environment
-    },
-  )
-}
-
-resource "aws_s3_bucket" "s3_website_bucket_with_logging" {
-  count = var.website_hosting == "true" && var.logging_enabled ? 1 : 0
-
-  bucket = var.name
-  acl    = var.acl
-
-  acceleration_status = var.acceleration_status
-
-  cors_rule {
-    allowed_headers = var.cors_allowed_headers
-    allowed_methods = var.cors_allowed_methods
-    allowed_origins = var.cors_allowed_origins
-    expose_headers  = var.cors_expose_headers
-    max_age_seconds = var.cors_max_age_seconds
-  }
-
-  versioning {
-    enabled = var.versioning_enabled
-  }
-
-  lifecycle_rule {
-    id      = "transition-to-infrequent-access-storage"
-    enabled = var.lifecycle_infrequent_storage_transition_enabled
-
-    prefix = var.lifecycle_infrequent_storage_object_prefix
-
-    tags = var.lifecycle_infrequent_storage_object_tags
-
-    transition {
-      days          = var.lifecycle_days_to_infrequent_storage_transition
-      storage_class = "STANDARD_IA"
-    }
-
-    dynamic "noncurrent_version_transition" {
-      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
-      content {
-        days          = var.lifecycle_days_to_infrequent_storage_transition
-        storage_class = "STANDARD_IA"
-      }
-    }
-  }
-
-  lifecycle_rule {
-    id      = "transition-to-glacier"
-    enabled = var.lifecycle_glacier_transition_enabled
-
-    prefix = var.lifecycle_glacier_object_prefix
-
-    tags = var.lifecycle_glacier_object_tags
-
-    transition {
-      days          = var.lifecycle_days_to_glacier_transition
-      storage_class = "GLACIER"
-    }
-
-    dynamic "noncurrent_version_transition" {
-      for_each = var.transition_noncurrent_versions == "false" ? [] : [1]
-      content {
-        days          = var.lifecycle_days_to_glacier_transition
-        storage_class = "GLACIER"
-      }
-    }
-  }
-
-  lifecycle_rule {
-    id      = "expire-objects"
-    enabled = var.lifecycle_expiration_enabled
-
-    prefix = var.lifecycle_expiration_object_prefix
-
-    tags = var.lifecycle_expiration_object_tags
-
-    expiration {
-      days = var.lifecycle_days_to_expiration
-    }
-
-    dynamic "noncurrent_version_expiration" {
-      for_each = var.expire_noncurrent_versions == "false" ? [] : [1]
-      content {
-        days = var.lifecycle_days_to_expiration
-      }
-    }
-  }
-
-  logging {
-    target_bucket = var.log_target_bucket
-    target_prefix = var.log_target_prefix
-  }
-
-  website {
-    index_document = var.website_index_document
-    error_document = var.website_error_document
-  }
-
-  dynamic "server_side_encryption_configuration" {
-    for_each = var.server_side_encryption_configuration
-    content {
-      dynamic "rule" {
-        for_each = lookup(server_side_encryption_configuration.value, "rule", [])
-        content {
-          dynamic "apply_server_side_encryption_by_default" {
-            for_each = lookup(rule.value, "apply_server_side_encryption_by_default", [])
-            content {
-              kms_master_key_id = lookup(apply_server_side_encryption_by_default.value, "kms_master_key_id", null)
-              sse_algorithm     = apply_server_side_encryption_by_default.value.sse_algorithm
-            }
-          }
-        }
-      }
-    }
-  }
-
-  tags = merge(
-    var.tags,
-    {
-      "Name" = format("%s-%s", var.environment, var.name)
-    },
-    {
-      "Env" = var.environment
-    },
-  )
-}
 
 resource "aws_s3_bucket_policy" "s3_website_bucket" {
-  count  = var.website_hosting == "true" && var.enforce_tls == "false" ? 1 : 0
-  bucket = local.s3_bucket_id
+  count  = var.website_hosting && ! var.enforce_tls ? 1 : 0
+  bucket = aws_s3_bucket.this.id
 
   policy = <<POLICY
 {
@@ -631,8 +215,8 @@ POLICY
 }
 
 resource "aws_s3_bucket_policy" "enforce_tls_bucket_policy" {
-  count  = var.website_hosting == "false" && var.enforce_tls == "true" ? 1 : 0
-  bucket = local.s3_bucket_id
+  count  = ! var.website_hosting && var.enforce_tls ? 1 : 0
+  bucket = aws_s3_bucket.this.id
 
   policy = <<POLICY
 {
@@ -675,7 +259,7 @@ resource "aws_iam_user" "s3_bucket_iam_user" {
 }
 
 resource "aws_iam_policy" "s3_bucket_with_kms_iam_policy_1" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
   policy      = data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_1[0].json
@@ -683,14 +267,14 @@ resource "aws_iam_policy" "s3_bucket_with_kms_iam_policy_1" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_iam_policy_1" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_iam_policy_1[0].arn
 }
 
 resource "aws_iam_policy" "s3_bucket_with_kms_iam_policy_2" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-S3BucketKMSPolicy"
   policy      = data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_2[0].json
@@ -698,14 +282,14 @@ resource "aws_iam_policy" "s3_bucket_with_kms_iam_policy_2" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_iam_policy_2" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_iam_policy_2[0].arn
 }
 
 resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_iam_policy_1" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-WhitelistedS3BucketObjectPolicy"
   policy      = data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_whitelist_1[0].json
@@ -713,14 +297,14 @@ resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_iam_policy_1" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_iam_policy_1" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_and_whitelist_iam_policy_1[0].arn
 }
 
 resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_iam_policy_2" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-WhitelistedS3BucketKMSPolicy"
   policy      = data.aws_iam_policy_document.s3_bucket_with_kms_policy_document_whitelist_2[0].json
@@ -728,14 +312,14 @@ resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_iam_policy_2" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_iam_policy_2" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_and_whitelist_iam_policy_2[0].arn
 }
 
 resource "aws_iam_policy" "s3_bucket_iam_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && ! var.website_hosting ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
   policy      = data.aws_iam_policy_document.s3_bucket_policy_document[0].json
@@ -743,14 +327,14 @@ resource "aws_iam_policy" "s3_bucket_iam_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_iam_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? var.number_of_users : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && ! var.website_hosting ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_iam_policy[0].arn
 }
 
 resource "aws_iam_policy" "s3_bucket_iam_whitelist_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && ! var.website_hosting ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
   policy      = data.aws_iam_policy_document.s3_bucket_policy_document_whitelist[0].json
@@ -758,14 +342,14 @@ resource "aws_iam_policy" "s3_bucket_iam_whitelist_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_whitelist_iam_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? var.number_of_users : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && ! var.website_hosting ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_iam_whitelist_policy[0].arn
 }
 
 resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_vpc_iam_policy_1" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-S3BucketObjectPolicyVPC"
   policy      = data.aws_iam_policy_document.s3_bucket_with_kms_and_whitelist_vpc_policy_document_1[0].json
@@ -773,14 +357,14 @@ resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_vpc_iam_policy_1" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_vpc_iam_policy_1" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_and_whitelist_vpc_iam_policy_1[0].arn
 }
 
 resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_vpc_iam_policy_2" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-S3BucketKMSPolicyVPC"
   policy      = data.aws_iam_policy_document.s3_bucket_with_kms_and_whitelist_vpc_policy_document_2[0].json
@@ -788,14 +372,14 @@ resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_vpc_iam_policy_2" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_vpc_iam_policy_2" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_and_whitelist_vpc_iam_policy_2[0].arn
 }
 
 resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_1" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-WhitelistedS3BucketObjectPolicyIPandVPC"
   policy      = data.aws_iam_policy_document.s3_bucket_with_kms_and_whitelist_ip_and_vpc_policy_document_1[0].json
@@ -803,14 +387,14 @@ resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_polic
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_1" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_1[0].arn
 }
 
 resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_2" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-WhitelistedS3BucketKMSPolicyIPandVPC"
   policy      = data.aws_iam_policy_document.s3_bucket_with_kms_and_whitelist_ip_and_vpc_policy_document_2[0].json
@@ -818,14 +402,14 @@ resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_polic
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_2" {
-  count = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_2[0].arn
 }
 
 resource "aws_iam_policy" "s3_bucket_with_whitelist_vpc_iam_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && ! var.website_hosting ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-S3BucketObjectPolicyVPC"
   policy      = data.aws_iam_policy_document.s3_bucket_with_whitelist_vpc_policy_document[0].json
@@ -833,14 +417,14 @@ resource "aws_iam_policy" "s3_bucket_with_whitelist_vpc_iam_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_whitelist_vpc_iam_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? var.number_of_users : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && ! var.website_hosting ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_whitelist_vpc_iam_policy[0].arn
 }
 
 resource "aws_iam_policy" "s3_bucket_iam_whitelist_ip_and_vpc_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && ! var.website_hosting ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-S3BucketObjectPolicyIPandVPC"
   policy      = data.aws_iam_policy_document.s3_bucket_with_whitelist_ip_and_vpc_policy_document[0].json
@@ -855,7 +439,7 @@ resource "aws_iam_user_policy_attachment" "attach_s3_bucket_whitelist_ip_and_vpc
 }
 
 resource "aws_iam_policy" "s3_bucket_iam_website_policy_1" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "true" ? 1 : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-WebsiteS3BucketObjectPolicy"
   policy      = data.aws_iam_policy_document.s3_bucket_with_kms_website_policy_document_1[0].json
@@ -863,14 +447,14 @@ resource "aws_iam_policy" "s3_bucket_iam_website_policy_1" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_website_bucket_iam_policy_1" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "true" ? var.number_of_users : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_iam_website_policy_1[0].arn
 }
 
 resource "aws_iam_policy" "s3_tls_bucket_policy" {
-  count = var.enforce_tls == "true" ? 1 : 0
+  count = var.enforce_tls ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-S3EnforceTLSPolicy"
   policy      = data.aws_iam_policy_document.s3_tls_bucket_policy_document[0].json
@@ -878,7 +462,7 @@ resource "aws_iam_policy" "s3_tls_bucket_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_tls_bucket_policy" {
-  count = var.enforce_tls == "true" ? var.number_of_users : 0
+  count = var.enforce_tls ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_tls_bucket_policy[0].arn
@@ -888,4 +472,34 @@ module "self_serve_access_keys" {
   source = "git::https://github.com/UKHomeOffice/acp-tf-self-serve-access-keys?ref=v0.1.0"
 
   user_names = aws_iam_user.s3_bucket_iam_user.*.name
+}
+
+resource "aws_s3_bucket_public_access_block" "s3_bucket" {
+  count                   = var.block_public_access ? 1 : 0
+  bucket                  = aws_s3_bucket.this.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+
+  depends_on = [
+    aws_s3_bucket.this,
+    aws_s3_bucket_policy.s3_website_bucket,
+    aws_s3_bucket_policy.s3_website_bucket,
+    aws_s3_bucket_policy.enforce_tls_bucket_policy,
+    aws_iam_policy.s3_bucket_with_kms_iam_policy_1,
+    aws_iam_policy.s3_bucket_with_kms_iam_policy_2,
+    aws_iam_policy.s3_bucket_with_kms_and_whitelist_iam_policy_1,
+    aws_iam_policy.s3_bucket_with_kms_and_whitelist_iam_policy_2,
+    aws_iam_policy.s3_bucket_iam_policy,
+    aws_iam_policy.s3_bucket_iam_whitelist_policy,
+    aws_iam_policy.s3_bucket_with_kms_and_whitelist_vpc_iam_policy_1,
+    aws_iam_policy.s3_bucket_with_kms_and_whitelist_vpc_iam_policy_2,
+    aws_iam_policy.s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_1,
+    aws_iam_policy.s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_2,
+    aws_iam_policy.s3_bucket_with_whitelist_vpc_iam_policy,
+    aws_iam_policy.s3_bucket_iam_whitelist_ip_and_vpc_policy,
+    aws_iam_policy.s3_bucket_iam_website_policy_1,
+    aws_iam_policy.s3_tls_bucket_policy,
+  ]
 }

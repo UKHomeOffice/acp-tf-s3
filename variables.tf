@@ -8,6 +8,12 @@ variable "acceleration_status" {
   default     = "Suspended"
 }
 
+variable "block_public_access" {
+  description = "Blocks all public access to the bucket"
+  type        = bool
+  default     = false
+}
+
 variable "bucket_iam_user" {
   description = "The name of the iam user assigned to the created s3 bucket"
 }
@@ -18,7 +24,14 @@ variable "environment" {
 
 variable "enforce_tls" {
   description = "Specifies if the bucket will be enforce a TLS bucket policy"
-  default     = "true"
+  type        = bool
+  default     = true
+}
+
+variable "cmk_enable_key_rotation" {
+  description = "Enables CMK key rotation"
+  type        = bool
+  default     = true
 }
 
 variable "cors_allowed_headers" {
@@ -53,7 +66,8 @@ variable "email_addresses" {
 
 variable "expire_noncurrent_versions" {
   description = "Allow expiration/retention rules to apply for all non-current version objects"
-  default     = "true"
+  type        = bool
+  default     = true
 }
 
 variable "iam_user_policy_name" {
@@ -62,7 +76,8 @@ variable "iam_user_policy_name" {
 
 variable "key_rotation" {
   description = "Enable email notifications for old IAM keys."
-  default     = "true"
+  type        = bool
+  default     = true
 }
 
 variable "kms_alias" {
@@ -77,7 +92,8 @@ variable "kms_key_policy" {
 
 variable "lifecycle_infrequent_storage_transition_enabled" {
   description = "Specifies infrequent storage transition lifecycle rule status."
-  default     = "false"
+  type        = bool
+  default     = false
 }
 
 variable "lifecycle_infrequent_storage_object_prefix" {
@@ -97,7 +113,8 @@ variable "lifecycle_days_to_infrequent_storage_transition" {
 
 variable "lifecycle_glacier_transition_enabled" {
   description = "Specifies Glacier transition lifecycle rule status."
-  default     = "false"
+  type        = bool
+  default     = false
 }
 
 variable "lifecycle_glacier_object_prefix" {
@@ -117,7 +134,8 @@ variable "lifecycle_days_to_glacier_transition" {
 
 variable "lifecycle_expiration_enabled" {
   description = "Specifies expiration lifecycle rule status."
-  default     = "false"
+  type        = bool
+  default     = false
 }
 
 variable "lifecycle_expiration_object_prefix" {
@@ -137,7 +155,8 @@ variable "lifecycle_days_to_expiration" {
 
 variable "logging_enabled" {
   description = "Specifies whether server access logging is enabled or not."
-  default     = "false"
+  type        = bool
+  default     = false
 }
 
 variable "log_target_bucket" {
@@ -159,11 +178,6 @@ variable "number_of_users" {
   default     = 1
 }
 
-variable "server_side_encryption_configuration" {
-  description = "Provides access to override the server side encryption configuration"
-  default     = []
-}
-
 variable "tags" {
   description = "A map of tags to add to all resources"
   default     = {}
@@ -171,17 +185,20 @@ variable "tags" {
 
 variable "transition_noncurrent_versions" {
   description = "Allow lifecycle rules to apply for all non-current version objects"
-  default     = "true"
+  type        = bool
+  default     = true
 }
 
 variable "versioning_enabled" {
   description = "If versioning is set for buckets in case of accidental deletion"
-  default     = "false"
+  type        = bool
+  default     = false
 }
 
 variable "website_hosting" {
   description = "Specifies if the bucket will be used for static website hosting"
-  default     = "false"
+  type        = bool
+  default     = false
 }
 
 variable "website_index_document" {
