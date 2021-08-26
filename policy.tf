@@ -1,5 +1,5 @@
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
-  count     = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
+  count     = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? 1 : 0
   policy_id = "${var.bucket_iam_user}S3BucketPolicy"
 
   statement {
@@ -7,8 +7,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -43,8 +43,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -60,13 +60,13 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
     condition {
       test     = "StringEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = [aws_kms_key.s3_bucket_kms_key[0].arn]
+      values   = [aws_kms_key.this[0].arn]
     }
   }
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
-  count     = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
+  count     = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? 1 : 0
   policy_id = "${var.bucket_iam_user}KMSPolicy"
 
   statement {
@@ -74,7 +74,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
     effect = "Allow"
 
     resources = [
-      aws_kms_key.s3_bucket_kms_key[0].arn,
+      aws_kms_key.this[0].arn,
       "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:alias/${var.kms_alias}",
     ]
 
@@ -103,7 +103,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_policy_document" {
-  count     = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
+  count     = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && ! var.website_hosting ? 1 : 0
   policy_id = "${var.bucket_iam_user}S3BucketPolicy"
 
   statement {
@@ -111,8 +111,8 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
     effect = "Allow"
 
     resources = [
-      "${local.s3_bucket_arn}/*",
-      local.s3_bucket_arn,
+      "${aws_s3_bucket.this.arn}/*",
+      aws_s3_bucket.this.arn,
     ]
 
     actions = [
@@ -147,8 +147,8 @@ data "aws_iam_policy_document" "s3_bucket_policy_document" {
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -211,7 +211,7 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" {
-  count     = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
+  count     = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? 1 : 0
   policy_id = "${var.bucket_iam_user}S3BucketPolicy"
 
   statement {
@@ -219,8 +219,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -261,8 +261,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -284,13 +284,13 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_1" 
     condition {
       test     = "StringEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = [aws_kms_key.s3_bucket_kms_key_whitelist[0].arn]
+      values   = [aws_kms_key.this[0].arn]
     }
   }
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" {
-  count     = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
+  count     = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? 1 : 0
   policy_id = "${var.bucket_iam_user}KMSPolicy"
 
   statement {
@@ -298,7 +298,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
     effect = "Allow"
 
     resources = [
-      aws_kms_key.s3_bucket_kms_key_whitelist[0].arn,
+      aws_kms_key.this[0].arn,
       "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:alias/${var.kms_alias}",
     ]
 
@@ -327,7 +327,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
 }
 
 data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
-  count     = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "false" ? 1 : 0
+  count     = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && ! var.website_hosting ? 1 : 0
   policy_id = "${var.bucket_iam_user}S3BucketPolicy"
 
   statement {
@@ -335,8 +335,8 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -377,8 +377,8 @@ data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -453,7 +453,7 @@ data "aws_iam_policy_document" "kms_key_policy_document_whitelist" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_document_1" {
-  count     = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
+  count     = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0
   policy_id = "${var.bucket_iam_user}S3BucketPolicyVPC"
 
   statement {
@@ -461,8 +461,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -503,8 +503,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -526,13 +526,13 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
     condition {
       test     = "StringEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = [aws_kms_key.s3_bucket_kms_key_whitelist_vpc[0].arn]
+      values   = [aws_kms_key.this[0].arn]
     }
   }
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_document_2" {
-  count     = var.kms_alias != "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
+  count     = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? 1 : 0
   policy_id = "${var.bucket_iam_user}KMSPolicyVPC"
 
   statement {
@@ -540,7 +540,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
     effect = "Allow"
 
     resources = [
-      aws_kms_key.s3_bucket_kms_key_whitelist_vpc[0].arn,
+      aws_kms_key.this[0].arn,
       "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:alias/${var.kms_alias}",
     ]
 
@@ -569,7 +569,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
-  count     = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
+  count     = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && ! var.website_hosting ? 1 : 0
   policy_id = "${var.bucket_iam_user}S3BucketPolicyVPC"
 
   statement {
@@ -577,8 +577,8 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -619,8 +619,8 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -695,7 +695,7 @@ data "aws_iam_policy_document" "kms_key_with_whitelist_vpc_policy_document" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_policy_document_1" {
-  count     = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
+  count     = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0
   policy_id = "${var.bucket_iam_user}S3BucketPolicyIPandVPC"
 
   statement {
@@ -703,8 +703,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -745,8 +745,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -768,7 +768,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     condition {
       test     = "StringEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = [aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc[0].arn]
+      values   = [aws_kms_key.this[0].arn]
     }
   }
 
@@ -777,8 +777,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -819,8 +819,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -842,13 +842,13 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     condition {
       test     = "StringEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = [aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc[0].arn]
+      values   = [aws_kms_key.this[0].arn]
     }
   }
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_policy_document_2" {
-  count     = var.kms_alias != "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
+  count     = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? 1 : 0
   policy_id = "${var.bucket_iam_user}KMSPolicyIPandVPC"
 
   statement {
@@ -856,7 +856,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
     effect = "Allow"
 
     resources = [
-      aws_kms_key.s3_bucket_kms_key_whitelist_ip_and_vpc[0].arn,
+      aws_kms_key.this[0].arn,
       "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:alias/${var.kms_alias}",
     ]
 
@@ -885,7 +885,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_document" {
-  count     = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && var.website_hosting == "false" ? 1 : 0
+  count     = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && ! var.website_hosting ? 1 : 0
   policy_id = "${var.bucket_iam_user}S3BucketPolicyIPandVPC"
 
   statement {
@@ -893,8 +893,8 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -935,8 +935,8 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -955,8 +955,8 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -997,8 +997,8 @@ data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_docum
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -1097,7 +1097,7 @@ data "aws_iam_policy_document" "kms_key_with_whitelist_ip_and_vpc_policy_documen
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_kms_website_policy_document_1" {
-  count     = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting == "true" ? 1 : 0
+  count     = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting ? 1 : 0
   policy_id = "${var.bucket_iam_user}S3BucketPolicy"
 
   statement {
@@ -1105,8 +1105,8 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_website_policy_document_1" {
     effect = "Allow"
 
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
 
     actions = [
@@ -1139,7 +1139,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_website_policy_document_1" {
 }
 
 data "aws_iam_policy_document" "s3_tls_bucket_policy_document" {
-  count     = var.enforce_tls == "true" ? 1 : 0
+  count     = var.enforce_tls ? 1 : 0
   policy_id = "${var.bucket_iam_user}S3BucketPolicy"
 
   statement {
@@ -1150,8 +1150,8 @@ data "aws_iam_policy_document" "s3_tls_bucket_policy_document" {
       "s3:*",
     ]
     resources = [
-      local.s3_bucket_arn,
-      "${local.s3_bucket_arn}/*",
+      aws_s3_bucket.this.arn,
+      "${aws_s3_bucket.this.arn}/*",
     ]
     condition {
       test     = "Bool"
