@@ -103,7 +103,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_2" {
 }
 
 data "aws_iam_policy_document" "s3_bucket_policy_document" {
-  count     = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && ! var.website_hosting ? 1 : 0
+  count     = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && !var.website_hosting ? 1 : 0
   policy_id = "${var.bucket_iam_user}S3BucketPolicy"
 
   statement {
@@ -327,7 +327,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_whitelist_2" 
 }
 
 data "aws_iam_policy_document" "s3_bucket_policy_document_whitelist" {
-  count     = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && ! var.website_hosting ? 1 : 0
+  count     = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && !var.website_hosting ? 1 : 0
   policy_id = "${var.bucket_iam_user}S3BucketPolicy"
 
   statement {
@@ -569,7 +569,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_vpc_policy_docu
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_whitelist_vpc_policy_document" {
-  count     = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && ! var.website_hosting ? 1 : 0
+  count     = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && !var.website_hosting ? 1 : 0
   policy_id = "${var.bucket_iam_user}S3BucketPolicyVPC"
 
   statement {
@@ -885,7 +885,7 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_poli
 }
 
 data "aws_iam_policy_document" "s3_bucket_with_whitelist_ip_and_vpc_policy_document" {
-  count     = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && ! var.website_hosting ? 1 : 0
+  count     = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && !var.website_hosting ? 1 : 0
   policy_id = "${var.bucket_iam_user}S3BucketPolicyIPandVPC"
 
   statement {

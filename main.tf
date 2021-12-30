@@ -16,12 +16,12 @@ Module usage:
 */
 
 terraform {
-  required_version = ">= 0.12"
+  required_version = ">= 0.14"
 }
 
 locals {
   email_tags         = { for i, email in var.email_addresses : "email${i}" => email }
-  use_kms_encryption = var.kms_alias != "" && ! var.website_hosting
+  use_kms_encryption = var.kms_alias != "" && !var.website_hosting
 }
 
 data "aws_caller_identity" "current" {
@@ -171,7 +171,7 @@ resource "aws_s3_bucket" "this" {
   # dynamic block for default AES256 encryption
   # condition is negation of the one for the block above
   dynamic "server_side_encryption_configuration" {
-    for_each = ! local.use_kms_encryption ? [1] : []
+    for_each = !local.use_kms_encryption ? [1] : []
     content {
       rule {
         apply_server_side_encryption_by_default {
@@ -194,7 +194,7 @@ resource "aws_s3_bucket" "this" {
 
 
 resource "aws_s3_bucket_policy" "s3_website_bucket" {
-  count  = var.website_hosting && ! var.enforce_tls ? 1 : 0
+  count  = var.website_hosting && !var.enforce_tls ? 1 : 0
   bucket = aws_s3_bucket.this.id
 
   policy = <<POLICY
@@ -215,7 +215,7 @@ POLICY
 }
 
 resource "aws_s3_bucket_policy" "enforce_tls_bucket_policy" {
-  count  = ! var.website_hosting && var.enforce_tls ? 1 : 0
+  count  = !var.website_hosting && var.enforce_tls ? 1 : 0
   bucket = aws_s3_bucket.this.id
 
   policy = <<POLICY
@@ -319,7 +319,7 @@ resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whiteli
 }
 
 resource "aws_iam_policy" "s3_bucket_iam_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && ! var.website_hosting ? 1 : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && !var.website_hosting ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
   policy      = data.aws_iam_policy_document.s3_bucket_policy_document[0].json
@@ -327,14 +327,14 @@ resource "aws_iam_policy" "s3_bucket_iam_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_iam_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && ! var.website_hosting ? var.number_of_users : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && !var.website_hosting ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_iam_policy[0].arn
 }
 
 resource "aws_iam_policy" "s3_bucket_iam_whitelist_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && ! var.website_hosting ? 1 : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && !var.website_hosting ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-S3BucketObjectPolicy"
   policy      = data.aws_iam_policy_document.s3_bucket_policy_document_whitelist[0].json
@@ -342,7 +342,7 @@ resource "aws_iam_policy" "s3_bucket_iam_whitelist_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_whitelist_iam_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && ! var.website_hosting ? var.number_of_users : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && !var.website_hosting ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_iam_whitelist_policy[0].arn
@@ -409,7 +409,7 @@ resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whiteli
 }
 
 resource "aws_iam_policy" "s3_bucket_with_whitelist_vpc_iam_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && ! var.website_hosting ? 1 : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && !var.website_hosting ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-S3BucketObjectPolicyVPC"
   policy      = data.aws_iam_policy_document.s3_bucket_with_whitelist_vpc_policy_document[0].json
@@ -417,14 +417,14 @@ resource "aws_iam_policy" "s3_bucket_with_whitelist_vpc_iam_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_whitelist_vpc_iam_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && ! var.website_hosting ? var.number_of_users : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && !var.website_hosting ? var.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_whitelist_vpc_iam_policy[0].arn
 }
 
 resource "aws_iam_policy" "s3_bucket_iam_whitelist_ip_and_vpc_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && ! var.website_hosting ? 1 : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 && !var.website_hosting ? 1 : 0
 
   name        = "${var.iam_user_policy_name}-S3BucketObjectPolicyIPandVPC"
   policy      = data.aws_iam_policy_document.s3_bucket_with_whitelist_ip_and_vpc_policy_document[0].json
