@@ -26,6 +26,73 @@ For standard buckets, KMS encryption is used if a `kms_alias` is provided. If `k
 | `kms_alias` specified | AES256                      | KMS                         |
 | `kms_alias` is `""`   | AES256                      | AES256                      |
 
+## Upgrading
+
+v2 of the module is not backwards-compatible with v1 following refactoring of the module.
+
+Because of the limitations of terraform at the time, there were 4 versions of an `aws_s3_bucket` that were conditionally created, with only one out of the 4 options actually creating a bucket.
+
+This caused issues when a tenant initially requested a bucket without logging and later on asked for logging to be turned on: this meant that the module wanted to destroy one bucket resource and create another one. This meant that the pipeline would fail (due to buckets not being empty) until the terraform state was also refactored.
+
+In v2 of the module, there is a single `aws_s3_bucket` resource and the 4 options have the appropriate blocks created dynamically (standard bucket, website bucket) x (no logging, logging enabled).
+
+If the state refactoring is performed in a `terraform-toolset` container, replace `terraform` below with `/acp/bin/run.sh`
+
+### Upgrading a standard bucket with no logging enabled
+
+Replace `standard_bucket` below with the name of the module creating the bucket.
+
+```
+terraform state mv module.standard_bucket.aws_kms_alias.s3_bucket_kms_alias[0] module.standard_bucket.aws_kms_alias.this[0]
+terraform state mv module.standard_bucket.aws_kms_key.s3_bucket_kms_key[0] module.standard_bucket.aws_kms_key.this[0]
+terraform state mv module.standard_bucket.aws_s3_bucket.s3_bucket[0] module.standard_bucket.aws_s3_bucket.this
+```
+
+### Upgrading a standard bucket with audit logs enabled
+
+Replace `audit_bucket` below with the name of the module creating the audit bucket and `bucket_with_logging` with the name of the tenant bucket that has logging enabled.
+
+``` bash
+# refactoring for the audit bucket
+terraform state mv module.audit_bucket.aws_kms_alias.s3_bucket_kms_alias[0] module.audit_bucket.aws_kms_alias.this[0]
+terraform state mv module.audit_bucket.aws_kms_key.s3_bucket_kms_key[0] module.audit_bucket.aws_kms_key.this[0]
+terraform state mv module.audit_bucket.aws_s3_bucket.s3_bucket[0] module.audit_bucket.aws_s3_bucket.this
+#
+# refactoring for the bucket with logging enabled
+terraform state mv module.bucket_with_logging.aws_kms_alias.s3_bucket_kms_alias[0] module.bucket_with_logging.aws_kms_alias.this[0]
+terraform state mv module.bucket_with_logging.aws_kms_key.s3_bucket_kms_key[0] module.bucket_with_logging.aws_kms_key.this[0]
+terraform state mv module.bucket_with_logging.aws_s3_bucket.s3_bucket_with_logging[0] module.bucket_with_logging.aws_s3_bucket.this
+```
+
+### Upgrading a website bucket with no logging enabled
+
+Replace `website_bucket` below with the name of the module creating the bucket.
+
+```
+terraform state mv module.website_bucket.aws_s3_bucket.s3_website_bucket[0] module.website_bucket.aws_s3_bucket.this
+```
+
+### Upgrading a website bucket with audit logs enabled
+
+Replace `audit_bucket` below with the name of the module creating the audit bucket and `website_bucket_with_logging` with the name of the tenant website bucket that has logging enabled.
+
+
+``` bash
+# refactoring for the audit bucket
+terraform state mv module.audit_bucket.aws_s3_bucket.s3_bucket[0] module.audit_bucket.aws_s3_bucket.this
+#
+# refactoring for the bucket with logging enabled
+terraform state mv module.website_bucket_with_logging.aws_s3_bucket.s3_website_bucket_with_logging[0] module.website_bucket_with_logging.aws_s3_bucket.this
+```
+
+### Upgrade notes
+
+Please note the following:
+
+- the KMS key will be amended to enable automatic key rotation. Any already encrypted will still be able to be decrypted with any previous keys replaced by the AWS automatic key rotation process.
+- if you set the `block_public_access` module property to `true`, a new resource will be created and a number of bucket policy resources will be modified to make sure that public access is not granted.
+
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -36,7 +103,7 @@ For standard buckets, KMS encryption is used if a `kms_alias` is provided. If `k
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.71.0 |
 
 ## Modules
 
@@ -160,69 +227,4 @@ For standard buckets, KMS encryption is used if a `kms_alias` is provided. If `k
 | <a name="output_s3_bucket_id"></a> [s3\_bucket\_id](#output\_s3\_bucket\_id) | ID of generated S3 bucket |
 | <a name="output_s3_bucket_kms_key"></a> [s3\_bucket\_kms\_key](#output\_s3\_bucket\_kms\_key) | KMS Key ID of the generated bucket |
 | <a name="output_s3_bucket_kms_key_arn"></a> [s3\_bucket\_kms\_key\_arn](#output\_s3\_bucket\_kms\_key\_arn) | KMS Key ARN of the generated bucket |
-
-## Upgrading
-
-v2 of the module is not backwards-compatible with v1 following refactoring of the module.
-
-Because of the limitations of terraform at the time, there were 4 versions of an `aws_s3_bucket` that were conditionally created, with only one out of the 4 options actually creating a bucket.
-
-This caused issues when a tenant initially requested a bucket without logging and later on asked for logging to be turned on: this meant that the module wanted to destroy one bucket resource and create another one. This meant that the pipeline would fail (due to buckets not being empty) until the terraform state was also refactored.
-
-In v2 of the module, there is a single `aws_s3_bucket` resource and the 4 options have the appropriate blocks created dynamically (standard bucket, website bucket) x (no logging, logging enabled).
-
-If the state refactoring is performed in a `terraform-toolset` container, replace `terraform` below with `/acp/bin/run.sh`
-
-### Upgrading a standard bucket with no logging enabled
-
-Replace `standard_bucket` below with the name of the module creating the bucket.
-
-```
-terraform state mv module.standard_bucket.aws_kms_alias.s3_bucket_kms_alias[0] module.standard_bucket.aws_kms_alias.this[0]
-terraform state mv module.standard_bucket.aws_kms_key.s3_bucket_kms_key[0] module.standard_bucket.aws_kms_key.this[0]
-terraform state mv module.standard_bucket.aws_s3_bucket.s3_bucket[0] module.standard_bucket.aws_s3_bucket.this
-```
-
-### Upgrading a standard bucket with audit logs enabled
-
-Replace `audit_bucket` below with the name of the module creating the audit bucket and `bucket_with_logging` with the name of the tenant bucket that has logging enabled.
-
-``` bash
-# refactoring for the audit bucket
-terraform state mv module.audit_bucket.aws_kms_alias.s3_bucket_kms_alias[0] module.audit_bucket.aws_kms_alias.this[0]
-terraform state mv module.audit_bucket.aws_kms_key.s3_bucket_kms_key[0] module.audit_bucket.aws_kms_key.this[0]
-terraform state mv module.audit_bucket.aws_s3_bucket.s3_bucket[0] module.audit_bucket.aws_s3_bucket.this
-#
-# refactoring for the bucket with logging enabled
-terraform state mv module.bucket_with_logging.aws_kms_alias.s3_bucket_kms_alias[0] module.bucket_with_logging.aws_kms_alias.this[0]
-terraform state mv module.bucket_with_logging.aws_kms_key.s3_bucket_kms_key[0] module.bucket_with_logging.aws_kms_key.this[0]
-terraform state mv module.bucket_with_logging.aws_s3_bucket.s3_bucket_with_logging[0] module.bucket_with_logging.aws_s3_bucket.this
-```
-
-### Upgrading a website bucket with no logging enabled
-
-Replace `website_bucket` below with the name of the module creating the bucket.
-
-```
-terraform state mv module.website_bucket.aws_s3_bucket.s3_website_bucket[0] module.website_bucket.aws_s3_bucket.this
-```
-
-### Upgrading a website bucket with audit logs enabled
-
-Replace `audit_bucket` below with the name of the module creating the audit bucket and `website_bucket_with_logging` with the name of the tenant website bucket that has logging enabled.
-
-
-``` bash
-# refactoring for the audit bucket
-terraform state mv module.audit_bucket.aws_s3_bucket.s3_bucket[0] module.audit_bucket.aws_s3_bucket.this
-#
-# refactoring for the bucket with logging enabled
-terraform state mv module.website_bucket_with_logging.aws_s3_bucket.s3_website_bucket_with_logging[0] module.website_bucket_with_logging.aws_s3_bucket.this
-```
-
-### Upgrade notes
-
-Please note the following:
-
-- the KMS key will be amended to enable automatic key rotation. Any already encrypted will still be able to be decrypted with any previous keys replaced by the AWS automatic key rotation process.
-- if you set the `block_public_access` module property to `true`, a new resource will be created and a number of bucket policy resources will be modified to make sure that public access is not granted.
+<!-- END_TF_DOCS -->
