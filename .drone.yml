@@ -10,9 +10,9 @@ platform:
 steps:
 - name: validate
   pull: if-not-exists
-  image: quay.io/ukhomeofficedigital/terraform-toolset:v0.14.11
+  image: quay.io/ukhomeofficedigital/terraform-toolset:v1.1.3-2
   commands:
-  - /acp/scripts/tf-validate.sh --no-docs
+  - /acp/scripts/tf-validate.sh
   when:
     event:
     - pull_request
