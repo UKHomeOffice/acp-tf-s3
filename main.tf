@@ -15,10 +15,6 @@ Module usage:
      }
 */
 
-terraform {
-  required_version = ">= 0.14"
-}
-
 locals {
   email_tags         = { for i, email in var.email_addresses : "email${i}" => email }
   use_kms_encryption = var.kms_alias != "" && !var.website_hosting
