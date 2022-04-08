@@ -53,129 +53,6 @@ resource "aws_kms_alias" "this" {
 
 resource "aws_s3_bucket" "this" {
   bucket = var.name
-  acl    = var.acl
-
-  acceleration_status = var.acceleration_status
-
-  cors_rule {
-    allowed_headers = var.cors_allowed_headers
-    allowed_methods = var.cors_allowed_methods
-    allowed_origins = var.cors_allowed_origins
-    expose_headers  = var.cors_expose_headers
-    max_age_seconds = var.cors_max_age_seconds
-  }
-
-  versioning {
-    enabled = var.versioning_enabled
-  }
-
-  lifecycle_rule {
-    id      = "transition-to-infrequent-access-storage"
-    enabled = var.lifecycle_infrequent_storage_transition_enabled
-
-    prefix = var.lifecycle_infrequent_storage_object_prefix
-
-    tags = var.lifecycle_infrequent_storage_object_tags
-
-    transition {
-      days          = var.lifecycle_days_to_infrequent_storage_transition
-      storage_class = "STANDARD_IA"
-    }
-
-    dynamic "noncurrent_version_transition" {
-      for_each = var.transition_noncurrent_versions ? [1] : []
-      content {
-        days          = var.lifecycle_days_to_infrequent_storage_transition
-        storage_class = "STANDARD_IA"
-      }
-    }
-  }
-
-  lifecycle_rule {
-    id      = "transition-to-glacier"
-    enabled = var.lifecycle_glacier_transition_enabled
-
-    prefix = var.lifecycle_glacier_object_prefix
-
-    tags = var.lifecycle_glacier_object_tags
-
-    transition {
-      days          = var.lifecycle_days_to_glacier_transition
-      storage_class = "GLACIER"
-    }
-
-    dynamic "noncurrent_version_transition" {
-      for_each = var.transition_noncurrent_versions ? [1] : []
-      content {
-        days          = var.lifecycle_days_to_glacier_transition
-        storage_class = "GLACIER"
-      }
-    }
-  }
-
-  lifecycle_rule {
-    id      = "expire-objects"
-    enabled = var.lifecycle_expiration_enabled
-
-    prefix = var.lifecycle_expiration_object_prefix
-
-    tags = var.lifecycle_expiration_object_tags
-
-    expiration {
-      days = var.lifecycle_days_to_expiration
-    }
-
-    dynamic "noncurrent_version_expiration" {
-      for_each = var.expire_noncurrent_versions ? [1] : []
-      content {
-        days = var.lifecycle_days_to_expiration
-      }
-    }
-  }
-
-  dynamic "logging" {
-    for_each = var.logging_enabled ? [1] : []
-    content {
-      target_bucket = var.log_target_bucket
-      target_prefix = var.log_target_prefix
-    }
-  }
-
-  dynamic "website" {
-    for_each = var.website_hosting ? [1] : []
-    content {
-      index_document = var.website_index_document
-      error_document = var.website_error_document
-    }
-  }
-
-  # dynamic block for default KMS encryption
-  dynamic "server_side_encryption_configuration" {
-    for_each = local.use_kms_encryption ? [1] : []
-    content {
-      rule {
-        bucket_key_enabled = true
-
-        apply_server_side_encryption_by_default {
-          sse_algorithm     = "aws:kms"
-          kms_master_key_id = aws_kms_key.this[0].id
-        }
-      }
-    }
-  }
-
-  # dynamic block for default AES256 encryption
-  # condition is negation of the one for the block above
-  dynamic "server_side_encryption_configuration" {
-    for_each = !local.use_kms_encryption ? [1] : []
-    content {
-      rule {
-        apply_server_side_encryption_by_default {
-          sse_algorithm = "AES256"
-        }
-      }
-    }
-  }
 
   tags = merge(
     var.tags,
@@ -186,6 +63,166 @@ resource "aws_s3_bucket" "this" {
       "Env" = var.environment
     },
   )
+}
+
+resource "aws_s3_bucket_accelerate_configuration" "this" {
+  bucket = aws_s3_bucket.this.bucket
+  status = var.acceleration_status
+}
+
+resource "aws_s3_bucket_acl" "this" {
+  bucket = aws_s3_bucket.this.id
+  acl    = var.acl
+}
+
+resource "aws_s3_bucket_cors_configuration" "this" {
+  bucket = aws_s3_bucket.this.bucket
+
+  cors_rule {
+    allowed_headers = var.cors_allowed_headers
+    allowed_methods = var.cors_allowed_methods
+    allowed_origins = var.cors_allowed_origins
+    expose_headers  = var.cors_expose_headers
+    max_age_seconds = var.cors_max_age_seconds
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  rule {
+    id = "transition-to-infrequent-access-storage"
+
+    prefix = var.lifecycle_infrequent_storage_object_prefix
+
+    filter {
+      and {
+        tags = var.lifecycle_infrequent_storage_object_tags
+      }
+    }
+
+    transition {
+      days          = var.lifecycle_days_to_infrequent_storage_transition
+      storage_class = "STANDARD_IA"
+    }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions ? [1] : []
+      content {
+        noncurrent_days = var.lifecycle_days_to_infrequent_storage_transition
+        storage_class   = "STANDARD_IA"
+      }
+    }
+    status = var.lifecycle_infrequent_storage_transition_enabled ? "Enabled" : "Disabled"
+  }
+
+  rule {
+    id = "transition-to-glacier"
+
+    prefix = var.lifecycle_glacier_object_prefix
+
+    filter {
+      and {
+        tags = var.lifecycle_glacier_object_tags
+      }
+    }
+
+    transition {
+      days          = var.lifecycle_days_to_glacier_transition
+      storage_class = "GLACIER"
+    }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions ? [1] : []
+      content {
+        noncurrent_days = var.lifecycle_days_to_glacier_transition
+        storage_class   = "GLACIER"
+      }
+    }
+    status = var.lifecycle_glacier_transition_enabled ? "Enabled" : "Disabled"
+  }
+
+  rule {
+    id = "expire-objects"
+
+    prefix = var.lifecycle_expiration_object_prefix
+
+    filter {
+      and {
+        tags = var.lifecycle_expiration_object_tags
+      }
+    }
+
+    expiration {
+      days = var.lifecycle_days_to_expiration
+    }
+
+    dynamic "noncurrent_version_expiration" {
+      for_each = var.expire_noncurrent_versions ? [1] : []
+      content {
+        noncurrent_days = var.lifecycle_days_to_expiration
+      }
+    }
+    status = var.lifecycle_expiration_enabled ? "Enabled" : "Disabled"
+  }
+}
+
+resource "aws_s3_bucket_logging" "this" {
+  count = var.logging_enabled ? 1 : 0
+
+  bucket = aws_s3_bucket.this.id
+
+  target_bucket = var.log_target_bucket
+  target_prefix = var.log_target_prefix
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "kms" {
+  count = local.use_kms_encryption ? 1 : 0
+
+  bucket = aws_s3_bucket.this.bucket
+
+  rule {
+    bucket_key_enabled = true
+
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = aws_kms_key.this[0].id
+    }
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "aes" {
+  count = !local.use_kms_encryption ? 1 : 0
+
+  bucket = aws_s3_bucket.this.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_versioning" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  versioning_configuration {
+    status = var.versioning_enabled ? "Enabled" : "Disabled"
+  }
+}
+
+resource "aws_s3_bucket_website_configuration" "this" {
+  count = var.website_hosting ? 1 : 0
+
+  bucket = aws_s3_bucket.this.bucket
+
+  index_document {
+    suffix = var.website_index_document
+  }
+
+  error_document {
+    key = var.website_error_document
+  }
 }
 
 
