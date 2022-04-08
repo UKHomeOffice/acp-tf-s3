@@ -66,6 +66,8 @@ resource "aws_s3_bucket" "this" {
 }
 
 resource "aws_s3_bucket_accelerate_configuration" "this" {
+  count = var.website_hosting ? 0 : 1
+  
   bucket = aws_s3_bucket.this.bucket
   status = var.acceleration_status
 }
