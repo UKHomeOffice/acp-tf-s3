@@ -67,7 +67,7 @@ resource "aws_s3_bucket" "this" {
 
 resource "aws_s3_bucket_accelerate_configuration" "this" {
   count = var.website_hosting ? 0 : 1
-  
+
   bucket = aws_s3_bucket.this.bucket
   status = var.acceleration_status
 }
@@ -97,9 +97,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
 
     prefix = var.lifecycle_infrequent_storage_object_prefix
 
-    filter {
-      and {
-        tags = var.lifecycle_infrequent_storage_object_tags
+    dynamic "filter" {
+      for_each = length(var.lifecycle_infrequent_storage_object_tags) > 0 ? [1] : []
+      content {
+        and {
+          tags = var.lifecycle_infrequent_storage_object_tags
+        }
       }
     }
 
@@ -123,9 +126,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
 
     prefix = var.lifecycle_glacier_object_prefix
 
-    filter {
-      and {
-        tags = var.lifecycle_glacier_object_tags
+    dynamic "filter" {
+      for_each = length(var.lifecycle_glacier_object_tags) > 0 ? [1] : []
+      content {
+        and {
+          tags = var.lifecycle_glacier_object_tags
+        }
       }
     }
 
@@ -149,9 +155,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
 
     prefix = var.lifecycle_expiration_object_prefix
 
-    filter {
-      and {
-        tags = var.lifecycle_expiration_object_tags
+    dynamic "filter" {
+      for_each = length(var.lifecycle_expiration_object_tags) > 0 ? [1] : []
+      content {
+        and {
+          tags = var.lifecycle_expiration_object_tags
+        }
       }
     }
 
