@@ -51,11 +51,16 @@ resource "aws_kms_alias" "this" {
   target_key_id = aws_kms_key.this[0].key_id
 }
 
+resource "aws_s3_bucket_accelerate_configuration" "this" {
+  count = var.website_hosting ? 0 : 1
+  
+  bucket = aws_s3_bucket.this.bucket
+  status = var.acceleration_status
+}
+
 resource "aws_s3_bucket" "this" {
   bucket = var.name
   acl    = var.acl
-
-  acceleration_status = var.acceleration_status
 
   cors_rule {
     allowed_headers = var.cors_allowed_headers
@@ -175,6 +180,12 @@ resource "aws_s3_bucket" "this" {
         }
       }
     }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      website
+    ]
   }
 
   tags = merge(
