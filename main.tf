@@ -54,6 +54,12 @@ resource "aws_kms_alias" "this" {
 resource "aws_s3_bucket" "this" {
   bucket = var.name
 
+  lifecycle {
+    ignore_changes = [
+      website
+    ]
+  }
+
   tags = merge(
     var.tags,
     {
