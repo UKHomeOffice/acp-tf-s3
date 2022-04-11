@@ -374,8 +374,6 @@ resource "aws_s3_bucket" "s3_website_bucket" {
   bucket = var.name
   acl    = var.acl
 
-  acceleration_status = var.acceleration_status
-
   cors_rule {
     allowed_headers = var.cors_allowed_headers
     allowed_methods = var.cors_allowed_methods
@@ -475,6 +473,12 @@ resource "aws_s3_bucket" "s3_website_bucket" {
     }
   }
 
+  lifecycle {
+    ignore_changes = [
+      website
+    ]
+  }
+
   tags = merge(
     var.tags,
     {
@@ -491,8 +495,6 @@ resource "aws_s3_bucket" "s3_website_bucket_with_logging" {
 
   bucket = var.name
   acl    = var.acl
-
-  acceleration_status = var.acceleration_status
 
   cors_rule {
     allowed_headers = var.cors_allowed_headers
@@ -596,6 +598,12 @@ resource "aws_s3_bucket" "s3_website_bucket_with_logging" {
         }
       }
     }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      website
+    ]
   }
 
   tags = merge(
