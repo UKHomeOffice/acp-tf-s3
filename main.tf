@@ -56,7 +56,11 @@ resource "aws_s3_bucket" "this" {
 
   lifecycle {
     ignore_changes = [
-      website
+      cors_rule,
+      grant,
+      lifecycle_rule,
+      server_side_encryption_configuration,
+      website,
     ]
   }
 
@@ -101,13 +105,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
   rule {
     id = "transition-to-infrequent-access-storage"
 
-    prefix = var.lifecycle_infrequent_storage_object_prefix
-
     dynamic "filter" {
-      for_each = length(var.lifecycle_infrequent_storage_object_tags) > 0 ? [1] : []
+      for_each = length(var.lifecycle_infrequent_storage_object_tags) > 0 || var.lifecycle_infrequent_storage_object_prefix != "" ? [1] : []
       content {
         and {
-          tags = var.lifecycle_infrequent_storage_object_tags
+          prefix = var.lifecycle_infrequent_storage_object_prefix
+          tags   = var.lifecycle_infrequent_storage_object_tags
         }
       }
     }
@@ -130,13 +133,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
   rule {
     id = "transition-to-glacier"
 
-    prefix = var.lifecycle_glacier_object_prefix
-
     dynamic "filter" {
-      for_each = length(var.lifecycle_glacier_object_tags) > 0 ? [1] : []
+      for_each = length(var.lifecycle_glacier_object_tags) > 0 || var.lifecycle_glacier_object_prefix != "" ? [1] : []
       content {
         and {
-          tags = var.lifecycle_glacier_object_tags
+          prefix = var.lifecycle_glacier_object_prefix
+          tags   = var.lifecycle_glacier_object_tags
         }
       }
     }
@@ -159,13 +161,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
   rule {
     id = "expire-objects"
 
-    prefix = var.lifecycle_expiration_object_prefix
-
     dynamic "filter" {
-      for_each = length(var.lifecycle_expiration_object_tags) > 0 ? [1] : []
+      for_each = length(var.lifecycle_expiration_object_tags) > 0 || var.lifecycle_expiration_object_prefix != "" ? [1] : []
       content {
         and {
-          tags = var.lifecycle_expiration_object_tags
+          prefix = var.lifecycle_expiration_object_prefix
+          tags   = var.lifecycle_expiration_object_tags
         }
       }
     }
