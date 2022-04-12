@@ -59,6 +59,7 @@ resource "aws_s3_bucket" "this" {
       cors_rule,
       grant,
       lifecycle_rule,
+      logging,
       server_side_encryption_configuration,
       website,
     ]
