@@ -222,7 +222,8 @@ Please note the following:
 | <a name="input_number_of_users"></a> [number\_of\_users](#input\_number\_of\_users) | The number of user to generate credentials for | `number` | `1` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map` | `{}` | no |
 | <a name="input_transition_noncurrent_versions"></a> [transition\_noncurrent\_versions](#input\_transition\_noncurrent\_versions) | Allow lifecycle rules to apply for all non-current version objects | `bool` | `true` | no |
-| <a name="input_versioning_enabled"></a> [versioning\_enabled](#input\_versioning\_enabled) | If versioning is set for buckets in case of accidental deletion | `bool` | `false` | no |
+| <a name="input_versioning_enabled"></a> [versioning\_enabled](#input\_versioning\_enabled) | If versioning is set for buckets in case of accidental deletion; deprecated - use versioning\_status instead | `bool` | `false` | no |
+| <a name="input_versioning_status"></a> [versioning\_status](#input\_versioning\_status) | The versioning status for the bucket - valid values are: Enabled, Disabled and Suspended | `string` | `""` | no |
 | <a name="input_website_error_document"></a> [website\_error\_document](#input\_website\_error\_document) | The path to the document to return in case of a 4XX error for static website hosting | `string` | `"error.html"` | no |
 | <a name="input_website_hosting"></a> [website\_hosting](#input\_website\_hosting) | Specifies if the bucket will be used for static website hosting | `bool` | `false` | no |
 | <a name="input_website_index_document"></a> [website\_index\_document](#input\_website\_index\_document) | The path of index document when requests are made for static website hosting | `string` | `"index.html"` | no |
