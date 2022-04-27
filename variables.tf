@@ -190,9 +190,15 @@ variable "transition_noncurrent_versions" {
 }
 
 variable "versioning_enabled" {
-  description = "If versioning is set for buckets in case of accidental deletion"
+  description = "If versioning is set for buckets in case of accidental deletion; deprecated - use versioning_status instead"
   type        = bool
   default     = false
+}
+
+variable "versioning_status" {
+  description = "The versioning status for the bucket - valid values are: Enabled, Disabled and Suspended"
+  type        = string
+  default     = ""
 }
 
 variable "website_hosting" {
