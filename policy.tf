@@ -38,29 +38,52 @@ data "aws_iam_policy_document" "s3_bucket_with_kms_policy_document_1" {
     ]
   }
 
-  statement {
-    sid    = "IAMS3ObjectPermissions"
-    effect = "Allow"
+  dynamic "statement" {
+    // default policy enforcing requester to specify the KMS key id for PutObject requests
+    for_each = var.enforce_kms_key_use ? [1] : []
+    content {
+      sid    = "IAMS3ObjectPermissions"
+      effect = "Allow"
 
-    resources = [
-      aws_s3_bucket.this.arn,
-      "${aws_s3_bucket.this.arn}/*",
-    ]
+      resources = [
+        aws_s3_bucket.this.arn,
+        "${aws_s3_bucket.this.arn}/*",
+      ]
 
-    actions = [
-      "s3:PutObject",
-    ]
+      actions = [
+        "s3:PutObject",
+      ]
 
-    condition {
-      test     = "StringEquals"
-      variable = "s3:x-amz-server-side-encryption"
-      values   = ["aws:kms"]
+      condition {
+        test     = "StringEquals"
+        variable = "s3:x-amz-server-side-encryption"
+        values   = ["aws:kms"]
+      }
+
+      condition {
+        test     = "StringEquals"
+        variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
+        values   = [aws_kms_key.this[0].arn]
+      }
     }
+  }
 
-    condition {
-      test     = "StringEquals"
-      variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values   = [aws_kms_key.this[0].arn]
+  dynamic "statement" {
+    // if var.enforce_kms_key_use is set to false to emulate the behaviour of version 0.x
+    // of the module, just allow PutObject without conditions
+    for_each = !var.enforce_kms_key_use ? [1] : []
+    content {
+      sid    = "IAMS3ObjectPermissions"
+      effect = "Allow"
+
+      resources = [
+        aws_s3_bucket.this.arn,
+        "${aws_s3_bucket.this.arn}/*",
+      ]
+
+      actions = [
+        "s3:PutObject",
+      ]
     }
   }
 }

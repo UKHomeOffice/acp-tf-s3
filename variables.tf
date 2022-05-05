@@ -226,3 +226,9 @@ variable "whitelist_vpc" {
   description = "Whitelisted vpc allowed to access the created s3 bucket"
   default     = []
 }
+
+variable "enforce_kms_key_use" {
+  description = "Whether or not to require a PutObject request to specify the KMS key id that was created. Defaults to true. Should only be set to false to emulate the behaviour of v0.x of the module and only until the tenants have changed their code to specify the KMS key id in their requests"
+  type        = bool
+  default     = true
+}
