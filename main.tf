@@ -197,7 +197,7 @@ resource "aws_s3_bucket_logging" "this" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "kms" {
-  count = local.use_kms_encryption ? 1 : 0
+  count = local.use_kms_encryption && var.acl != "log-delivery-write" ? 1 : 0
 
   bucket = aws_s3_bucket.this.bucket
 
@@ -212,7 +212,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "kms" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "aes" {
-  count = !local.use_kms_encryption ? 1 : 0
+  count = !(local.use_kms_encryption && var.acl != "log-delivery-write") ? 1 : 0
 
   bucket = aws_s3_bucket.this.bucket
 
