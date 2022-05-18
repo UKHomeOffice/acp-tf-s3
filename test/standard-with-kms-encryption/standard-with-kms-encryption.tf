@@ -7,8 +7,6 @@ locals {
   bucket_name   = "${local.bucket_prefix}-eu-west-2"
 }
 module "standard_bucket" {
-  # source                  = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=v1.5.1"
-
   source              = "../.."
   block_public_access = true
 
