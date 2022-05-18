@@ -10,8 +10,6 @@ locals {
 }
 
 module "audit_bucket" {
-  # source                  = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=v1.5.1"
-
   source              = "../.."
   block_public_access = true
 
@@ -25,8 +23,6 @@ module "audit_bucket" {
 }
 
 module "bucket_with_logging" {
-  # source                  = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=v1.5.1"
-
   source              = "../.."
   block_public_access = true
 
