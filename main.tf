@@ -111,11 +111,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
       for_each = length(var.lifecycle_infrequent_storage_object_tags) > 0 && var.lifecycle_infrequent_storage_object_prefix == "" ? [1] : []
       content {
         and {
-          // the `tag` construct cannot be used because it allows only to specify 1 tag and not a map
-          // the `and` construct requires at least 2 predicates
-          // so we're making one up that is always true with object_size_greater_than
-          object_size_greater_than = 1
-          tags                     = var.lifecycle_infrequent_storage_object_tags
+          tags = var.lifecycle_infrequent_storage_object_tags
         }
       }
     }
@@ -159,11 +155,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
       for_each = length(var.lifecycle_glacier_object_tags) > 0 && var.lifecycle_glacier_object_prefix == "" ? [1] : []
       content {
         and {
-          // the `tag` construct cannot be used because it allows only to specify 1 tag and not a map
-          // the `and` construct requires at least 2 predicates
-          // so we're making one up that is always true with object_size_greater_than
-          object_size_greater_than = 1
-          tags                     = var.lifecycle_glacier_object_tags
+          tags = var.lifecycle_glacier_object_tags
         }
       }
     }
@@ -207,11 +199,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
       for_each = length(var.lifecycle_expiration_object_tags) > 0 && var.lifecycle_expiration_object_prefix == "" ? [1] : []
       content {
         and {
-          // the `tag` construct cannot be used because it allows only to specify 1 tag and not a map
-          // the `and` construct requires at least 2 predicates
-          // so we're making one up that is always true with object_size_greater_than
-          object_size_greater_than = 1
-          tags                     = var.lifecycle_expiration_object_tags
+          tags = var.lifecycle_expiration_object_tags
         }
       }
     }
