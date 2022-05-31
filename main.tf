@@ -294,14 +294,14 @@ resource "aws_s3_bucket_website_configuration" "this" {
 }
 
 
-resource "aws_s3_bucket_policy" "s3_website_bucket" {
-  count  = var.website_hosting && !var.enforce_tls ? 1 : 0
+resource "aws_s3_bucket_policy" "this" {
   bucket = aws_s3_bucket.this.id
 
   policy = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
+  %{if var.website_hosting && !var.enforce_tls}
     {
       "Sid": "PublicReadGetObject",
       "Effect": "Allow",
@@ -309,20 +309,9 @@ resource "aws_s3_bucket_policy" "s3_website_bucket" {
       "Action": "s3:GetObject",
       "Resource": "arn:aws:s3:::${var.name}/*"
     }
-  ]
-}
-POLICY
-
-}
-
-resource "aws_s3_bucket_policy" "enforce_tls_bucket_policy" {
-  count  = !var.website_hosting && var.enforce_tls ? 1 : 0
-  bucket = aws_s3_bucket.this.id
-
-  policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
+  %{endif}
+  
+  %{if !var.website_hosting && var.enforce_tls}
     {
       "Sid": "AllowSSLRequestsOnly",
       "Action": "s3:*",
@@ -338,6 +327,26 @@ resource "aws_s3_bucket_policy" "enforce_tls_bucket_policy" {
       },
       "Principal": "*"
     }
+  %{endif}
+
+  %{if var.bucket_policy}
+    ${var.bucket_policy}
+  %{endif}
+  ]
+}
+POLICY
+
+}
+
+resource "aws_s3_bucket_policy" "enforce_tls_bucket_policy" {
+  count  = s ? 1 : 0
+  bucket = aws_s3_bucket.this.id
+
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    
   ]
 }
 POLICY
