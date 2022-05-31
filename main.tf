@@ -580,9 +580,7 @@ resource "aws_s3_bucket_public_access_block" "s3_bucket" {
 
   depends_on = [
     aws_s3_bucket.this,
-    aws_s3_bucket_policy.s3_website_bucket,
-    aws_s3_bucket_policy.s3_website_bucket,
-    aws_s3_bucket_policy.enforce_tls_bucket_policy,
+    aws_s3_bucket_policy.this,
     aws_iam_policy.s3_bucket_with_kms_iam_policy_1,
     aws_iam_policy.s3_bucket_with_kms_iam_policy_2,
     aws_iam_policy.s3_bucket_with_kms_and_whitelist_iam_policy_1,
