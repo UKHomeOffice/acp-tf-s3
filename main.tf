@@ -294,48 +294,49 @@ resource "aws_s3_bucket_website_configuration" "this" {
 }
 
 
+
+data "aws_iam_policy_document" "bucket_policy" {
+  dynamic "statement" {
+    for_each = var.website_hosting && !var.enforce_tls ? [1] : []
+    sid      = "PublicReadGetObject"
+    effect   = "Allow"
+    actions = [
+      "s3:GetObject"
+    ]
+
+    resources = [
+      "arn:aws:s3:::${var.name}/*"
+    ]
+  }
+
+  dynamic "statement" {
+    for_each = !var.website_hosting && var.enforce_tls ? [1] : []
+    sid      = "AllowSSLRequestsOnly"
+    effect   = "Deny"
+    actions = [
+      "s3:*"
+    ]
+
+    resources = [
+      "arn:aws:s3:::${var.name}",
+      "arn:aws:s3:::${var.name}/*"
+    ]
+
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+
+      values = false
+    }
+    principals {
+      type = "*"
+    }
+  }
+}
+
 resource "aws_s3_bucket_policy" "this" {
   bucket = aws_s3_bucket.this.id
-
-  policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-  %{if var.website_hosting && !var.enforce_tls}
-    {
-      "Sid": "PublicReadGetObject",
-      "Effect": "Allow",
-      "Principal": "*",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::${var.name}/*"
-    }
-  %{endif}
-  
-  %{if !var.website_hosting && var.enforce_tls}
-    {
-      "Sid": "AllowSSLRequestsOnly",
-      "Action": "s3:*",
-      "Effect": "Deny",
-      "Resource": [
-        "arn:aws:s3:::${var.name}",
-        "arn:aws:s3:::${var.name}/*"
-      ],
-      "Condition": {
-        "Bool": {
-          "aws:SecureTransport": "false"
-        }
-      },
-      "Principal": "*"
-    }
-  %{endif}
-
-  %{if var.bucket_policy}
-    ${var.bucket_policy}
-  %{endif}
-  ]
-}
-POLICY
-
+  policy = var.bucket_policy != "" ? var.bucket_policy : data.aws_iam_policy_document.bucket_policy.json
 }
 
 resource "aws_iam_user" "s3_bucket_iam_user" {
