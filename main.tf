@@ -338,21 +338,6 @@ POLICY
 
 }
 
-resource "aws_s3_bucket_policy" "enforce_tls_bucket_policy" {
-  count  = s ? 1 : 0
-  bucket = aws_s3_bucket.this.id
-
-  policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    
-  ]
-}
-POLICY
-
-}
-
 resource "aws_iam_user" "s3_bucket_iam_user" {
   count = var.number_of_users
 
