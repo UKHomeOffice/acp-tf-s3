@@ -298,38 +298,42 @@ resource "aws_s3_bucket_website_configuration" "this" {
 data "aws_iam_policy_document" "bucket_policy" {
   dynamic "statement" {
     for_each = var.website_hosting && !var.enforce_tls ? [1] : []
-    sid      = "PublicReadGetObject"
-    effect   = "Allow"
-    actions = [
-      "s3:GetObject"
-    ]
+    content {
+      sid    = "PublicReadGetObject"
+      effect = "Allow"
+      actions = [
+        "s3:GetObject"
+      ]
 
-    resources = [
-      "arn:aws:s3:::${var.name}/*"
-    ]
+      resources = [
+        "arn:aws:s3:::${var.name}/*"
+      ]
+    }
   }
 
   dynamic "statement" {
     for_each = !var.website_hosting && var.enforce_tls ? [1] : []
-    sid      = "AllowSSLRequestsOnly"
-    effect   = "Deny"
-    actions = [
-      "s3:*"
-    ]
+    content {
+      sid    = "AllowSSLRequestsOnly"
+      effect = "Deny"
+      actions = [
+        "s3:*"
+      ]
 
-    resources = [
-      "arn:aws:s3:::${var.name}",
-      "arn:aws:s3:::${var.name}/*"
-    ]
+      resources = [
+        "arn:aws:s3:::${var.name}",
+        "arn:aws:s3:::${var.name}/*"
+      ]
 
-    condition {
-      test     = "Bool"
-      variable = "aws:SecureTransport"
+      condition {
+        test     = "Bool"
+        variable = "aws:SecureTransport"
 
-      values = false
-    }
-    principals {
-      type = "*"
+        values = false
+      }
+      principals {
+        type = "*"
+      }
     }
   }
 }
