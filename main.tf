@@ -294,54 +294,53 @@ resource "aws_s3_bucket_website_configuration" "this" {
 }
 
 
-resource "aws_s3_bucket_policy" "s3_website_bucket" {
-  count  = var.website_hosting && !var.enforce_tls ? 1 : 0
-  bucket = aws_s3_bucket.this.id
 
-  policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "PublicReadGetObject",
-      "Effect": "Allow",
-      "Principal": "*",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::${var.name}/*"
+data "aws_iam_policy_document" "bucket_policy" {
+  dynamic "statement" {
+    for_each = var.website_hosting && !var.enforce_tls ? [1] : []
+    content {
+      sid    = "PublicReadGetObject"
+      effect = "Allow"
+      actions = [
+        "s3:GetObject"
+      ]
+
+      resources = [
+        "arn:aws:s3:::${var.name}/*"
+      ]
     }
-  ]
-}
-POLICY
+  }
 
-}
+  dynamic "statement" {
+    for_each = !var.website_hosting && var.enforce_tls ? [1] : []
+    content {
+      sid    = "AllowSSLRequestsOnly"
+      effect = "Deny"
+      actions = [
+        "s3:*"
+      ]
 
-resource "aws_s3_bucket_policy" "enforce_tls_bucket_policy" {
-  count  = !var.website_hosting && var.enforce_tls ? 1 : 0
-  bucket = aws_s3_bucket.this.id
-
-  policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "AllowSSLRequestsOnly",
-      "Action": "s3:*",
-      "Effect": "Deny",
-      "Resource": [
+      resources = [
         "arn:aws:s3:::${var.name}",
         "arn:aws:s3:::${var.name}/*"
-      ],
-      "Condition": {
-        "Bool": {
-          "aws:SecureTransport": "false"
-        }
-      },
-      "Principal": "*"
-    }
-  ]
-}
-POLICY
+      ]
 
+      condition {
+        test     = "Bool"
+        variable = "aws:SecureTransport"
+
+        values = false
+      }
+      principals {
+        type = "*"
+      }
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "this" {
+  bucket = aws_s3_bucket.this.id
+  policy = var.bucket_policy != "" ? var.bucket_policy : data.aws_iam_policy_document.bucket_policy.json
 }
 
 resource "aws_iam_user" "s3_bucket_iam_user" {
@@ -585,9 +584,7 @@ resource "aws_s3_bucket_public_access_block" "s3_bucket" {
 
   depends_on = [
     aws_s3_bucket.this,
-    aws_s3_bucket_policy.s3_website_bucket,
-    aws_s3_bucket_policy.s3_website_bucket,
-    aws_s3_bucket_policy.enforce_tls_bucket_policy,
+    aws_s3_bucket_policy.this,
     aws_iam_policy.s3_bucket_with_kms_iam_policy_1,
     aws_iam_policy.s3_bucket_with_kms_iam_policy_2,
     aws_iam_policy.s3_bucket_with_kms_and_whitelist_iam_policy_1,

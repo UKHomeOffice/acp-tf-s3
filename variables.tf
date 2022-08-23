@@ -28,6 +28,12 @@ variable "enforce_tls" {
   default     = true
 }
 
+variable "bucket_policy" {
+  description = "Custom Bucket Policy"
+  type        = string
+  default     = ""
+}
+
 variable "cmk_enable_key_rotation" {
   description = "Enables CMK key rotation"
   type        = bool
