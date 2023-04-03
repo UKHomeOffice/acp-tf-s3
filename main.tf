@@ -56,7 +56,6 @@ resource "aws_s3_bucket" "this" {
 
   lifecycle {
     ignore_changes = [
-      acl,
       cors_rule,
       grant,
       lifecycle_rule,
