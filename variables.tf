@@ -34,6 +34,11 @@ variable "cmk_enable_key_rotation" {
   default     = true
 }
 
+variable "ownership_controls" {
+  description = "Ownership controls for the writer must be defined by default"
+  default     = "ObjectWriter"
+}
+
 variable "cors_allowed_headers" {
   description = "Specifies which headers are allowed."
   default     = ["Authorization"]
