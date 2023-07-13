@@ -132,6 +132,27 @@ variable "lifecycle_days_to_glacier_transition" {
   default     = "180"
 }
 
+variable "lifecycle_glacier_deep_archive_transition_enabled" {
+  description = "Specifies Glacier Deep Archive transition lifecycle rule status."
+  type        = bool
+  default     = false
+}
+
+variable "lifecycle_glacier_deep_archive_object_prefix" {
+  description = "Object key prefix identifying one or more objects to which the lifecycle rule applies."
+  default     = ""
+}
+
+variable "lifecycle_glacier_deep_archive_object_tags" {
+  description = "Object tags to filter on for the transition to glacier lifecycle rule."
+  default     = {}
+}
+
+variable "lifecycle_days_to_glacier_deep_archive_transition" {
+  description = "Specifies the number of days after object creation when it will be moved to Glacier storage."
+  default     = "180"
+}
+
 variable "lifecycle_expiration_enabled" {
   description = "Specifies expiration lifecycle rule status."
   type        = bool
