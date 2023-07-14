@@ -39,6 +39,12 @@ variable "ownership_controls" {
   default     = "ObjectWriter"
 }
 
+variable "ownership_controls_object" {
+   description = "control_object_ownership needs to be set to true"
+   type        = bool
+   default     = true
+}
+
 variable "cors_allowed_headers" {
   description = "Specifies which headers are allowed."
   default     = ["Authorization"]
