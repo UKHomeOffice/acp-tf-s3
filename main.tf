@@ -288,6 +288,14 @@ resource "aws_s3_bucket_logging" "this" {
   target_prefix = var.log_target_prefix
 }
 
+resource "aws_s3_bucket_ownership_controls" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  rule {
+    object_ownership = var.ownership_controls
+  }
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "kms" {
   count = local.use_kms_encryption && var.acl != "log-delivery-write" ? 1 : 0
 
