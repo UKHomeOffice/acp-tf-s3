@@ -98,13 +98,13 @@ Please note the following:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 3.75.1 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.75.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.67.0 |
 
 ## Modules
 
@@ -153,6 +153,7 @@ Please note the following:
 | [aws_s3_bucket_cors_configuration.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_cors_configuration) | resource |
 | [aws_s3_bucket_lifecycle_configuration.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_logging.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_logging) | resource |
+| [aws_s3_bucket_ownership_controls.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_ownership_controls) | resource |
 | [aws_s3_bucket_policy.enforce_tls_bucket_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
 | [aws_s3_bucket_policy.s3_website_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
 | [aws_s3_bucket_public_access_block.s3_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
@@ -221,6 +222,7 @@ Please note the following:
 | <a name="input_logging_enabled"></a> [logging\_enabled](#input\_logging\_enabled) | Specifies whether server access logging is enabled or not. | `bool` | `false` | no |
 | <a name="input_name"></a> [name](#input\_name) | A descriptive name for the S3 instance | `any` | n/a | yes |
 | <a name="input_number_of_users"></a> [number\_of\_users](#input\_number\_of\_users) | The number of user to generate credentials for | `number` | `1` | no |
+| <a name="input_ownership_controls"></a> [ownership\_controls](#input\_ownership\_controls) | Ownership controls for the writer must be defined by default | `string` | `"ObjectWriter"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map` | `{}` | no |
 | <a name="input_transition_noncurrent_versions"></a> [transition\_noncurrent\_versions](#input\_transition\_noncurrent\_versions) | Allow lifecycle rules to apply for all non-current version objects | `bool` | `true` | no |
 | <a name="input_versioning_enabled"></a> [versioning\_enabled](#input\_versioning\_enabled) | If versioning is set for buckets in case of accidental deletion; deprecated - use versioning\_status instead | `bool` | `false` | no |

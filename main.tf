@@ -56,7 +56,6 @@ resource "aws_s3_bucket" "this" {
 
   lifecycle {
     ignore_changes = [
-      acl,
       cors_rule,
       grant,
       lifecycle_rule,
@@ -85,10 +84,17 @@ resource "aws_s3_bucket_accelerate_configuration" "this" {
 }
 
 resource "aws_s3_bucket_acl" "this" {
-  bucket = aws_s3_bucket.this.id
-  acl    = var.acl
+  bucket     = aws_s3_bucket.this.id
+  acl        = var.acl
+  depends_on = [aws_s3_bucket_ownership_controls.this]
 }
+resource "aws_s3_bucket_ownership_controls" "this" {
+  bucket = aws_s3_bucket.this.id
 
+  rule {
+    object_ownership = var.ownership_controls
+  }
+}
 resource "aws_s3_bucket_cors_configuration" "this" {
   bucket = aws_s3_bucket.this.bucket
 
@@ -243,6 +249,7 @@ resource "aws_s3_bucket_logging" "this" {
   target_bucket = var.log_target_bucket
   target_prefix = var.log_target_prefix
 }
+
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "kms" {
   count = local.use_kms_encryption && var.acl != "log-delivery-write" ? 1 : 0

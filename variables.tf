@@ -39,6 +39,11 @@ variable "cors_allowed_headers" {
   default     = ["Authorization"]
 }
 
+variable "ownership_controls" {
+  description = "Ownership controls for the writer must be defined by default"
+  default     = "ObjectWriter"
+}
+
 variable "cors_allowed_methods" {
   description = "Specifies which methods are allowed. Can be GET, PUT, POST, DELETE or HEAD."
   default     = ["GET"]
