@@ -40,9 +40,9 @@ variable "ownership_controls" {
 }
 
 variable "ownership_controls_object" {
-   description = "control_object_ownership needs to be set to true"
-   type        = bool
-   default     = true
+  description = "control_object_ownership needs to be set to true"
+  type        = bool
+  default     = true
 }
 
 variable "cors_allowed_headers" {

@@ -289,10 +289,9 @@ resource "aws_s3_bucket_logging" "this" {
 }
 
 resource "aws_s3_bucket_ownership_controls" "this" {
-  bucket = aws_s3_bucket.this.id
+  bucket = aws_s3_bucket.this.bucket
 
   rule {
-    control_object_ownership = var.ownership_controls_object
     object_ownership = var.ownership_controls
   }
 }
