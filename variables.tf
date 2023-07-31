@@ -34,6 +34,17 @@ variable "cmk_enable_key_rotation" {
   default     = true
 }
 
+variable "ownership_controls" {
+  description = "Ownership controls for the writer must be defined by default"
+  default     = "ObjectWriter"
+}
+
+variable "ownership_controls_object" {
+  description = "control_object_ownership needs to be set to true"
+  type        = bool
+  default     = true
+}
+
 variable "cors_allowed_headers" {
   description = "Specifies which headers are allowed."
   default     = ["Authorization"]
@@ -128,6 +139,27 @@ variable "lifecycle_glacier_object_tags" {
 }
 
 variable "lifecycle_days_to_glacier_transition" {
+  description = "Specifies the number of days after object creation when it will be moved to Glacier storage."
+  default     = "180"
+}
+
+variable "lifecycle_glacier_deep_archive_transition_enabled" {
+  description = "Specifies Glacier Deep Archive transition lifecycle rule status."
+  type        = bool
+  default     = false
+}
+
+variable "lifecycle_glacier_deep_archive_object_prefix" {
+  description = "Object key prefix identifying one or more objects to which the lifecycle rule applies."
+  default     = ""
+}
+
+variable "lifecycle_glacier_deep_archive_object_tags" {
+  description = "Object tags to filter on for the transition to glacier lifecycle rule."
+  default     = {}
+}
+
+variable "lifecycle_days_to_glacier_deep_archive_transition" {
   description = "Specifies the number of days after object creation when it will be moved to Glacier storage."
   default     = "180"
 }

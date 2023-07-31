@@ -193,6 +193,50 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
   }
 
   rule {
+    id = "transition-to-glacier-deep-archive"
+
+    dynamic "filter" {
+      for_each = length(var.lifecycle_glacier_deep_archive_object_tags) > 0 && var.lifecycle_glacier_deep_archive_object_prefix == "" ? [1] : []
+      content {
+        and {
+          tags = var.lifecycle_glacier_deep_archive_object_tags
+        }
+      }
+    }
+
+    dynamic "filter" {
+      for_each = length(var.lifecycle_glacier_deep_archive_object_tags) == 0 && var.lifecycle_glacier_deep_archive_object_prefix != "" ? [1] : []
+      content {
+        prefix = var.lifecycle_glacier_deep_archive_object_prefix
+      }
+    }
+
+    dynamic "filter" {
+      for_each = length(var.lifecycle_glacier_deep_archive_object_tags) > 0 && var.lifecycle_glacier_deep_archive_object_prefix != "" ? [1] : []
+      content {
+        and {
+          prefix = var.lifecycle_glacier_deep_archive_object_prefix
+          tags   = var.lifecycle_glacier_deep_archive_object_tags
+        }
+      }
+    }
+
+    transition {
+      days          = var.lifecycle_days_to_glacier_deep_archive_transition
+      storage_class = "DEEP_ARCHIVE"
+    }
+
+    dynamic "noncurrent_version_transition" {
+      for_each = var.transition_noncurrent_versions ? [1] : []
+      content {
+        noncurrent_days = var.lifecycle_days_to_glacier_deep_archive_transition
+        storage_class   = "DEEP_ARCHIVE"
+      }
+    }
+    status = var.lifecycle_glacier_deep_archive_transition_enabled ? "Enabled" : "Disabled"
+  }
+
+  rule {
     id = "expire-objects"
 
     dynamic "filter" {
@@ -242,6 +286,14 @@ resource "aws_s3_bucket_logging" "this" {
 
   target_bucket = var.log_target_bucket
   target_prefix = var.log_target_prefix
+}
+
+resource "aws_s3_bucket_ownership_controls" "this" {
+  bucket = aws_s3_bucket.this.bucket
+
+  rule {
+    object_ownership = var.ownership_controls
+  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "kms" {
