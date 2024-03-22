@@ -278,6 +278,42 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
     }
     status = var.lifecycle_expiration_enabled ? "Enabled" : "Disabled"
   }
+
+  rule {
+    id = "abort-multipart-upload"
+
+    dynamic "filter" {
+      for_each = length(var.lifecycle_abort_multipart_upload_object_tags) > 0 && var.lifecycle_abort_multipart_upload_object_prefix == "" ? [1] : []
+      content {
+        and {
+          tags = var.lifecycle_abort_multipart_upload_object_tags
+        }
+      }
+    }
+
+    dynamic "filter" {
+      for_each = length(var.lifecycle_abort_multipart_upload_object_tags) == 0 && var.lifecycle_abort_multipart_upload_object_prefix != "" ? [1] : []
+      content {
+        prefix = var.lifecycle_abort_multipart_upload_object_prefix
+      }
+    }
+
+    dynamic "filter" {
+      for_each = length(var.lifecycle_abort_multipart_upload_object_tags) > 0 && var.lifecycle_abort_multipart_upload_object_prefix != "" ? [1] : []
+      content {
+        and {
+          prefix = var.lifecycle_abort_multipart_upload_object_prefix
+          tags   = var.lifecycle_abort_multipart_upload_object_tags
+        }
+      }
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = var.lifecycle_days_to_abort_multipart_upload
+    }
+
+    status = var.lifecycle_abort_multipart_upload_enabled ? "Enabled" : "Disabled"
+  }
 }
 
 resource "aws_s3_bucket_logging" "this" {

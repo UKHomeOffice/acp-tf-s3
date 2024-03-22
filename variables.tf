@@ -185,6 +185,27 @@ variable "lifecycle_days_to_expiration" {
   default     = "365"
 }
 
+variable "lifecycle_abort_multipart_upload_enabled" {
+  description = "Specifies Abort Multipart Uploads lifecycle rule status."
+  type        = bool
+  default     = false
+}
+
+variable "lifecycle_abort_multipart_upload_object_prefix" {
+  description = "Object key prefix identifying one or more objects to which the lifecycle rule applies."
+  default     = ""
+}
+
+variable "lifecycle_abort_multipart_upload_object_tags" {
+  description = "Object tags to filter on for the abort multipart upload lifecycle rule."
+  default     = {}
+}
+
+variable "lifecycle_days_to_abort_multipart_upload" {
+  description = "Specifies the number of days after which Amazon S3 aborts an incomplete multipart upload."
+  default     = "7"
+}
+
 variable "logging_enabled" {
   description = "Specifies whether server access logging is enabled or not."
   type        = bool
