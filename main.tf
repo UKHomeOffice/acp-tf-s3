@@ -16,8 +16,9 @@ Module usage:
 */
 
 locals {
-  email_tags         = { for i, email in var.email_addresses : "email${i}" => email }
-  use_kms_encryption = var.kms_alias != "" && !var.website_hosting
+  email_tags              = { for i, email in var.email_addresses : "email${i}" => email }
+  use_kms_encryption      = var.kms_alias != "" && !var.website_hosting
+  create_lifecycle_policy = var.create_lifecycle_policy
 }
 
 data "aws_caller_identity" "current" {
@@ -103,6 +104,7 @@ resource "aws_s3_bucket_cors_configuration" "this" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "this" {
+  count  = var.create_lifecycle_policy ? 1 : 0
   bucket = aws_s3_bucket.this.id
 
   rule {
