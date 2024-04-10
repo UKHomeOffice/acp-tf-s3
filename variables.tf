@@ -14,6 +14,12 @@ variable "block_public_access" {
   default     = false
 }
 
+variable "create_lifecycle_policy" {
+  description = "States whether the module autocreates the lifecycle policy"
+  type        = bool
+  default     = true
+}
+
 variable "bucket_iam_user" {
   description = "The name of the iam user assigned to the created s3 bucket"
 }

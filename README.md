@@ -205,6 +205,7 @@ Please note the following:
 | <a name="input_key_rotation"></a> [key\_rotation](#input\_key\_rotation) | Enable email notifications for old IAM keys. | `bool` | `true` | no |
 | <a name="input_kms_alias"></a> [kms\_alias](#input\_kms\_alias) | The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects | `string` | `""` | no |
 | <a name="input_kms_key_policy"></a> [kms\_key\_policy](#input\_kms\_key\_policy) | KMS key policy (uses a default policy if omitted) | `string` | `""` | no |
+| <a name="input_create_lifecycle_policy"></a> [create\_lifecycle\_policy](#create\_lifecycle\_policy) | Specifies whether to create lifecycle policies. | `bool` | `true` | no |
 | <a name="input_lifecycle_abort_multipart_upload_enabled"></a> [lifecycle\_abort\_multipart\_upload\_enabled](#input\_lifecycle\_abort\_multipart\_upload\_enabled) | Specifies Abort Multipart Uploads lifecycle rule status. | `bool` | `false` | no |
 | <a name="input_lifecycle_abort_multipart_upload_object_prefix"></a> [lifecycle\_abort\_multipart\_upload\_object\_prefix](#input\_lifecycle\_abort\_multipart\_upload\_object\_prefix) | Object key prefix identifying one or more objects to which the lifecycle rule applies. | `string` | `""` | no |
 | <a name="input_lifecycle_abort_multipart_upload_object_tags"></a> [lifecycle\_abort\_multipart\_upload\_object\_tags](#input\_lifecycle\_abort\_multipart\_upload\_object\_tags) | Object tags to filter on for the abort multipart upload lifecycle rule. | `map` | `{}` | no |
