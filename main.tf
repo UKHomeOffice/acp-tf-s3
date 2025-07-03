@@ -406,8 +406,12 @@ POLICY
 
 }
 
+data "aws_s3_bucket_policy" "existing_policy" {
+  bucket = aws_s3_bucket.this.id
+}
+
 resource "aws_s3_bucket_policy" "enforce_tls_bucket_policy" {
-  count  = !var.website_hosting && var.enforce_tls ? 1 : 0
+  count  = !var.website_hosting && var.enforce_tls && isnull(data.aws_s3_bucket_policy.existing_policy.policy) ? 1 : 0
   bucket = aws_s3_bucket.this.id
 
   policy = <<POLICY
