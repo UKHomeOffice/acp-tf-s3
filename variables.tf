@@ -291,3 +291,8 @@ variable "enforce_kms_key_use" {
   type        = bool
   default     = true
 }
+
+variable "custom_policy_exists" {
+  type    = bool
+  default = false
+}
