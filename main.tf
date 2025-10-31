@@ -62,6 +62,7 @@ resource "aws_s3_bucket" "this" {
       grant,
       lifecycle_rule,
       logging,
+      replication_configuration,
       server_side_encryption_configuration,
       website,
     ]

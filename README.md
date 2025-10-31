@@ -196,6 +196,7 @@ Please note the following:
 | <a name="input_cors_allowed_origins"></a> [cors\_allowed\_origins](#input\_cors\_allowed\_origins) | Specifies which origins are allowed. | `list` | <pre>[<br>  "*"<br>]</pre> | no |
 | <a name="input_cors_expose_headers"></a> [cors\_expose\_headers](#input\_cors\_expose\_headers) | Specifies expose header in the response. | `list` | `[]` | no |
 | <a name="input_cors_max_age_seconds"></a> [cors\_max\_age\_seconds](#input\_cors\_max\_age\_seconds) | Specifies time in seconds that browser can cache the response for a preflight request. | `string` | `"3000"` | no |
+| <a name="input_create_lifecycle_policy"></a> [create\_lifecycle\_policy](#input\_create\_lifecycle\_policy) | States whether the module autocreates the lifecycle policy | `bool` | `true` | no |
 | <a name="input_email_addresses"></a> [email\_addresses](#input\_email\_addresses) | A list of email addresses for key rotation notifications. | `list` | `[]` | no |
 | <a name="input_enforce_kms_key_use"></a> [enforce\_kms\_key\_use](#input\_enforce\_kms\_key\_use) | Whether or not to require a PutObject request to specify the KMS key id that was created. Defaults to true. Should only be set to false to emulate the behaviour of v0.x of the module and only until the tenants have changed their code to specify the KMS key id in their requests | `bool` | `true` | no |
 | <a name="input_enforce_tls"></a> [enforce\_tls](#input\_enforce\_tls) | Specifies if the bucket will be enforce a TLS bucket policy | `bool` | `true` | no |
@@ -205,7 +206,6 @@ Please note the following:
 | <a name="input_key_rotation"></a> [key\_rotation](#input\_key\_rotation) | Enable email notifications for old IAM keys. | `bool` | `true` | no |
 | <a name="input_kms_alias"></a> [kms\_alias](#input\_kms\_alias) | The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects | `string` | `""` | no |
 | <a name="input_kms_key_policy"></a> [kms\_key\_policy](#input\_kms\_key\_policy) | KMS key policy (uses a default policy if omitted) | `string` | `""` | no |
-| <a name="input_create_lifecycle_policy"></a> [create\_lifecycle\_policy](#create\_lifecycle\_policy) | Specifies whether to create lifecycle policies. | `bool` | `true` | no |
 | <a name="input_lifecycle_abort_multipart_upload_enabled"></a> [lifecycle\_abort\_multipart\_upload\_enabled](#input\_lifecycle\_abort\_multipart\_upload\_enabled) | Specifies Abort Multipart Uploads lifecycle rule status. | `bool` | `false` | no |
 | <a name="input_lifecycle_abort_multipart_upload_object_prefix"></a> [lifecycle\_abort\_multipart\_upload\_object\_prefix](#input\_lifecycle\_abort\_multipart\_upload\_object\_prefix) | Object key prefix identifying one or more objects to which the lifecycle rule applies. | `string` | `""` | no |
 | <a name="input_lifecycle_abort_multipart_upload_object_tags"></a> [lifecycle\_abort\_multipart\_upload\_object\_tags](#input\_lifecycle\_abort\_multipart\_upload\_object\_tags) | Object tags to filter on for the abort multipart upload lifecycle rule. | `map` | `{}` | no |
