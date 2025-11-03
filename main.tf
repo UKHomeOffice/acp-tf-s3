@@ -282,6 +282,29 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
     status = var.lifecycle_expiration_enabled ? "Enabled" : "Disabled"
   }
 
+  dynamic "rule" {
+    for_each = var.lifecycle_expiration_object_prefixes
+    content {
+      id     = "expire-objects-${rule.value}"
+      status = var.lifecycle_expiration_enabled ? "Enabled" : "Disabled"
+
+      filter {
+        prefix = rule.value
+      }
+
+      expiration {
+        days = var.lifecycle_days_to_expiration
+      }
+
+      dynamic "noncurrent_version_expiration" {
+        for_each = var.expire_noncurrent_versions ? [1] : []
+        content {
+          noncurrent_days = var.lifecycle_days_to_expiration
+        }
+      }
+    }
+  }
+
   rule {
     id = "abort-multipart-upload"
 
