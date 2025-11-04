@@ -181,6 +181,12 @@ variable "lifecycle_expiration_object_prefix" {
   default     = ""
 }
 
+variable "lifecycle_expiration_object_prefixes" {
+  type    = list(string)
+  default = []
+  description = "Optional list of prefixes for object expiration lifecycle rules"
+}
+
 variable "lifecycle_expiration_object_tags" {
   description = "Object tags to filter on for the expire object lifecycle rule."
   default     = {}
