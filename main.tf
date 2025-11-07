@@ -661,7 +661,7 @@ resource "aws_iam_user_policy_attachment" "attach_s3_tls_bucket_policy" {
 }
 
 module "self_serve_access_keys" {
-  source = "git::https://github.com/UKHomeOffice/acp-tf-self-serve-access-keys?ref=v0.1.0"
+  source = "git::https://github.com/UKHomeOffice/acp-tf-self-serve-access-keys?ref=v0.2.0"
 
   user_names = aws_iam_user.s3_bucket_iam_user.*.name
 }
