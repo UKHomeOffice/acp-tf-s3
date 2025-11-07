@@ -1,116 +1,21 @@
-# acp-tf-s3 S3 bucket terraform module
-
-Module usage:
-
-     module "s3" {
-
-        source = "git::https://github.com/UKHomeOffice/acp-tf-s3?ref=master"
-
-        name                 = "fake"
-        acl                  = "private"
-        environment          = "${var.environment}"
-        kms_alias            = "mykey"
-        bucket_iam_user      = "fake-s3-bucket-user"
-        iam_user_policy_name = "fake-s3-bucket-policy"
-
-     }
-
-The bucket created is always encrypted.
-
-If the `website_hosting` parameter is set to `true`, default AES256 encryption is used.
-
-For standard buckets, KMS encryption is used if a `kms_alias` is provided. If `kms_alias` is not provided, default AES256 encryption is used.
-
-| encryption type       | `website_hosting` is `true` |`website_hosting` is `false` |
-|-----------------------|-----------------------------|-----------------------------|
-| `kms_alias` specified | AES256                      | KMS                         |
-| `kms_alias` is `""`   | AES256                      | AES256                      |
-
-## Upgrading
-
-v2 of the module is not backwards-compatible with v1 following refactoring of the module.
-
-Because of the limitations of terraform at the time, there were 4 versions of an `aws_s3_bucket` that were conditionally created, with only one out of the 4 options actually creating a bucket.
-
-This caused issues when a tenant initially requested a bucket without logging and later on asked for logging to be turned on: this meant that the module wanted to destroy one bucket resource and create another one. This meant that the pipeline would fail (due to buckets not being empty) until the terraform state was also refactored.
-
-In v2 of the module, there is a single `aws_s3_bucket` resource and the 4 options have the appropriate blocks created dynamically (standard bucket, website bucket) x (no logging, logging enabled).
-
-If the state refactoring is performed in a `terraform-toolset` container, replace `terraform` below with `/acp/bin/run.sh`
-
-### Upgrading a standard bucket with no logging enabled
-
-Replace `standard_bucket` below with the name of the module creating the bucket.
-
-```
-terraform state mv module.standard_bucket.aws_kms_alias.s3_bucket_kms_alias[0] module.standard_bucket.aws_kms_alias.this[0]
-terraform state mv module.standard_bucket.aws_kms_key.s3_bucket_kms_key[0] module.standard_bucket.aws_kms_key.this[0]
-terraform state mv module.standard_bucket.aws_s3_bucket.s3_bucket[0] module.standard_bucket.aws_s3_bucket.this
-```
-
-### Upgrading a standard bucket with audit logs enabled
-
-Replace `audit_bucket` below with the name of the module creating the audit bucket and `bucket_with_logging` with the name of the tenant bucket that has logging enabled.
-
-``` bash
-# refactoring for the audit bucket
-terraform state mv module.audit_bucket.aws_kms_alias.s3_bucket_kms_alias[0] module.audit_bucket.aws_kms_alias.this[0]
-terraform state mv module.audit_bucket.aws_kms_key.s3_bucket_kms_key[0] module.audit_bucket.aws_kms_key.this[0]
-terraform state mv module.audit_bucket.aws_s3_bucket.s3_bucket[0] module.audit_bucket.aws_s3_bucket.this
-#
-# refactoring for the bucket with logging enabled
-terraform state mv module.bucket_with_logging.aws_kms_alias.s3_bucket_kms_alias[0] module.bucket_with_logging.aws_kms_alias.this[0]
-terraform state mv module.bucket_with_logging.aws_kms_key.s3_bucket_kms_key[0] module.bucket_with_logging.aws_kms_key.this[0]
-terraform state mv module.bucket_with_logging.aws_s3_bucket.s3_bucket_with_logging[0] module.bucket_with_logging.aws_s3_bucket.this
-```
-
-### Upgrading a website bucket with no logging enabled
-
-Replace `website_bucket` below with the name of the module creating the bucket.
-
-```
-terraform state mv module.website_bucket.aws_s3_bucket.s3_website_bucket[0] module.website_bucket.aws_s3_bucket.this
-```
-
-### Upgrading a website bucket with audit logs enabled
-
-Replace `audit_bucket` below with the name of the module creating the audit bucket and `website_bucket_with_logging` with the name of the tenant website bucket that has logging enabled.
-
-
-``` bash
-# refactoring for the audit bucket
-terraform state mv module.audit_bucket.aws_s3_bucket.s3_bucket[0] module.audit_bucket.aws_s3_bucket.this
-#
-# refactoring for the bucket with logging enabled
-terraform state mv module.website_bucket_with_logging.aws_s3_bucket.s3_website_bucket_with_logging[0] module.website_bucket_with_logging.aws_s3_bucket.this
-```
-
-### Upgrade notes
-
-Please note the following:
-
-- the KMS key will be amended to enable automatic key rotation. Any already encrypted will still be able to be decrypted with any previous keys replaced by the AWS automatic key rotation process.
-- if you set the `block_public_access` module property to `true`, a new resource will be created and a number of bucket policy resources will be modified to make sure that public access is not granted.
-
-<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 3.75.1 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.75.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 4.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_self_serve_access_keys"></a> [self\_serve\_access\_keys](#module\_self\_serve\_access\_keys) | git::https://github.com/UKHomeOffice/acp-tf-self-serve-access-keys | v0.1.0 |
+| <a name="module_self_serve_access_keys"></a> [self\_serve\_access\_keys](#module\_self\_serve\_access\_keys) | git::https://github.com/UKHomeOffice/acp-tf-self-serve-access-keys | v0.2.0 |
 
 ## Resources
 
@@ -216,7 +121,6 @@ Please note the following:
 | <a name="input_lifecycle_days_to_infrequent_storage_transition"></a> [lifecycle\_days\_to\_infrequent\_storage\_transition](#input\_lifecycle\_days\_to\_infrequent\_storage\_transition) | Specifies the number of days after object creation when it will be moved to standard infrequent access storage. | `string` | `"60"` | no |
 | <a name="input_lifecycle_expiration_enabled"></a> [lifecycle\_expiration\_enabled](#input\_lifecycle\_expiration\_enabled) | Specifies expiration lifecycle rule status. | `bool` | `false` | no |
 | <a name="input_lifecycle_expiration_object_prefix"></a> [lifecycle\_expiration\_object\_prefix](#input\_lifecycle\_expiration\_object\_prefix) | Object key prefix identifying one or more objects to which the lifecycle rule applies. | `string` | `""` | no |
-| <a name="input_lifecycle_expiration_object_prefixes"></a> [lifecycle\_expiration\_object\_prefixes](#input\_lifecycle\_expiration\_object\_prefixes) | Optional list of prefixes for object expiration lifecycle rules | `list(string)` | `[]` | no |
 | <a name="input_lifecycle_expiration_object_tags"></a> [lifecycle\_expiration\_object\_tags](#input\_lifecycle\_expiration\_object\_tags) | Object tags to filter on for the expire object lifecycle rule. | `map` | `{}` | no |
 | <a name="input_lifecycle_glacier_deep_archive_object_prefix"></a> [lifecycle\_glacier\_deep\_archive\_object\_prefix](#input\_lifecycle\_glacier\_deep\_archive\_object\_prefix) | Object key prefix identifying one or more objects to which the lifecycle rule applies. | `string` | `""` | no |
 | <a name="input_lifecycle_glacier_deep_archive_object_tags"></a> [lifecycle\_glacier\_deep\_archive\_object\_tags](#input\_lifecycle\_glacier\_deep\_archive\_object\_tags) | Object tags to filter on for the transition to glacier lifecycle rule. | `map` | `{}` | no |
@@ -252,4 +156,3 @@ Please note the following:
 | <a name="output_s3_bucket_id"></a> [s3\_bucket\_id](#output\_s3\_bucket\_id) | ID of generated S3 bucket |
 | <a name="output_s3_bucket_kms_key"></a> [s3\_bucket\_kms\_key](#output\_s3\_bucket\_kms\_key) | KMS Key ID of the generated bucket |
 | <a name="output_s3_bucket_kms_key_arn"></a> [s3\_bucket\_kms\_key\_arn](#output\_s3\_bucket\_kms\_key\_arn) | KMS Key ARN of the generated bucket |
-<!-- END_TF_DOCS -->
