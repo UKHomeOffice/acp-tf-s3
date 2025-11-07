@@ -98,19 +98,19 @@ Please note the following:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 3.75.1 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.75.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 4.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_self_serve_access_keys"></a> [self\_serve\_access\_keys](#module\_self\_serve\_access\_keys) | git::https://github.com/UKHomeOffice/acp-tf-self-serve-access-keys | v0..0 |
+| <a name="module_self_serve_access_keys"></a> [self\_serve\_access\_keys](#module\_self\_serve\_access\_keys) | git::https://github.com/UKHomeOffice/acp-tf-self-serve-access-keys | v0.2.0 |
 
 ## Resources
 
@@ -191,11 +191,12 @@ Please note the following:
 | <a name="input_block_public_access"></a> [block\_public\_access](#input\_block\_public\_access) | Blocks all public access to the bucket | `bool` | `false` | no |
 | <a name="input_bucket_iam_user"></a> [bucket\_iam\_user](#input\_bucket\_iam\_user) | The name of the iam user assigned to the created s3 bucket | `any` | n/a | yes |
 | <a name="input_cmk_enable_key_rotation"></a> [cmk\_enable\_key\_rotation](#input\_cmk\_enable\_key\_rotation) | Enables CMK key rotation | `bool` | `true` | no |
-| <a name="input_cors_allowed_headers"></a> [cors\_allowed\_headers](#input\_cors\_allowed\_headers) | Specifies which headers are allowed. | `list` | <pre>[<br>  "Authorization"<br>]</pre> | no |
-| <a name="input_cors_allowed_methods"></a> [cors\_allowed\_methods](#input\_cors\_allowed\_methods) | Specifies which methods are allowed. Can be GET, PUT, POST, DELETE or HEAD. | `list` | <pre>[<br>  "GET"<br>]</pre> | no |
-| <a name="input_cors_allowed_origins"></a> [cors\_allowed\_origins](#input\_cors\_allowed\_origins) | Specifies which origins are allowed. | `list` | <pre>[<br>  "*"<br>]</pre> | no |
+| <a name="input_cors_allowed_headers"></a> [cors\_allowed\_headers](#input\_cors\_allowed\_headers) | Specifies which headers are allowed. | `list` | <pre>[<br/>  "Authorization"<br/>]</pre> | no |
+| <a name="input_cors_allowed_methods"></a> [cors\_allowed\_methods](#input\_cors\_allowed\_methods) | Specifies which methods are allowed. Can be GET, PUT, POST, DELETE or HEAD. | `list` | <pre>[<br/>  "GET"<br/>]</pre> | no |
+| <a name="input_cors_allowed_origins"></a> [cors\_allowed\_origins](#input\_cors\_allowed\_origins) | Specifies which origins are allowed. | `list` | <pre>[<br/>  "*"<br/>]</pre> | no |
 | <a name="input_cors_expose_headers"></a> [cors\_expose\_headers](#input\_cors\_expose\_headers) | Specifies expose header in the response. | `list` | `[]` | no |
 | <a name="input_cors_max_age_seconds"></a> [cors\_max\_age\_seconds](#input\_cors\_max\_age\_seconds) | Specifies time in seconds that browser can cache the response for a preflight request. | `string` | `"3000"` | no |
+| <a name="input_create_lifecycle_policy"></a> [create\_lifecycle\_policy](#input\_create\_lifecycle\_policy) | States whether the module autocreates the lifecycle policy | `bool` | `true` | no |
 | <a name="input_email_addresses"></a> [email\_addresses](#input\_email\_addresses) | A list of email addresses for key rotation notifications. | `list` | `[]` | no |
 | <a name="input_enforce_kms_key_use"></a> [enforce\_kms\_key\_use](#input\_enforce\_kms\_key\_use) | Whether or not to require a PutObject request to specify the KMS key id that was created. Defaults to true. Should only be set to false to emulate the behaviour of v0.x of the module and only until the tenants have changed their code to specify the KMS key id in their requests | `bool` | `true` | no |
 | <a name="input_enforce_tls"></a> [enforce\_tls](#input\_enforce\_tls) | Specifies if the bucket will be enforce a TLS bucket policy | `bool` | `true` | no |
@@ -205,7 +206,6 @@ Please note the following:
 | <a name="input_key_rotation"></a> [key\_rotation](#input\_key\_rotation) | Enable email notifications for old IAM keys. | `bool` | `true` | no |
 | <a name="input_kms_alias"></a> [kms\_alias](#input\_kms\_alias) | The alias name for the kms key used to encrypt and decrypt the created S3 bucket objects | `string` | `""` | no |
 | <a name="input_kms_key_policy"></a> [kms\_key\_policy](#input\_kms\_key\_policy) | KMS key policy (uses a default policy if omitted) | `string` | `""` | no |
-| <a name="input_create_lifecycle_policy"></a> [create\_lifecycle\_policy](#create\_lifecycle\_policy) | Specifies whether to create lifecycle policies. | `bool` | `true` | no |
 | <a name="input_lifecycle_abort_multipart_upload_enabled"></a> [lifecycle\_abort\_multipart\_upload\_enabled](#input\_lifecycle\_abort\_multipart\_upload\_enabled) | Specifies Abort Multipart Uploads lifecycle rule status. | `bool` | `false` | no |
 | <a name="input_lifecycle_abort_multipart_upload_object_prefix"></a> [lifecycle\_abort\_multipart\_upload\_object\_prefix](#input\_lifecycle\_abort\_multipart\_upload\_object\_prefix) | Object key prefix identifying one or more objects to which the lifecycle rule applies. | `string` | `""` | no |
 | <a name="input_lifecycle_abort_multipart_upload_object_tags"></a> [lifecycle\_abort\_multipart\_upload\_object\_tags](#input\_lifecycle\_abort\_multipart\_upload\_object\_tags) | Object tags to filter on for the abort multipart upload lifecycle rule. | `map` | `{}` | no |
