@@ -52,6 +52,11 @@ resource "aws_kms_alias" "this" {
   target_key_id = aws_kms_key.this[0].key_id
 }
 
+moved {
+  from = aws_s3_bucket.s3_bucket[0]
+  to   = aws_s3_bucket.this
+}
+
 resource "aws_s3_bucket" "this" {
   bucket = var.name
 
