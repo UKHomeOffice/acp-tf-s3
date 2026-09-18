@@ -29,8 +29,21 @@ locals {
     for arn in local.datasync_source_role_arns :
     "arn:aws:iam::${split(":", arn)[4]}:root"
   ])
-  datasync_source_root_arns_json = join(", ", formatlist("\"%s\"", local.datasync_source_root_arns))
-  datasync_source_role_arns_json = join(", ", formatlist("\"%s\"", local.datasync_source_role_arns))
+  # aws:PrincipalArn is evaluated against the CALLING principal. When DataSync
+  # assumes the role it calls as an assumed-role SESSION ARN
+  # (arn:aws:sts::<acct>:assumed-role/<role-name>/<session>), not the role ARN,
+  # so the condition must allow both the role ARN and the assumed-role/*/ session
+  # pattern (the role name is the last path segment, dropping any /service-role/
+  # path). Matching only the role ARN silently denies DataSync access.
+  datasync_source_principal_arn_patterns = distinct(flatten([
+    for arn in local.datasync_source_role_arns : [
+      arn,
+      "arn:aws:sts::${split(":", arn)[4]}:assumed-role/${element(reverse(split("/", split(":", arn)[5])), 0)}/*",
+    ]
+  ]))
+  datasync_source_root_arns_json              = join(", ", formatlist("\"%s\"", local.datasync_source_root_arns))
+  datasync_source_role_arns_json              = join(", ", formatlist("\"%s\"", local.datasync_source_role_arns))
+  datasync_source_principal_arn_patterns_json = join(", ", formatlist("\"%s\"", local.datasync_source_principal_arn_patterns))
   datasync_source_policy_statements_json = var.datasync_source_access_enabled && length(local.datasync_source_role_arns) > 0 ? trimspace(<<-POLICY
     {
       "Sid": "DataSyncSourceBucketRead",
@@ -46,7 +59,7 @@ locals {
       "Resource": "${aws_s3_bucket.this.arn}",
       "Condition": {
         "ArnLike": {
-          "aws:PrincipalArn": [${local.datasync_source_role_arns_json}]
+          "aws:PrincipalArn": [${local.datasync_source_principal_arn_patterns_json}]
         }
       }
     },
@@ -66,7 +79,7 @@ locals {
       "Resource": "${aws_s3_bucket.this.arn}/*",
       "Condition": {
         "ArnLike": {
-          "aws:PrincipalArn": [${local.datasync_source_role_arns_json}]
+          "aws:PrincipalArn": [${local.datasync_source_principal_arn_patterns_json}]
         }
       }
     }

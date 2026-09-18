@@ -241,7 +241,9 @@ data "aws_iam_policy_document" "kms_key_policy_document" {
       condition {
         test     = "ArnLike"
         variable = "aws:PrincipalArn"
-        values   = local.datasync_source_role_arns
+        # Match the role ARN and its assumed-role session ARN — DataSync calls as
+        # an assumed-role session, so the role ARN alone would not match.
+        values = local.datasync_source_principal_arn_patterns
       }
     }
   }
