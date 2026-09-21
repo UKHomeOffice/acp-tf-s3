@@ -1,3 +1,9 @@
+variable "org_moniker" {
+  description = "cc or acp. this will change key behaviour"
+  type        = string
+  default     = "acp"
+}
+
 variable "acl" {
   description = "The access control list assigned to this bucket"
   default     = "private"
@@ -22,6 +28,7 @@ variable "create_lifecycle_policy" {
 
 variable "bucket_iam_user" {
   description = "The name of the iam user assigned to the created s3 bucket"
+  default     = ""
   type        = string
 }
 
@@ -90,6 +97,7 @@ variable "expire_noncurrent_versions" {
 
 variable "iam_user_policy_name" {
   description = "The policy name of attached to the user"
+  default     = ""
   type        = string
 }
 

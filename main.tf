@@ -16,6 +16,7 @@ Module usage:
 */
 
 locals {
+  number_of_users           = var.org_moniker == "cc" ? 0 : var.number_of_users
   email_tags                = { for i, email in var.email_addresses : "email${i}" => email }
   use_kms_encryption        = var.kms_alias != "" && !var.website_hosting
   create_lifecycle_policy   = var.create_lifecycle_policy
@@ -672,9 +673,9 @@ POLICY
 }
 
 resource "aws_iam_user" "s3_bucket_iam_user" {
-  count = var.number_of_users
+  count = local.number_of_users
 
-  name = "${var.bucket_iam_user}${var.number_of_users != 1 ? "-${count.index}" : ""}"
+  name = "${var.bucket_iam_user}${local.number_of_users != 1 ? "-${count.index}" : ""}"
   path = "/"
 
   tags = merge(
@@ -695,7 +696,7 @@ resource "aws_iam_policy" "s3_bucket_with_kms_iam_policy_1" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_iam_policy_1" {
-  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? local.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_iam_policy_1[0].arn
@@ -710,7 +711,7 @@ resource "aws_iam_policy" "s3_bucket_with_kms_iam_policy_2" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_iam_policy_2" {
-  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 ? local.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_iam_policy_2[0].arn
@@ -725,7 +726,7 @@ resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_iam_policy_1" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_iam_policy_1" {
-  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? local.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_and_whitelist_iam_policy_1[0].arn
@@ -740,7 +741,7 @@ resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_iam_policy_2" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_iam_policy_2" {
-  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 ? local.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_and_whitelist_iam_policy_2[0].arn
@@ -755,7 +756,7 @@ resource "aws_iam_policy" "s3_bucket_iam_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_iam_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && !var.website_hosting ? var.number_of_users : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && !var.website_hosting ? local.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_iam_policy[0].arn
@@ -770,7 +771,7 @@ resource "aws_iam_policy" "s3_bucket_iam_whitelist_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_whitelist_iam_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && !var.website_hosting ? var.number_of_users : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) == 0 && !var.website_hosting ? local.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_iam_whitelist_policy[0].arn
@@ -785,7 +786,7 @@ resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_vpc_iam_policy_1" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_vpc_iam_policy_1" {
-  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? local.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_and_whitelist_vpc_iam_policy_1[0].arn
@@ -800,7 +801,7 @@ resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_vpc_iam_policy_2" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_vpc_iam_policy_2" {
-  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 ? local.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_and_whitelist_vpc_iam_policy_2[0].arn
@@ -815,7 +816,7 @@ resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_polic
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_1" {
-  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? local.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_1[0].arn
@@ -830,7 +831,7 @@ resource "aws_iam_policy" "s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_polic
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_2" {
-  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0
+  count = local.use_kms_encryption && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? local.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_kms_and_whitelist_ip_and_vpc_iam_policy_2[0].arn
@@ -845,7 +846,7 @@ resource "aws_iam_policy" "s3_bucket_with_whitelist_vpc_iam_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_with_whitelist_vpc_iam_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && !var.website_hosting ? var.number_of_users : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) != 0 && !var.website_hosting ? local.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_with_whitelist_vpc_iam_policy[0].arn
@@ -860,7 +861,7 @@ resource "aws_iam_policy" "s3_bucket_iam_whitelist_ip_and_vpc_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_bucket_whitelist_ip_and_vpc_iam_policy" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? var.number_of_users : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) != 0 && length(var.whitelist_vpc) != 0 ? local.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_iam_whitelist_ip_and_vpc_policy[0].arn
@@ -875,7 +876,7 @@ resource "aws_iam_policy" "s3_bucket_iam_website_policy_1" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_website_bucket_iam_policy_1" {
-  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting ? var.number_of_users : 0
+  count = var.kms_alias == "" && length(var.whitelist_ip) == 0 && length(var.whitelist_vpc) == 0 && var.website_hosting ? local.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_bucket_iam_website_policy_1[0].arn
@@ -890,7 +891,7 @@ resource "aws_iam_policy" "s3_tls_bucket_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "attach_s3_tls_bucket_policy" {
-  count = var.enforce_tls ? var.number_of_users : 0
+  count = var.enforce_tls ? local.number_of_users : 0
 
   user       = aws_iam_user.s3_bucket_iam_user[count.index].name
   policy_arn = aws_iam_policy.s3_tls_bucket_policy[0].arn
